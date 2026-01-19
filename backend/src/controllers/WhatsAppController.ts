@@ -8,6 +8,7 @@ import DeleteWhatsAppService from "../services/WhatsappService/DeleteWhatsAppSer
 import ListWhatsAppsService from "../services/WhatsappService/ListWhatsAppsService";
 import ShowWhatsAppService from "../services/WhatsappService/ShowWhatsAppService";
 import UpdateWhatsAppService from "../services/WhatsappService/UpdateWhatsAppService";
+import ExchangeFacebookTokenService from "../services/FacebookServices/ExchangeFacebookTokenService";
 import AppError from "../errors/AppError";
 
 interface WhatsappData {
@@ -24,7 +25,7 @@ interface WhatsappData {
   //sendIdQueue?: number;
   //timeSendQueue?: number;
   transferQueueId?: number;
-  timeToTransfer?: number;  
+  timeToTransfer?: number;
   promptId?: number;
   maxUseBotQueues?: number;
   timeUseBotQueues?: number;
@@ -56,8 +57,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     token,
     //timeSendQueue,
     //sendIdQueue,
-	transferQueueId,
-	timeToTransfer,
+    transferQueueId,
+    timeToTransfer,
     promptId,
     maxUseBotQueues,
     timeUseBotQueues,
@@ -78,8 +79,8 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     token,
     //timeSendQueue,
     //sendIdQueue,
-	transferQueueId,
-	timeToTransfer,	
+    transferQueueId,
+    timeToTransfer,
     promptId,
     maxUseBotQueues,
     timeUseBotQueues,
@@ -180,4 +181,43 @@ export const restart = async (
   await restartWbot(companyId);
 
   return res.status(200).json({ message: "Whatsapp restart." });
+};
+
+export const storeFacebookConnection = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { code, redirectUri, name } = req.body;
+  const { companyId } = req.user;
+
+  if (!code) {
+    throw new AppError("ERR_NO_CODE", 400);
+  }
+
+  // Exchange code for token
+  const { accessToken, userId, whatsappAccountId } = await ExchangeFacebookTokenService(
+    code,
+    redirectUri || `${process.env.FRONTEND_URL}/fb-callback`
+  );
+
+  // Create the WhatsApp connection
+  const { whatsapp } = await CreateWhatsAppService({
+    name: name || "WhatsApp Cloud API",
+    companyId,
+    channel: "whatsapp_cloud",
+    facebookAccessToken: accessToken,
+    facebookUserId: userId,
+    whatsappAccountId,
+    status: "CONNECTED",
+    isDefault: false,
+    queueIds: []
+  });
+
+  const io = getIO();
+  io.to(`company-${companyId}-mainchannel`).emit(`company-${companyId}-whatsapp`, {
+    action: "update",
+    whatsapp
+  });
+
+  return res.status(200).json(whatsapp);
 };

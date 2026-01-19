@@ -158,6 +158,33 @@ const Connections = () => {
 		confirmationModalInitialState
 	);
 
+	// Listen for Facebook OAuth callback messages from popup
+	useEffect(() => {
+		const handleFacebookMessage = async (event) => {
+			if (event.data?.type === "FB_AUTH_SUCCESS") {
+				try {
+					toast.info("Creando conexión WhatsApp Cloud...");
+					const redirectUri = `${window.location.origin}/fb-callback`;
+					const response = await api.post("/whatsapp/facebook", {
+						code: event.data.code,
+						redirectUri,
+						name: "WhatsApp Cloud API"
+					});
+					toast.success("¡Conexión WhatsApp Cloud creada exitosamente!");
+					console.log("WhatsApp Cloud connection created:", response.data);
+				} catch (err) {
+					console.error("Error creating WhatsApp Cloud connection:", err);
+					toastError(err);
+				}
+			} else if (event.data?.type === "FB_AUTH_ERROR") {
+				toast.error(`Error en autorización: ${event.data.error}`);
+			}
+		};
+
+		window.addEventListener("message", handleFacebookMessage);
+		return () => window.removeEventListener("message", handleFacebookMessage);
+	}, []);
+
 	const handleMenuOpen = (event) => {
 		setAnchorEl(event.currentTarget);
 	};

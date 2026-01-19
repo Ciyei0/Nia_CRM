@@ -111,12 +111,12 @@ class Whatsapp extends Model<Whatsapp> {
 
   //@Column
   //sendIdQueue: number;
-  
+
   @Column
   transferQueueId: number;
 
   @Column
-  timeToTransfer: number;  
+  timeToTransfer: number;
 
   @ForeignKey(() => Prompt)
   @Column
@@ -140,12 +140,25 @@ class Whatsapp extends Model<Whatsapp> {
 
   @Column
   expiresTicket: number;
-  
+
   @Column
   number: string;
-  
+
   @Column
   expiresInactiveMessage: string;
+
+  @Default("baileys")
+  @Column
+  channel: string;
+
+  @Column(DataType.TEXT)
+  facebookAccessToken: string;
+
+  @Column
+  facebookUserId: string;
+
+  @Column
+  whatsappAccountId: string;
 }
 
 export default Whatsapp;

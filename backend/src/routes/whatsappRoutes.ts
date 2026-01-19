@@ -21,4 +21,6 @@ whatsappRoutes.delete(
   WhatsAppController.remove
 );
 
+whatsappRoutes.post("/whatsapp/facebook", isAuth, WhatsAppController.storeFacebookConnection);
+
 export default whatsappRoutes;
