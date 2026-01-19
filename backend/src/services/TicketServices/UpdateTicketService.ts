@@ -16,8 +16,10 @@ import ListSettingsServiceOne from "../SettingServices/ListSettingsServiceOne"; 
 import ShowUserService from "../UserServices/ShowUserService"; //NOVO PLW DESIGN//
 import { isNil } from "lodash";
 import Whatsapp from "../../models/Whatsapp";
-import { Op } from "sequelize";
+import { Op, QueryTypes, fn, col } from "sequelize";
 import AppError from "../../errors/AppError";
+import User from "../../models/User";
+import UserQueue from "../../models/UserQueue";
 
 interface TicketData {
   status?: string;
@@ -169,6 +171,41 @@ const UpdateTicketService = async ({
 
     if (queueId !== undefined && queueId !== null) {
       ticketTraking.queuedAt = moment().toDate();
+
+      // SYSTEM: AUTO ASSIGNMENT LOGIC (ROUND ROBIN)
+      if (!userId) {
+        // 1. Find all users belonging to this queue
+        const usersInQueue = await UserQueue.findAll({
+          where: { queueId: queueId },
+          attributes: ["userId"],
+          order: [["userId", "ASC"]] // Order by ID to ensure consistent rotation
+        });
+
+        const userIds = usersInQueue.map(u => u.userId);
+
+        if (userIds.length > 0) {
+          // 2. Find the Last Assigned Ticket for this Queue to see who got it
+          const lastTicket = await Ticket.findOne({
+            where: {
+              queueId: queueId,
+              userId: { [Op.not]: null }
+            },
+            order: [["updatedAt", "DESC"]]
+          });
+
+          let nextUserIndex = 0;
+
+          if (lastTicket && lastTicket.userId) {
+            const lastUserIndex = userIds.indexOf(lastTicket.userId);
+            if (lastUserIndex !== -1) {
+              nextUserIndex = (lastUserIndex + 1) % userIds.length;
+            }
+          }
+
+          userId = userIds[nextUserIndex];
+          // console.log(`[RoundRobin] Last User: ${lastTicket?.userId} | Next User: ${userId}`);
+        }
+      }
     }
 
     const settingsTransfTicket = await ListSettingsServiceOne({ companyId: companyId, key: "sendMsgTransfTicket" });
@@ -233,7 +270,7 @@ const UpdateTicketService = async ({
                 }
               );
               await verifyMessage(queueChangedMessage, ticket, ticket.contact);
-            }      
+            }
     }
 
     await ticket.update({

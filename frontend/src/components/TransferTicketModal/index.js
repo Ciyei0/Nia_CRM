@@ -4,6 +4,8 @@ import { useHistory } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
 
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -24,10 +26,23 @@ const filterOptions = createFilterOptions({
 
 const TransferTicketModal = ({ modalOpen, onClose, ticketid }) => {
 	const history = useHistory();
-	const [options, setOptions] = useState([]);
-	const [loading, setLoading] = useState(false);
-	const [searchParam, setSearchParam] = useState("");
-	const [selectedUser, setSelectedUser] = useState(null);
+	const [selectedQueue, setSelectedQueue] = useState(null);
+	const [queues, setQueues] = useState([]);
+	const [tab, setTab] = useState(0);
+
+	useEffect(() => {
+		if (tab === 1) {
+			const fetchQueues = async () => {
+				try {
+					const { data } = await api.get("/queue");
+					setQueues(data);
+				} catch (err) {
+					toastError(err);
+				}
+			};
+			fetchQueues();
+		}
+	}, [tab]);
 
 	useEffect(() => {
 		if (!modalOpen || searchParam.length < 3) {
@@ -58,18 +73,32 @@ const TransferTicketModal = ({ modalOpen, onClose, ticketid }) => {
 		onClose();
 		setSearchParam("");
 		setSelectedUser(null);
+		setSelectedQueue(null);
+		setTab(0);
 	};
 
 	const handleSaveTicket = async e => {
 		e.preventDefault();
-		if (!ticketid || !selectedUser) return;
+		if (!ticketid) return;
+		if (tab === 0 && !selectedUser) return;
+		if (tab === 1 && !selectedQueue) return;
+
 		setLoading(true);
 		try {
-			await api.put(`/tickets/${ticketid}`, {
-				userId: selectedUser.id,
-				queueId: null,
-				status: "open",
-			});
+			const data = {};
+			if (tab === 0) {
+				data.userId = selectedUser.id;
+				data.queueId = null; // Option: keep queueId? Usually transferring to user might implies same queue or no queue restriction. 
+				// The original code passed `queueId: null`. I will stick to that or better yet, not send it if I want to keep current queue. 
+				// But original code: `queueId: null`.
+				data.status = "open";
+			} else {
+				data.queueId = selectedQueue.id;
+				data.userId = null;
+				data.status = "pending"; // Return to pending for auto-assignment
+			}
+
+			await api.put(`/tickets/${ticketid}`, data);
 			setLoading(false);
 			history.push(`/tickets`);
 		} catch (err) {
@@ -85,40 +114,86 @@ const TransferTicketModal = ({ modalOpen, onClose, ticketid }) => {
 					{i18n.t("transferTicketModal.title")}
 				</DialogTitle>
 				<DialogContent dividers>
-					<Autocomplete
-						style={{ width: 300 }}
-						getOptionLabel={option => `${option.name}`}
-						onChange={(e, newValue) => {
-							setSelectedUser(newValue);
-						}}
-						options={options}
-						filterOptions={filterOptions}
-						freeSolo
-						autoHighlight
-						noOptionsText={i18n.t("transferTicketModal.noOptions")}
-						loading={loading}
-						renderInput={params => (
-							<TextField
-								{...params}
-								label={i18n.t("transferTicketModal.fieldLabel")}
-								variant="outlined"
-								required
-								autoFocus
-								onChange={e => setSearchParam(e.target.value)}
-								InputProps={{
-									...params.InputProps,
-									endAdornment: (
-										<React.Fragment>
-											{loading ? (
-												<CircularProgress color="inherit" size={20} />
-											) : null}
-											{params.InputProps.endAdornment}
-										</React.Fragment>
-									),
-								}}
-							/>
-						)}
-					/>
+					<Tabs
+						value={tab}
+						onChange={(e, v) => setTab(v)}
+						indicatorColor="primary"
+						textColor="primary"
+						variant="fullWidth"
+						style={{ marginBottom: 20 }}
+					>
+						<Tab label="Agente" />
+						<Tab label="Departamento" />
+					</Tabs>
+					{tab === 0 && (
+						<Autocomplete
+							style={{ width: 300, margin: "auto" }}
+							getOptionLabel={option => `${option.name}`}
+							onChange={(e, newValue) => {
+								setSelectedUser(newValue);
+							}}
+							options={options}
+							filterOptions={filterOptions}
+							freeSolo
+							autoHighlight
+							noOptionsText={i18n.t("transferTicketModal.noOptions")}
+							loading={loading}
+							renderInput={params => (
+								<TextField
+									{...params}
+									label={i18n.t("transferTicketModal.fieldLabel")}
+									variant="outlined"
+									required
+									autoFocus
+									onChange={e => setSearchParam(e.target.value)}
+									InputProps={{
+										...params.InputProps,
+										endAdornment: (
+											<React.Fragment>
+												{loading ? (
+													<CircularProgress color="inherit" size={20} />
+												) : null}
+												{params.InputProps.endAdornment}
+											</React.Fragment>
+										),
+									}}
+								/>
+							)}
+						/>
+					)}
+					{tab === 1 && (
+						<Autocomplete
+							style={{ width: 300, margin: "auto" }}
+							getOptionLabel={option => `${option.name}`}
+							onChange={(e, newValue) => {
+								setSelectedQueue(newValue);
+							}}
+							options={queues}
+							autoHighlight
+							noOptionsText={i18n.t("transferTicketModal.noOptions")}
+							loading={loading}
+							renderInput={params => (
+								<TextField
+									{...params}
+									label="Departamento"
+									variant="outlined"
+									required
+									autoFocus
+									InputProps={{
+										...params.InputProps,
+										endAdornment: (
+											<React.Fragment>
+												{loading ? (
+													<CircularProgress color="inherit" size={20} />
+												) : null}
+												{params.InputProps.endAdornment}
+											</React.Fragment>
+										),
+									}}
+								/>
+							)}
+						/>
+					)}
 				</DialogContent>
 				<DialogActions>
 					<Button

@@ -54,11 +54,11 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.fancyBackground,
     '& .MuiButton-outlinedPrimary': {
       color: theme.mode === 'light' ? '#FFF' : '#FFF',
-	  backgroundColor: theme.mode === 'light' ? '#2f0549' : '#1c1c1c',
+      backgroundColor: theme.mode === 'light' ? '#1565C0' : '#1c1c1c',
       //border: theme.mode === 'light' ? '1px solid rgba(0 124 102)' : '1px solid rgba(255, 255, 255, 0.5)',
     },
     '& .MuiTab-textColorPrimary.Mui-selected': {
-      color: theme.mode === 'light' ? '#2f0549' : '#FFF',
+      color: theme.mode === 'light' ? '#1565C0' : '#FFF',
     }
   },
   avatar: {
@@ -266,7 +266,7 @@ const LoggedInLayout = ({ children, themeToggle }) => {
 
     socket.on(`company-${companyId}-auth`, (data) => {
       if (data.user.id === +userId) {
-        toastError("Sua conta foi acessada em outro computador.");
+        toastError("Tu cuenta fue accedida en otro ordenador.");
         setTimeout(() => {
           localStorage.clear();
           window.location.reload();
@@ -329,11 +329,11 @@ const LoggedInLayout = ({ children, themeToggle }) => {
   if (loading) {
     return <BackdropLoading />;
   }
-  
-  	const logo = `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/interno.png`;
-    const randomValue = Math.random(); // Generate a random number
-  
-    const logoWithRandom = `${logo}?r=${randomValue}`;
+
+  const logo = `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/interno.png`;
+  const randomValue = Math.random(); // Generate a random number
+
+  const logoWithRandom = `${logo}?r=${randomValue}`;
 
   return (
     <div className={classes.root}>
@@ -349,7 +349,7 @@ const LoggedInLayout = ({ children, themeToggle }) => {
         open={drawerOpen}
       >
         <div className={classes.toolbarIcon}>
-          <img src={logoWithRandom} style={{ margin: "0 auto" , width: "50%"}} alt={`${process.env.REACT_APP_NAME_SYSTEM}`} />
+          <img src={logoWithRandom} style={{ margin: "0 auto", width: "50%" }} alt={`${process.env.REACT_APP_NAME_SYSTEM}`} />
           <IconButton onClick={() => setDrawerOpen(!drawerOpen)}>
             <ChevronLeftIcon />
           </IconButton>
@@ -394,11 +394,11 @@ const LoggedInLayout = ({ children, themeToggle }) => {
             {/* {greaterThenSm && user?.profile === "admin" && getDateAndDifDays(user?.company?.dueDate).difData < 7 ? ( */}
             {greaterThenSm && user?.profile === "admin" && user?.company?.dueDate ? (
               <>
-                Olá <b>{user.name}</b>, Bem vindo a <b>{user?.company?.name}</b>! (Ativo até {dateToClient(user?.company?.dueDate)})
+                Hola <b>{user.name}</b>, Bienvenido a <b>{user?.company?.name}</b>! (Activo hasta {dateToClient(user?.company?.dueDate)})
               </>
             ) : (
               <>
-                Olá  <b>{user.name}</b>, Bem vindo a <b>{user?.company?.name}</b>!
+                Hola <b>{user.name}</b>, Bienvenido a <b>{user?.company?.name}</b>!
               </>
             )}
           </Typography>

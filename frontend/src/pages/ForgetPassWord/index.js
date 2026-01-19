@@ -20,7 +20,7 @@ import Container from "@material-ui/core/Container";
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
 import moment from "moment";
-import { toast } from 'react-toastify'; 
+import { toast } from 'react-toastify';
 import toastError from '../../errors/toastError';
 import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: "100vw",
     height: "100vh",
-    background: "black", //Cor de fundo
+    background: "linear-gradient(to right, #0D47A1 , #1976D2 , #0D47A1)", //Color de fondo
     backgroundRepeat: "no-repeat",
     backgroundSize: "100% 100%",
     backgroundPosition: "center",
@@ -104,24 +104,24 @@ const ForgetPassword = () => {
   const [user] = useState(initialState);
   const dueDate = moment().add(3, "day").format();
 
-const handleSendEmail = async (values) => {
-  const email = values.email;
-  try {
-    const response = await api.post(
-      `${process.env.REACT_APP_BACKEND_URL}/forgetpassword/${email}`
-    );
-    console.log("API Response:", response.data);
+  const handleSendEmail = async (values) => {
+    const email = values.email;
+    try {
+      const response = await api.post(
+        `${process.env.REACT_APP_BACKEND_URL}/forgetpassword/${email}`
+      );
+      console.log("API Response:", response.data);
 
-    if (response.data.status === 404) {
-      toast.error("Email não encontrado");
-    } else {
-      toast.success(i18n.t("Email enviado com sucesso!"));
+      if (response.data.status === 404) {
+        toast.error("Correo no encontrado");
+      } else {
+        toast.success(i18n.t("¡Correo enviado con éxito!"));
+      }
+    } catch (err) {
+      console.log("API Error:", err);
+      toastError(err);
     }
-  } catch (err) {
-    console.log("API Error:", err);
-    toastError(err);
-  }
-};
+  };
 
   const handleResetPassword = async (values) => {
     const email = values.email;
@@ -135,7 +135,7 @@ const handleSendEmail = async (values) => {
           `${process.env.REACT_APP_BACKEND_URL}/resetpasswords/${email}/${token}/${newPassword}`
         );
         setError(""); // Limpe o erro se não houver erro
-        toast.success(i18n.t("Senha redefinida com sucesso."));
+        toast.success(i18n.t("Contraseña restablecida con éxito."));
         history.push("/login");
       } catch (err) {
         console.log(err);
@@ -145,21 +145,21 @@ const handleSendEmail = async (values) => {
 
   const isResetPasswordButtonClicked = showResetPasswordButton;
   const UserSchema = Yup.object().shape({
-    email: Yup.string().email("Invalid email").required("Required"),
+    email: Yup.string().email("Correo inválido").required("Campo requerido"),
     newPassword: isResetPasswordButtonClicked
       ? Yup.string()
-          .required("Campo obrigatório")
-          .matches(
-            passwordRegex,
-            "Sua senha precisa ter no mínimo 8 caracteres, sendo uma letra maiúscula, uma minúscula e um número."
-          )
-      : Yup.string(), // Sem validação se não for redefinição de senha
+        .required("Campo requerido")
+        .matches(
+          passwordRegex,
+          "Tu contraseña debe tener al menos 8 caracteres, una letra mayúscula, una minúscula y un número."
+        )
+      : Yup.string(), // Sin validación si no es restablecimiento de contraseña
     confirmPassword: Yup.string().when("newPassword", {
       is: (newPassword) => isResetPasswordButtonClicked && newPassword,
       then: Yup.string()
-        .oneOf([Yup.ref("newPassword"), null], "As senhas não correspondem")
-        .required("Campo obrigatório"),
-      otherwise: Yup.string(), // Sem validação se não for redefinição de senha
+        .oneOf([Yup.ref("newPassword"), null], "Las contraseñas no coinciden")
+        .required("Campo requerido"),
+      otherwise: Yup.string(), // Sin validación si no es restablecimiento de contraseña
     }),
   });
 
@@ -176,7 +176,7 @@ const handleSendEmail = async (values) => {
             />
           </div>
           <Typography component="h1" variant="h5">
-            {i18n.t("Redefinir senha")}
+            {i18n.t("Restablecer contraseña")}
           </Typography>
           <Formik
             initialValues={{
@@ -224,7 +224,7 @@ const handleSendEmail = async (values) => {
                           variant="outlined"
                           fullWidth
                           id="token"
-                          label="Código de Verificação"
+                          label="Código de Verificación"
                           name="token"
                           error={touched.token && Boolean(errors.token)}
                           helperText={touched.token && errors.token}
@@ -239,7 +239,7 @@ const handleSendEmail = async (values) => {
                           fullWidth
                           type={showPassword ? "text" : "password"}
                           id="newPassword"
-                          label="Nova senha"
+                          label="Nueva contraseña"
                           name="newPassword"
                           error={
                             touched.newPassword &&
@@ -274,7 +274,7 @@ const handleSendEmail = async (values) => {
                           fullWidth
                           type={showConfirmPassword ? "text" : "password"}
                           id="confirmPassword"
-                          label="Confirme a senha"
+                          label="Confirmar contraseña"
                           name="confirmPassword"
                           error={
                             touched.confirmPassword &&
@@ -314,7 +314,7 @@ const handleSendEmail = async (values) => {
                     color="primary"
                     className={classes.submit}
                   >
-                    Redefinir Senha
+                    Restablecer Contraseña
                   </Button>
                 ) : (
                   <Button
@@ -324,7 +324,7 @@ const handleSendEmail = async (values) => {
                     color="primary"
                     className={classes.submit}
                   >
-                    Enviar Email
+                    Enviar Correo
                   </Button>
                 )}
                 <Grid container justifyContent="flex-end">
@@ -335,7 +335,7 @@ const handleSendEmail = async (values) => {
                       component={RouterLink}
                       to="/signup"
                     >
-                      {i18n.t("Não tem uma conta? Cadastre-se!")}
+                      {i18n.t("¿No tienes cuenta? ¡Regístrate!")}
                     </Link>
                   </Grid>
                 </Grid>

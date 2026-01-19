@@ -49,7 +49,7 @@ export const options = {
         },
         title: {
             display: true,
-            text: 'Gráfico de Conversas',
+            text: 'Gráfico de Conversaciones',
             position: 'left',
         },
         datalabels: {
@@ -101,14 +101,14 @@ export const ChatsUser = () => {
             const { data } = await api.get(`/dashboard/ticketsUsers?initialDate=${format(initialDate, 'yyyy-MM-dd')}&finalDate=${format(finalDate, 'yyyy-MM-dd')}&companyId=${companyId}`);
             setTicketsData(data);
         } catch (error) {
-            toast.error('Erro ao obter informações da conversa');
+            toast.error('Error al obtener información de la conversación');
         }
     }
 
     return (
         <>
             <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                Total de Conversas por Usuários
+                Total de Conversaciones por Usuarios
             </Typography>
 
             <Stack direction={'row'} spacing={2} alignItems={'center'} sx={{ my: 2, }} >
@@ -127,7 +127,7 @@ export const ChatsUser = () => {
                     <DatePicker
                         value={finalDate}
                         onChange={(newValue) => { setFinalDate(newValue) }}
-                        label="Fim"
+                        label="Fin"
                         renderInput={(params) => <TextField fullWidth {...params} sx={{ width: '20ch' }} />}
                     />
                 </LocalizationProvider>

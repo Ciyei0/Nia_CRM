@@ -89,11 +89,49 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "scroll",
     ...theme.scrollbarStyles,
   },
+  searchContainer: {
+    display: "flex",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
+    borderRadius: "50px",
+    padding: "5px 15px",
+    marginRight: "10px",
+  },
+  searchInput: {
+    border: "none",
+    backgroundColor: "transparent",
+    outline: "none",
+    marginLeft: "10px",
+    width: "150px",
+  },
+  addButton: {
+    backgroundColor: "#3b5bdb",
+    color: "white",
+    borderRadius: "50px",
+    padding: "8px 20px",
+    fontWeight: "bold",
+    textTransform: "uppercase",
+    "&:hover": {
+      backgroundColor: "#2c48b5",
+    },
+  },
+  colorPill: {
+    width: "60px",
+    height: "20px",
+    borderRadius: "10px",
+    margin: "0 auto",
+  },
+  tableHeader: {
+    fontWeight: "bold",
+    color: "#555",
+  },
+  iconButton: {
+    color: "#757575",
+  },
 }));
 
 const Tags = () => {
   const classes = useStyles();
-
   const { user } = useContext(AuthContext);
 
   const [loading, setLoading] = useState(false);
@@ -199,7 +237,7 @@ const Tags = () => {
     }
   };
 
-return (
+  return (
     <MainContainer>
       <ConfirmationModal
         title={deletingTag && `${i18n.t("tags.confirmationModal.deleteTitle")}`}
@@ -219,26 +257,22 @@ return (
       <MainHeader>
         <Title>{i18n.t("tags.title")}</Title>
         <MainHeaderButtonsWrapper>
-          <TextField
-            placeholder={i18n.t("contacts.searchPlaceholder")}
-            type="search"
-            value={searchParam}
-            onChange={handleSearch}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon style={{ color: "gray" }} />
-                </InputAdornment>
-              ),
-            }}
-          />
+          <div className={classes.searchContainer}>
+            <SearchIcon style={{ color: "gray" }} />
+            <input
+              className={classes.searchInput}
+              placeholder={i18n.t("contacts.searchPlaceholder")}
+              type="search"
+              value={searchParam}
+              onChange={handleSearch}
+            />
+          </div>
           <Button
-            variant="contained"
-            color="primary"
+            className={classes.addButton}
             onClick={handleOpenTagModal}
           >
             {i18n.t("tags.buttons.add")}
-          </Button>		  
+          </Button>
         </MainHeaderButtonsWrapper>
       </MainHeader>
       <Paper
@@ -249,34 +283,27 @@ return (
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell align="center">{i18n.t("tags.table.name")}</TableCell>
-              <TableCell align="center">
-                {i18n.t("tags.table.tickets")}
+              <TableCell align="center" className={classes.tableHeader}>{i18n.t("tags.table.name")}</TableCell>
+              <TableCell align="center" className={classes.tableHeader}>
+                Color <span style={{ marginLeft: 5, fontSize: 12, cursor: 'help' }} title="Color de la etiqueta">ⓘ</span>
               </TableCell>
-              <TableCell align="center">
-                {i18n.t("tags.table.actions")}
+              <TableCell align="center" className={classes.tableHeader}>
+                Comportamiento
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             <>
-              {tags.map((tag) => (
-                <TableRow key={tag.id}>
+              {tags.map((tag, index) => (
+                <TableRow key={tag.id} style={{ backgroundColor: index % 2 === 0 ? "#fff" : "#f1f1f1" }}>
                   <TableCell align="center">
-                    <Chip
-                      variant="outlined"
-                      style={{
-                        backgroundColor: tag.color,
-                        textShadow: "1px 1px 1px #000",
-                        color: "white",
-                      }}
-                      label={tag.name}
-                      size="small"
-                    />
+                    {tag.name}
                   </TableCell>
-                  <TableCell align="center">{tag.ticketsCount}</TableCell>
                   <TableCell align="center">
-                    <IconButton size="small" onClick={() => handleEditTag(tag)}>
+                    <div className={classes.colorPill} style={{ backgroundColor: tag.color }} />
+                  </TableCell>
+                  <TableCell align="center">
+                    <IconButton size="small" onClick={() => handleEditTag(tag)} className={classes.iconButton}>
                       <EditIcon />
                     </IconButton>
 
@@ -286,13 +313,14 @@ return (
                         setConfirmModalOpen(true);
                         setDeletingTag(tag);
                       }}
+                      className={classes.iconButton}
                     >
                       <DeleteOutlineIcon />
                     </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
-              {loading && <TableRowSkeleton columns={4} />}
+              {loading && <TableRowSkeleton columns={3} />}
             </>
           </TableBody>
         </Table>

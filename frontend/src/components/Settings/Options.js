@@ -14,64 +14,35 @@ import useSettings from "../../hooks/useSettings";
 import { ToastContainer, toast } from 'react-toastify';
 import { makeStyles } from "@material-ui/core/styles";
 import { grey, blue } from "@material-ui/core/colors";
-import { Tabs, Tab } from "@material-ui/core";
+import { Tabs, Tab, Divider } from "@material-ui/core";
 import OnlyForSuperUser from '../../components/OnlyForSuperUser';
 import useAuth from '../../hooks/useAuth.js';
 
-//import 'react-toastify/dist/ReactToastify.css';
- 
 const useStyles = makeStyles((theme) => ({
   container: {
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
   },
-  fixedHeightPaper: {
-    padding: theme.spacing(2),
-    display: "flex",
-    overflow: "auto",
-    flexDirection: "column",
-    height: 240,
+  sectionTitle: {
+    color: theme.palette.text.secondary,
+    fontWeight: 'bold',
+    marginBottom: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    paddingLeft: theme.spacing(1),
   },
-  tab: {
-    backgroundColor: theme.palette.options,  //DARK MODE PLW DESIGN//
-    borderRadius: 4,
-    width: "100%",
-    "& .MuiTab-wrapper": {
-      color: theme.palette.fontecor,
-    },   //DARK MODE PLW DESIGN//
-    "& .MuiTabs-flexContainer": {
-      justifyContent: "center"
+  cardPaper: {
+    padding: theme.spacing(3),
+    height: '100%',
+    transition: "box-shadow 0.3s",
+    "&:hover": {
+      boxShadow: theme.shadows[4],
     }
-
-
   },
-  paper: {
-    padding: theme.spacing(2),
-    display: "flex",
-    alignItems: "center",
-    marginBottom: 12,
-    width: "100%",
-  },
-  cardAvatar: {
-    fontSize: "55px",
-    color: grey[500],
-    backgroundColor: "#ffffff",
-    width: theme.spacing(7),
-    height: theme.spacing(7),
-  },
-  cardTitle: {
-    fontSize: "18px",
-    color: blue[700],
-  },
-  cardSubtitle: {
-    color: grey[600],
-    fontSize: "14px",
-  },
-  alignRight: {
-    textAlign: "right",
-  },
-  fullWidth: {
-    width: "100%",
+  fieldContainer: {
+    marginBottom: theme.spacing(3),
+    "&:last-child": {
+      marginBottom: 0,
+    }
   },
   selectContainer: {
     width: "100%",
@@ -86,6 +57,7 @@ export default function Options(props) {
   const [currentUser, setCurrentUser] = useState({});
   const { getCurrentUserInfo } = useAuth();
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     async function findData() {
       setLoading(true);
@@ -103,7 +75,7 @@ export default function Options(props) {
 
   const isSuper = () => {
     return currentUser.super;
-  }; 
+  };
 
   const [userRating, setUserRating] = useState("disabled");
   const [scheduleType, setScheduleType] = useState("disabled");
@@ -132,8 +104,7 @@ export default function Options(props) {
 
   const [asaasType, setAsaasType] = useState("");
   const [loadingAsaasType, setLoadingAsaasType] = useState(false);
-  
-  // recursos a mais...
+
   const [trial, settrial] = useState('3');
   const [loadingtrial, setLoadingtrial] = useState(false);
 
@@ -145,10 +116,10 @@ export default function Options(props) {
 
   const [SendGreetingAccepted, setSendGreetingAccepted] = useState("disabled");
   const [loadingSendGreetingAccepted, setLoadingSendGreetingAccepted] = useState(false);
-  
+
   const [SettingsTransfTicket, setSettingsTransfTicket] = useState("disabled");
   const [loadingSettingsTransfTicket, setLoadingSettingsTransfTicket] = useState(false);
-  
+
   const [sendGreetingMessageOneQueues, setSendGreetingMessageOneQueues] = useState("disabled");
   const [loadingSendGreetingMessageOneQueues, setLoadingSendGreetingMessageOneQueues] = useState(false);
 
@@ -177,21 +148,16 @@ export default function Options(props) {
       if (allowregister) {
         setallowregister(allowregister.value);
       }
-      
-	  {/*PLW DESIGN SAUDAÇÃO*/}
+
       const SendGreetingAccepted = settings.find((s) => s.key === "sendGreetingAccepted");
       if (SendGreetingAccepted) {
         setSendGreetingAccepted(SendGreetingAccepted.value);
-      }	 
-	  {/*PLW DESIGN SAUDAÇÃO*/}	 
-	  
-	  {/*TRANSFERIR TICKET*/}	
-	  const SettingsTransfTicket = settings.find((s) => s.key === "sendMsgTransfTicket");
+      }
+
+      const SettingsTransfTicket = settings.find((s) => s.key === "sendMsgTransfTicket");
       if (SettingsTransfTicket) {
         setSettingsTransfTicket(SettingsTransfTicket.value);
       }
-	  {/*TRANSFERIR TICKET*/}
-
 
       const viewregister = settings.find((s) => s.key === 'viewregister');
       if (viewregister) {
@@ -201,14 +167,14 @@ export default function Options(props) {
       const sendGreetingMessageOneQueues = settings.find((s) => s.key === "sendGreetingMessageOneQueues");
       if (sendGreetingMessageOneQueues) {
         setSendGreetingMessageOneQueues(sendGreetingMessageOneQueues.value)
-      }	  
-	  
+      }
+
       const chatbotType = settings.find((s) => s.key === "chatBotType");
       if (chatbotType) {
         setChatbotType(chatbotType.value);
       }
-	  
-	  const trial = settings.find((s) => s.key === 'trial');
+
+      const trial = settings.find((s) => s.key === 'trial');
       if (trial) {
         settrial(trial.value);
       }
@@ -267,15 +233,15 @@ export default function Options(props) {
     toast.success('Operação atualizada com sucesso.');
     setLoadingallowregister(false);
   }
-  
-    async function handleSendGreetingMessageOneQueues(value) {
+
+  async function handleSendGreetingMessageOneQueues(value) {
     setSendGreetingMessageOneQueues(value);
     setLoadingSendGreetingMessageOneQueues(true);
     await update({
       key: "sendGreetingMessageOneQueues",
       value,
     });
-	toast.success("Operação atualizada com sucesso.");
+    toast.success("Operação atualizada com sucesso.");
     setLoadingSendGreetingMessageOneQueues(false);
   }
 
@@ -289,8 +255,8 @@ export default function Options(props) {
     toast.success('Operação atualizada com sucesso.');
     setLoadingviewregister(false);
   }
-  
-    async function handletrial(value) {
+
+  async function handletrial(value) {
     settrial(value);
     setLoadingtrial(true);
     await update({
@@ -309,16 +275,7 @@ export default function Options(props) {
       key: "scheduleType",
       value,
     });
-    //toast.success("Oraçãpeo atualizada com sucesso.");
-    toast.success('Operação atualizada com sucesso.', {
-      position: "top-right",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: true,
-      theme: "light",
-      });
+    toast.success('Operação atualizada com sucesso.');
     setLoadingScheduleType(false);
     if (typeof scheduleTypeChanged === "function") {
       scheduleTypeChanged(value);
@@ -356,12 +313,8 @@ export default function Options(props) {
     });
     toast.success("Operação atualizada com sucesso.");
     setCheckMsgIsGroupType(false);
-    /*     if (typeof scheduleTypeChanged === "function") {
-          scheduleTypeChanged(value);
-        } */
   }
-  
-  {/*NOVO CÓDIGO*/}  
+
   async function handleSendGreetingAccepted(value) {
     setSendGreetingAccepted(value);
     setLoadingSendGreetingAccepted(true);
@@ -369,12 +322,9 @@ export default function Options(props) {
       key: "sendGreetingAccepted",
       value,
     });
-	toast.success("Operação atualizada com sucesso.");
+    toast.success("Operação atualizada com sucesso.");
     setLoadingSendGreetingAccepted(false);
-  }  
-  
-  
-  {/*NOVO CÓDIGO*/}    
+  }
 
   async function handleSettingsTransfTicket(value) {
     setSettingsTransfTicket(value);
@@ -386,8 +336,8 @@ export default function Options(props) {
 
     toast.success("Operação atualizada com sucesso.");
     setLoadingSettingsTransfTicket(false);
-  } 
- 
+  }
+
   async function handleChangeIPIxc(value) {
     setIpIxcType(value);
     setLoadingIpIxcType(true);
@@ -453,440 +403,420 @@ export default function Options(props) {
     toast.success("Operação atualizada com sucesso.");
     setLoadingAsaasType(false);
   }
+
   return (
     <>
-      <Grid spacing={3} container>
-        <Grid xs={12} sm={12} md={12} item>
-          <FormControl className={classes.selectContainer}>
-            <InputLabel id="ratings-label">Avaliações</InputLabel>
-            <Select
-              labelId="ratings-label"
-              value={userRating}
-              onChange={async (e) => {
-                handleChangeUserRating(e.target.value);
-              }}
-            >
-              <MenuItem value={"disabled"}>Desabilitadas</MenuItem>
-              <MenuItem value={"enabled"}>Habilitadas</MenuItem>
-            </Select>
-            <FormHelperText>
-              {loadingUserRating && "Atualizando..."}
-            </FormHelperText>
-          </FormControl>
+      <Typography variant="h6" className={classes.sectionTitle}>
+        Gestión de Atención
+      </Typography>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6} lg={4}>
+          <Paper className={classes.cardPaper}>
+            <div className={classes.fieldContainer}>
+              <FormControl className={classes.selectContainer}>
+                <InputLabel id="ratings-label">Evaluaciones de Usuarios</InputLabel>
+                <Select
+                  labelId="ratings-label"
+                  value={userRating}
+                  onChange={async (e) => {
+                    handleChangeUserRating(e.target.value);
+                  }}
+                >
+                  <MenuItem value={"disabled"}>Deshabilitadas</MenuItem>
+                  <MenuItem value={"enabled"}>Habilitadas</MenuItem>
+                </Select>
+                <FormHelperText>
+                  {loadingUserRating && "Atualizando..."}
+                </FormHelperText>
+              </FormControl>
+            </div>
+
+            <div className={classes.fieldContainer}>
+              <FormControl className={classes.selectContainer}>
+                <InputLabel id="schedule-type-label">
+                  Gestión de Expediente
+                </InputLabel>
+                <Select
+                  labelId="schedule-type-label"
+                  value={scheduleType}
+                  onChange={async (e) => {
+                    handleScheduleType(e.target.value);
+                  }}
+                >
+                  <MenuItem value={"disabled"}>Deshabilitado</MenuItem>
+                  <MenuItem value={"queue"}>Fila (Departamento)</MenuItem>
+                  <MenuItem value={"company"}>Empresa</MenuItem>
+                </Select>
+                <FormHelperText>
+                  {loadingScheduleType && "Atualizando..."}
+                </FormHelperText>
+              </FormControl>
+            </div>
+          </Paper>
         </Grid>
-        <Grid xs={12} sm={12} md={12} item>
-          <FormControl className={classes.selectContainer}>
-            <InputLabel id="schedule-type-label">
-              Gerenciamento de Expediente
-            </InputLabel>
-            <Select
-              labelId="schedule-type-label"
-              value={scheduleType}
-              onChange={async (e) => {
-                handleScheduleType(e.target.value);
-              }}
-            >
-              <MenuItem value={"disabled"}>Desabilitado</MenuItem>
-              <MenuItem value={"queue"}>Fila</MenuItem>
-              <MenuItem value={"company"}>Empresa</MenuItem>
-            </Select>
-            <FormHelperText>
-              {loadingScheduleType && "Atualizando..."}
-            </FormHelperText>
-          </FormControl>
+
+        <Grid item xs={12} md={6} lg={4}>
+          <Paper className={classes.cardPaper}>
+            <div className={classes.fieldContainer}>
+              <FormControl className={classes.selectContainer}>
+                <InputLabel id="group-type-label">
+                  Ignorar Mensajes de Grupo
+                </InputLabel>
+                <Select
+                  labelId="group-type-label"
+                  value={CheckMsgIsGroup}
+                  onChange={async (e) => {
+                    handleGroupType(e.target.value);
+                  }}
+                >
+                  <MenuItem value={"disabled"}>No</MenuItem>
+                  <MenuItem value={"enabled"}>Sí</MenuItem>
+                </Select>
+                <FormHelperText>
+                  {loadingScheduleType && "Atualizando..."}
+                </FormHelperText>
+              </FormControl>
+            </div>
+
+            <div className={classes.fieldContainer}>
+              <FormControl className={classes.selectContainer}>
+                <InputLabel id="call-type-label">
+                  Aceptar Llamadas
+                </InputLabel>
+                <Select
+                  labelId="call-type-label"
+                  value={callType}
+                  onChange={async (e) => {
+                    handleCallType(e.target.value);
+                  }}
+                >
+                  <MenuItem value={"disabled"}>No Aceptar</MenuItem>
+                  <MenuItem value={"enabled"}>Aceptar</MenuItem>
+                </Select>
+                <FormHelperText>
+                  {loadingCallType && "Atualizando..."}
+                </FormHelperText>
+              </FormControl>
+            </div>
+          </Paper>
         </Grid>
-        <Grid xs={12} sm={12} md={12} item>
-          <FormControl className={classes.selectContainer}>
-            <InputLabel id="group-type-label">
-              Ignorar Mensagens de Grupos
-            </InputLabel>
-            <Select
-              labelId="group-type-label"
-              value={CheckMsgIsGroup}
-              onChange={async (e) => {
-                handleGroupType(e.target.value);
-              }}
-            >
-              <MenuItem value={"disabled"}>Desativado</MenuItem>
-              <MenuItem value={"enabled"}>Ativado</MenuItem>
-            </Select>
-            <FormHelperText>
-              {loadingScheduleType && "Atualizando..."}
-            </FormHelperText>
-          </FormControl>
+
+        <Grid item xs={12} md={6} lg={4}>
+          <Paper className={classes.cardPaper}>
+            <div className={classes.fieldContainer}>
+              <FormControl className={classes.selectContainer}>
+                <InputLabel id="chatbot-type-label">
+                  Tipo de Chatbot
+                </InputLabel>
+                <Select
+                  labelId="chatbot-type-label"
+                  value={chatbotType}
+                  onChange={async (e) => {
+                    handleChatbotType(e.target.value);
+                  }}
+                >
+                  <MenuItem value={"text"}>Texto</MenuItem>
+                </Select>
+                <FormHelperText>
+                  {loadingChatbotType && "Atualizando..."}
+                </FormHelperText>
+              </FormControl>
+            </div>
+          </Paper>
         </Grid>
-        <Grid xs={12} sm={12} md={12} item>
-          <FormControl className={classes.selectContainer}>
-            <InputLabel id="call-type-label">
-              Aceitar Chamada
-            </InputLabel>
-            <Select
-              labelId="call-type-label"
-              value={callType}
-              onChange={async (e) => {
-                handleCallType(e.target.value);
-              }}
-            >
-              <MenuItem value={"disabled"}>Não Aceitar</MenuItem>
-              <MenuItem value={"enabled"}>Aceitar</MenuItem>
-            </Select>
-            <FormHelperText>
-              {loadingCallType && "Atualizando..."}
-            </FormHelperText>
-          </FormControl>
-        </Grid>
-       <Grid xs={12} sm={12} md={12} item>
-          <FormControl className={classes.selectContainer}>
-            <InputLabel id="chatbot-type-label">
-              Tipo Chatbot
-            </InputLabel>
-            <Select
-              labelId="chatbot-type-label"
-              value={chatbotType}
-              onChange={async (e) => {
-                handleChatbotType(e.target.value);
-              }}
-            >
-              <MenuItem value={"text"}>Texto</MenuItem>
-			 {/*<MenuItem value={"button"}>Botão</MenuItem>*/}
-             {/*<MenuItem value={"list"}>Lista</MenuItem>*/}
-            </Select>
-            <FormHelperText>
-              {loadingChatbotType && "Atualizando..."}
-            </FormHelperText>
-          </FormControl>
-        </Grid>
-		{/* ENVIAR SAUDAÇÃO AO ACEITAR O TICKET */}
-        <Grid xs={12} sm={12} md={12} item>
-          <FormControl className={classes.selectContainer}>
-            <InputLabel id="sendGreetingAccepted-label">Enviar saudação ao aceitar o ticket</InputLabel>
-            <Select
-              labelId="sendGreetingAccepted-label"
-              value={SendGreetingAccepted}
-              onChange={async (e) => {
-                handleSendGreetingAccepted(e.target.value);
-              }}
-            >
-              <MenuItem value={"disabled"}>Desabilitado</MenuItem>
-              <MenuItem value={"enabled"}>Habilitado</MenuItem>
-            </Select>
-            <FormHelperText>
-              {loadingSendGreetingAccepted && "Atualizando..."}
-            </FormHelperText>
-          </FormControl>
-        </Grid>
-		{/* ENVIAR SAUDAÇÃO AO ACEITAR O TICKET */}
-		
-		{/* ENVIAR MENSAGEM DE TRANSFERENCIA DE SETOR/ATENDENTE */}
-        <Grid xs={12} sm={12} md={12} item>
-          <FormControl className={classes.selectContainer}>
-            <InputLabel id="sendMsgTransfTicket-label">Enviar mensagem de transferencia de Fila/agente</InputLabel>
-            <Select
-              labelId="sendMsgTransfTicket-label"
-              value={SettingsTransfTicket}
-              onChange={async (e) => {
-                handleSettingsTransfTicket(e.target.value);
-              }}
-            >
-              <MenuItem value={"disabled"}>Desabilitado</MenuItem>
-              <MenuItem value={"enabled"}>Habilitado</MenuItem>
-            </Select>
-            <FormHelperText>
-              {loadingSettingsTransfTicket && "Atualizando..."}
-            </FormHelperText>
-          </FormControl>
-        </Grid>
-		
-		{/* ENVIAR SAUDAÇÃO QUANDO HOUVER SOMENTE 1 FILA */}
-        <Grid xs={12} sm={12} md={12} item>
-          <FormControl className={classes.selectContainer}>
-            <InputLabel id="sendGreetingMessageOneQueues-label">Enviar saudação quando houver somente 1 fila</InputLabel>
-            <Select
-              labelId="sendGreetingMessageOneQueues-label"
-              value={sendGreetingMessageOneQueues}
-              onChange={async (e) => {
-                handleSendGreetingMessageOneQueues(e.target.value);
-              }}
-            >
-              <MenuItem value={"disabled"}>Desabilitado</MenuItem>
-              <MenuItem value={"enabled"}>Habilitado</MenuItem>
-            </Select>
-            <FormHelperText>
-              {loadingSendGreetingMessageOneQueues && "Atualizando..."}
-            </FormHelperText>
-          </FormControl>
-        </Grid>
-	
-		
       </Grid>
-	  
-		<OnlyForSuperUser
-				user={currentUser}
-				yes={() => (
-				  <>
-					<Grid spacing={3} container>
-					  <Tabs
-						indicatorColor='primary'
-						textColor='primary'
-						scrollButtons='on'
-						variant='scrollable'
-						className={classes.tab}
-						style={{
-						  marginBottom: 20,
-						  marginTop: 20,
-						}}
-					  >
-						<Tab label='Configurações Globais' />
-					  </Tabs>
-					</Grid>
 
+      <Typography variant="h6" className={classes.sectionTitle}>
+        Mensajes y Saludos
+      </Typography>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <Paper className={classes.cardPaper}>
+            <div className={classes.fieldContainer}>
+              <FormControl className={classes.selectContainer}>
+                <InputLabel id="sendGreetingAccepted-label">Enviar saludo al aceptar ticket</InputLabel>
+                <Select
+                  labelId="sendGreetingAccepted-label"
+                  value={SendGreetingAccepted}
+                  onChange={async (e) => {
+                    handleSendGreetingAccepted(e.target.value);
+                  }}
+                >
+                  <MenuItem value={"disabled"}>Deshabilitado</MenuItem>
+                  <MenuItem value={"enabled"}>Habilitado</MenuItem>
+                </Select>
+                <FormHelperText>
+                  {loadingSendGreetingAccepted && "Atualizando..."}
+                </FormHelperText>
+              </FormControl>
+            </div>
 
-            <Grid xs={12} sm={12} md={12} item>
-                <FormControl className={classes.selectContainer}>
-                  <InputLabel id='allowregister-label'>
-                    Registro (Inscrição) Permitida?
-                  </InputLabel>
-                  <Select
-                    labelId='allowregister-label'
-                    value={allowregister}
-                    onChange={async (e) => {
-                      handleallowregister(e.target.value);
-                    }}
-                  >
-                    <MenuItem value={'disabled'}>Não</MenuItem>
-                    <MenuItem value={'enabled'}>Sim</MenuItem>
-                  </Select>
-                  <FormHelperText>
-                    {loadingallowregister && 'Atualizando...'}
-                  </FormHelperText>
-                </FormControl>
+            <div className={classes.fieldContainer}>
+              <FormControl className={classes.selectContainer}>
+                <InputLabel id="sendMsgTransfTicket-label">Mensaje de transferencia (Fila/Agente)</InputLabel>
+                <Select
+                  labelId="sendMsgTransfTicket-label"
+                  value={SettingsTransfTicket}
+                  onChange={async (e) => {
+                    handleSettingsTransfTicket(e.target.value);
+                  }}
+                >
+                  <MenuItem value={"disabled"}>Deshabilitado</MenuItem>
+                  <MenuItem value={"enabled"}>Habilitado</MenuItem>
+                </Select>
+                <FormHelperText>
+                  {loadingSettingsTransfTicket && "Atualizando..."}
+                </FormHelperText>
+              </FormControl>
+            </div>
+          </Paper>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <Paper className={classes.cardPaper}>
+            <div className={classes.fieldContainer}>
+              <FormControl className={classes.selectContainer}>
+                <InputLabel id="sendGreetingMessageOneQueues-label">Enviar saludo si solo hay 1 fila</InputLabel>
+                <Select
+                  labelId="sendGreetingMessageOneQueues-label"
+                  value={sendGreetingMessageOneQueues}
+                  onChange={async (e) => {
+                    handleSendGreetingMessageOneQueues(e.target.value);
+                  }}
+                >
+                  <MenuItem value={"disabled"}>Deshabilitado</MenuItem>
+                  <MenuItem value={"enabled"}>Habilitado</MenuItem>
+                </Select>
+                <FormHelperText>
+                  {loadingSendGreetingMessageOneQueues && "Atualizando..."}
+                </FormHelperText>
+              </FormControl>
+            </div>
+          </Paper>
+        </Grid>
+      </Grid>
+
+      <OnlyForSuperUser
+        user={currentUser}
+        yes={() => (
+          <>
+            <Typography variant="h6" className={classes.sectionTitle}>
+              Configuración Global (Super Admin)
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} lg={4}>
+                <Paper className={classes.cardPaper}>
+                  <div className={classes.fieldContainer}>
+                    <FormControl className={classes.selectContainer}>
+                      <InputLabel id='allowregister-label'>
+                        Registro Permitido (Signup)
+                      </InputLabel>
+                      <Select
+                        labelId='allowregister-label'
+                        value={allowregister}
+                        onChange={async (e) => {
+                          handleallowregister(e.target.value);
+                        }}
+                      >
+                        <MenuItem value={'disabled'}>No</MenuItem>
+                        <MenuItem value={'enabled'}>Sí</MenuItem>
+                      </Select>
+                      <FormHelperText>
+                        {loadingallowregister && 'Atualizando...'}
+                      </FormHelperText>
+                    </FormControl>
+                  </div>
+                </Paper>
               </Grid>
 
-				  <Grid xs={12} sm={12} md={12} item>
-                <FormControl className={classes.selectContainer}>
-                  <InputLabel id='viewregister-label'>
-                    Registro (Inscrição) Visível?
-                  </InputLabel>
-                  <Select
-                    labelId='viewregister-label'
-                    value={viewregister}
-                    onChange={async (e) => {
-                      handleviewregister(e.target.value);
-                    }}
-                  >
-                    <MenuItem value={'disabled'}>Não</MenuItem>
-                    <MenuItem value={'enabled'}>Sim</MenuItem>
-                  </Select>
-                  <FormHelperText>
-                    {loadingviewregister && 'Atualizando...'}
-                  </FormHelperText>
-                </FormControl>
-              </Grid>
-			  
-			                <Grid xs={12} sm={12} md={12} item>
-                <FormControl className={classes.selectContainer}>
-                  <InputLabel id='trial-label'>Tempo de Trial?</InputLabel>
-                  <Select
-                    labelId='trial-label'
-                    value={trial}
-                    onChange={async (e) => {
-                      handletrial(e.target.value);
-                    }}
-                  >
-                    <MenuItem value={'1'}>1</MenuItem>
-                    <MenuItem value={'2'}>2</MenuItem>
-                    <MenuItem value={'3'}>3</MenuItem>
-                    <MenuItem value={'4'}>4</MenuItem>
-                    <MenuItem value={'5'}>5</MenuItem>
-                    <MenuItem value={'6'}>6</MenuItem>
-                    <MenuItem value={'7'}>7</MenuItem>
-                  </Select>
-                  <FormHelperText>
-                    {loadingtrial && 'Atualizando...'}
-                  </FormHelperText>
-                </FormControl>
+              <Grid item xs={12} lg={4}>
+                <Paper className={classes.cardPaper}>
+                  <div className={classes.fieldContainer}>
+                    <FormControl className={classes.selectContainer}>
+                      <InputLabel id='viewregister-label'>
+                        Botón de Registro Visible
+                      </InputLabel>
+                      <Select
+                        labelId='viewregister-label'
+                        value={viewregister}
+                        onChange={async (e) => {
+                          handleviewregister(e.target.value);
+                        }}
+                      >
+                        <MenuItem value={'disabled'}>No</MenuItem>
+                        <MenuItem value={'enabled'}>Sí</MenuItem>
+                      </Select>
+                      <FormHelperText>
+                        {loadingviewregister && 'Atualizando...'}
+                      </FormHelperText>
+                    </FormControl>
+                  </div>
+                </Paper>
               </Grid>
 
-      </>
+              <Grid item xs={12} lg={4}>
+                <Paper className={classes.cardPaper}>
+                  <div className={classes.fieldContainer}>
+                    <FormControl className={classes.selectContainer}>
+                      <InputLabel id='trial-label'>Días de Prueba (Trial)</InputLabel>
+                      <Select
+                        labelId='trial-label'
+                        value={trial}
+                        onChange={async (e) => {
+                          handletrial(e.target.value);
+                        }}
+                      >
+                        <MenuItem value={'1'}>1</MenuItem>
+                        <MenuItem value={'2'}>2</MenuItem>
+                        <MenuItem value={'3'}>3</MenuItem>
+                        <MenuItem value={'4'}>4</MenuItem>
+                        <MenuItem value={'5'}>5</MenuItem>
+                        <MenuItem value={'6'}>6</MenuItem>
+                        <MenuItem value={'7'}>7</MenuItem>
+                      </Select>
+                      <FormHelperText>
+                        {loadingtrial && 'Atualizando...'}
+                      </FormHelperText>
+                    </FormControl>
+                  </div>
+                </Paper>
+              </Grid>
+            </Grid>
+          </>
         )}
       />
-	        <Grid spacing={3} container>
-        <Tabs
-          indicatorColor="primary"
-          textColor="primary"
-          scrollButtons="on"
-          variant="scrollable"
-          className={classes.tab}
-          style={{
-            marginBottom: 20,
-            marginTop: 20
-          }}
-        >
-          <Tab
 
-            label="INTEGRAÇÕES" />
-
-        </Tabs>
-
-      </Grid>
-      {/*-----------------IXC-----------------*/}
-      <Grid spacing={3} container
-        style={{ marginBottom: 10 }}>
-        <Tabs
-          indicatorColor="primary"
-          textColor="primary"
-          scrollButtons="on"
-          variant="scrollable"
-          className={classes.tab}
-        >
-          <Tab
-
-            label="IXC" />
-
-        </Tabs>
-        <Grid xs={12} sm={6} md={6} item>
-          <FormControl className={classes.selectContainer}>
-            <TextField
-              id="ipixc"
-              name="ipixc"
-              margin="dense"
-              label="IP do IXC"
-              variant="outlined"
-              value={ipixcType}
-              onChange={async (e) => {
-                handleChangeIPIxc(e.target.value);
-              }}
-            >
-            </TextField>
-            <FormHelperText>
-              {loadingIpIxcType && "Atualizando..."}
-            </FormHelperText>
-          </FormControl>
+      <Typography variant="h6" className={classes.sectionTitle}>
+        Integraciones
+      </Typography>
+      <Grid container spacing={3}>
+        {/* IXC Card */}
+        <Grid item xs={12} md={6} lg={4}>
+          <Paper className={classes.cardPaper}>
+            <Typography variant="subtitle1" gutterBottom style={{ fontWeight: 'bold' }}>IXC Soft</Typography>
+            <div className={classes.fieldContainer}>
+              <FormControl className={classes.selectContainer}>
+                <TextField
+                  id="ipixc"
+                  name="ipixc"
+                  margin="dense"
+                  label="IP del IXC"
+                  variant="outlined"
+                  value={ipixcType}
+                  onChange={async (e) => {
+                    handleChangeIPIxc(e.target.value);
+                  }}
+                  fullWidth
+                />
+                <FormHelperText>
+                  {loadingIpIxcType && "Atualizando..."}
+                </FormHelperText>
+              </FormControl>
+            </div>
+            <div className={classes.fieldContainer}>
+              <FormControl className={classes.selectContainer}>
+                <TextField
+                  id="tokenixc"
+                  name="tokenixc"
+                  margin="dense"
+                  label="Token del IXC"
+                  variant="outlined"
+                  value={tokenixcType}
+                  onChange={async (e) => {
+                    handleChangeTokenIxc(e.target.value);
+                  }}
+                  fullWidth
+                />
+                <FormHelperText>
+                  {loadingTokenIxcType && "Atualizando..."}
+                </FormHelperText>
+              </FormControl>
+            </div>
+          </Paper>
         </Grid>
-        <Grid xs={12} sm={6} md={6} item>
-          <FormControl className={classes.selectContainer}>
-            <TextField
-              id="tokenixc"
-              name="tokenixc"
-              margin="dense"
-              label="Token do IXC"
-              variant="outlined"
-              value={tokenixcType}
-              onChange={async (e) => {
-                handleChangeTokenIxc(e.target.value);
-              }}
-            >
-            </TextField>
-            <FormHelperText>
-              {loadingTokenIxcType && "Atualizando..."}
-            </FormHelperText>
-          </FormControl>
-        </Grid>
-      </Grid>
-      {/*-----------------MK-AUTH-----------------*/}
-      <Grid spacing={3} container
-        style={{ marginBottom: 10 }}>
-        <Tabs
-          indicatorColor="primary"
-          textColor="primary"
-          scrollButtons="on"
-          variant="scrollable"
-          className={classes.tab}
-        >
-          <Tab label="MK-AUTH" />
 
-        </Tabs>
-        <Grid xs={12} sm={12} md={4} item>
-          <FormControl className={classes.selectContainer}>
-            <TextField
-              id="ipmkauth"
-              name="ipmkauth"
-              margin="dense"
-              label="Ip Mk-Auth"
-              variant="outlined"
-              value={ipmkauthType}
-              onChange={async (e) => {
-                handleChangeIpMkauth(e.target.value);
-              }}
-            >
-            </TextField>
-            <FormHelperText>
-              {loadingIpMkauthType && "Atualizando..."}
-            </FormHelperText>
-          </FormControl>
+        {/* MK-AUTH Card */}
+        <Grid item xs={12} md={6} lg={4}>
+          <Paper className={classes.cardPaper}>
+            <Typography variant="subtitle1" gutterBottom style={{ fontWeight: 'bold' }}>MK-AUTH</Typography>
+            <div className={classes.fieldContainer}>
+              <FormControl className={classes.selectContainer}>
+                <TextField
+                  id="ipmkauth"
+                  name="ipmkauth"
+                  margin="dense"
+                  label="IP MK-AUTH"
+                  variant="outlined"
+                  value={ipmkauthType}
+                  onChange={async (e) => {
+                    handleChangeIpMkauth(e.target.value);
+                  }}
+                  fullWidth
+                />
+              </FormControl>
+            </div>
+            <div className={classes.fieldContainer}>
+              <FormControl className={classes.selectContainer}>
+                <TextField
+                  id="clientidmkauth"
+                  name="clientidmkauth"
+                  margin="dense"
+                  label="Client ID"
+                  variant="outlined"
+                  value={clientidmkauthType}
+                  onChange={async (e) => {
+                    handleChangeClientIdMkauth(e.target.value);
+                  }}
+                  fullWidth
+                />
+              </FormControl>
+            </div>
+            <div className={classes.fieldContainer}>
+              <FormControl className={classes.selectContainer}>
+                <TextField
+                  id="clientsecretmkauth"
+                  name="clientsecretmkauth"
+                  margin="dense"
+                  label="Client Secret"
+                  variant="outlined"
+                  value={clientsecretmkauthType}
+                  onChange={async (e) => {
+                    handleChangeClientSecrectMkauth(e.target.value);
+                  }}
+                  fullWidth
+                />
+              </FormControl>
+            </div>
+          </Paper>
         </Grid>
-        <Grid xs={12} sm={12} md={4} item>
-          <FormControl className={classes.selectContainer}>
-            <TextField
-              id="clientidmkauth"
-              name="clientidmkauth"
-              margin="dense"
-              label="Client Id"
-              variant="outlined"
-              value={clientidmkauthType}
-              onChange={async (e) => {
-                handleChangeClientIdMkauth(e.target.value);
-              }}
-            >
-            </TextField>
-            <FormHelperText>
-              {loadingClientIdMkauthType && "Atualizando..."}
-            </FormHelperText>
-          </FormControl>
-        </Grid>
-        <Grid xs={12} sm={12} md={4} item>
-          <FormControl className={classes.selectContainer}>
-            <TextField
-              id="clientsecretmkauth"
-              name="clientsecretmkauth"
-              margin="dense"
-              label="Client Secret"
-              variant="outlined"
-              value={clientsecretmkauthType}
-              onChange={async (e) => {
-                handleChangeClientSecrectMkauth(e.target.value);
-              }}
-            >
-            </TextField>
-            <FormHelperText>
-              {loadingClientSecrectMkauthType && "Atualizando..."}
-            </FormHelperText>
-          </FormControl>
+
+        {/* ASAAS Card */}
+        <Grid item xs={12} md={6} lg={4}>
+          <Paper className={classes.cardPaper}>
+            <Typography variant="subtitle1" gutterBottom style={{ fontWeight: 'bold' }}>ASAAS</Typography>
+            <div className={classes.fieldContainer}>
+              <FormControl className={classes.selectContainer}>
+                <TextField
+                  id="asaas"
+                  name="asaas"
+                  margin="dense"
+                  label="Token ASAAS"
+                  variant="outlined"
+                  value={asaasType}
+                  onChange={async (e) => {
+                    handleChangeAsaas(e.target.value);
+                  }}
+                  fullWidth
+                />
+                <FormHelperText>
+                  {loadingAsaasType && "Atualizando..."}
+                </FormHelperText>
+              </FormControl>
+            </div>
+          </Paper>
         </Grid>
       </Grid>
-      {/*-----------------ASAAS-----------------*/}
-      <Grid spacing={3} container
-        style={{ marginBottom: 10 }}>
-        <Tabs
-          indicatorColor="primary"
-          textColor="primary"
-          scrollButtons="on"
-          variant="scrollable"
-          className={classes.tab}
-        >
-          <Tab label="ASAAS" />
 
-        </Tabs>
-        <Grid xs={12} sm={12} md={12} item>
-          <FormControl className={classes.selectContainer}>
-            <TextField
-              id="asaas"
-              name="asaas"
-              margin="dense"
-              label="Token Asaas"
-              variant="outlined"
-              value={asaasType}
-              onChange={async (e) => {
-                handleChangeAsaas(e.target.value);
-              }}
-            >
-            </TextField>
-            <FormHelperText>
-              {loadingAsaasType && "Atualizando..."}
-            </FormHelperText>
-          </FormControl>
-        </Grid>
-      </Grid>
     </>
   );
 }

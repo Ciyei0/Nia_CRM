@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 
 import { makeStyles, createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { IconButton } from "@material-ui/core";
-import { MoreVert, Replay } from "@material-ui/icons";
+import { MoreVert, Replay, ContactPhone, Android } from "@material-ui/icons";
 
 import { i18n } from "../../translate/i18n";
 import api from "../../services/api";
@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const TicketActionButtonsCustom = ({ ticket }) => {
+const TicketActionButtonsCustom = ({ ticket, onDrawerOpen }) => {
 	const classes = useStyles();
 	const history = useHistory();
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -41,7 +41,7 @@ const TicketActionButtonsCustom = ({ ticket }) => {
 
 	const customTheme = createTheme({
 		palette: {
-		  	primary: green,
+			primary: green,
 		}
 	});
 
@@ -77,6 +77,19 @@ const TicketActionButtonsCustom = ({ ticket }) => {
 		}
 	};
 
+	const handleToggleBot = async () => {
+		setLoading(true);
+		try {
+			await api.put(`/tickets/${ticket.id}`, {
+				isBot: !ticket.isBot
+			});
+			setLoading(false);
+		} catch (err) {
+			setLoading(false);
+			toastError(err);
+		}
+	};
+
 	return (
 		<div className={classes.actionButtons}>
 			{ticket.status === "closed" && (
@@ -103,23 +116,19 @@ const TicketActionButtonsCustom = ({ ticket }) => {
 							</IconButton>
 						</Tooltip>
 					</ThemeProvider>
-					{/* <ButtonWithSpinner
-						loading={loading}
-						startIcon={<Replay />}
-						size="small"
-						onClick={e => handleUpdateTicketStatus(e, "pending", null)}
-					>
-						{i18n.t("messagesList.header.buttons.return")}
-					</ButtonWithSpinner>
-					<ButtonWithSpinner
-						loading={loading}
-						size="small"
-						variant="contained"
-						color="primary"
-						onClick={e => handleUpdateTicketStatus(e, "closed", user?.id)}
-					>
-						{i18n.t("messagesList.header.buttons.resolve")}
-					</ButtonWithSpinner> */}
+
+					<Tooltip title="Datos de contacto">
+						<IconButton onClick={onDrawerOpen}>
+							<ContactPhone />
+						</IconButton>
+					</Tooltip>
+
+					<Tooltip title="Activar/Desactivar Bot">
+						<IconButton onClick={handleToggleBot}>
+							{ticket.isBot ? <Android style={{ color: green[500] }} /> : <Android />}
+						</IconButton>
+					</Tooltip>
+
 					<IconButton onClick={handleOpenTicketOptionsMenu}>
 						<MoreVert />
 					</IconButton>

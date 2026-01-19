@@ -18,11 +18,9 @@ import {
 	TextField,
 	InputAdornment,
 	IconButton,
-	Switch,
-	FormControlLabel
-  } from '@material-ui/core';
-  
-import { Visibility, VisibilityOff } from '@material-ui/icons';
+} from '@material-ui/core';
+
+import { Visibility, VisibilityOff, Person } from '@material-ui/icons';
 
 import { makeStyles } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
@@ -46,11 +44,9 @@ const useStyles = makeStyles(theme => ({
 			marginRight: theme.spacing(1),
 		},
 	},
-
 	btnWrapper: {
 		position: "relative",
 	},
-
 	buttonProgress: {
 		color: green[500],
 		position: "absolute",
@@ -62,6 +58,44 @@ const useStyles = makeStyles(theme => ({
 	formControl: {
 		margin: theme.spacing(1),
 		minWidth: 120,
+	},
+	dialogTitle: {
+		color: "#2563eb",
+		fontWeight: "bold",
+		textAlign: "left", // Match screenshot
+	},
+	avatarContainer: {
+		display: "flex",
+		justifyContent: "center",
+		marginBottom: theme.spacing(2),
+	},
+	avatarPlaceholder: {
+		width: "100px",
+		height: "100px",
+		borderRadius: "50%",
+		backgroundColor: "#bdbdbd",
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		color: "white",
+	},
+	avatarIcon: {
+		width: "60px",
+		height: "60px",
+	},
+	cancelButton: {
+		color: "#e11d48", // Pink/Red text
+		fontWeight: "bold",
+	},
+	addButton: {
+		backgroundColor: "#2563eb",
+		color: "white",
+		borderRadius: "50px",
+		fontWeight: "bold",
+		padding: "8px 25px",
+		"&:hover": {
+			backgroundColor: "#1d4ed8",
+		},
 	},
 }));
 
@@ -81,15 +115,13 @@ const UserModal = ({ open, onClose, userId }) => {
 		name: "",
 		email: "",
 		password: "",
-		profile: "user",
-		allTicket: "desabled"
+		profile: "user"
 	};
 
 	const { user: loggedInUser } = useContext(AuthContext);
 
 	const [user, setUser] = useState(initialState);
 	const [selectedQueueIds, setSelectedQueueIds] = useState([]);
-	const [whatsappId, setWhatsappId] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const { loading, whatsApps } = useWhatsApps();
 
@@ -104,7 +136,6 @@ const UserModal = ({ open, onClose, userId }) => {
 				});
 				const userQueueIds = data.queues?.map(queue => queue.id);
 				setSelectedQueueIds(userQueueIds);
-				setWhatsappId(data.whatsappId ? data.whatsappId : '');
 			} catch (err) {
 				toastError(err);
 			}
@@ -119,7 +150,7 @@ const UserModal = ({ open, onClose, userId }) => {
 	};
 
 	const handleSaveUser = async values => {
-		const userData = { ...values, whatsappId, queueIds: selectedQueueIds, allTicket: values.allTicket };
+		const userData = { ...values, queueIds: selectedQueueIds };
 		try {
 			if (userId) {
 				await api.put(`/users/${userId}`, userData);
@@ -141,8 +172,11 @@ const UserModal = ({ open, onClose, userId }) => {
 				maxWidth="xs"
 				fullWidth
 				scroll="paper"
+				PaperProps={{
+					style: { borderRadius: 15 }
+				}}
 			>
-				<DialogTitle id="form-dialog-title">
+				<DialogTitle id="form-dialog-title" className={classes.dialogTitle}>
 					{userId
 						? `${i18n.t("userModal.title.edit")}`
 						: `${i18n.t("userModal.title.add")}`}
@@ -161,6 +195,11 @@ const UserModal = ({ open, onClose, userId }) => {
 					{({ touched, errors, isSubmitting }) => (
 						<Form>
 							<DialogContent dividers>
+								<div className={classes.avatarContainer}>
+									<div className={classes.avatarPlaceholder}>
+										<Person className={classes.avatarIcon} />
+									</div>
+								</div>
 								<div className={classes.multFieldLine}>
 									<Field
 										as={TextField}
@@ -172,46 +211,15 @@ const UserModal = ({ open, onClose, userId }) => {
 										variant="outlined"
 										margin="dense"
 										fullWidth
-									/>
-									<Field
-										as={TextField}
-										name="password"
-										variant="outlined"
-										margin="dense"
-										fullWidth
-										label={i18n.t("userModal.form.password")}
-										error={touched.password && Boolean(errors.password)}
-										helperText={touched.password && errors.password}
-										type={showPassword ? 'text' : 'password'}
-										InputProps={{
-										endAdornment: (
-											<InputAdornment position="end">
-											<IconButton
-												aria-label="toggle password visibility"
-												onClick={() => setShowPassword((e) => !e)}
-											>
-												{showPassword ? <VisibilityOff /> : <Visibility />}
-											</IconButton>
-											</InputAdornment>
-										)
-										}}
-									/>
-								</div>
-								<div className={classes.multFieldLine}>
-									<Field
-										as={TextField}
-										label={i18n.t("userModal.form.email")}
-										name="email"
-										error={touched.email && Boolean(errors.email)}
-										helperText={touched.email && errors.email}
-										variant="outlined"
-										margin="dense"
-										fullWidth
+										style={{ flex: 2 }} // Give more space to Name
+										className={classes.textField}
+										InputProps={{ style: { borderRadius: 8 } }}
 									/>
 									<FormControl
 										variant="outlined"
 										className={classes.formControl}
 										margin="dense"
+										style={{ flex: 1, marginTop: 8 }} // Align with text field
 									>
 										<Can
 											role={loggedInUser.profile}
@@ -238,6 +246,44 @@ const UserModal = ({ open, onClose, userId }) => {
 										/>
 									</FormControl>
 								</div>
+
+								<Field
+									as={TextField}
+									label={i18n.t("userModal.form.email")}
+									name="email"
+									error={touched.email && Boolean(errors.email)}
+									helperText={touched.email && errors.email}
+									variant="outlined"
+									margin="dense"
+									fullWidth
+									InputProps={{ style: { borderRadius: 8 } }}
+								/>
+
+								<Field
+									as={TextField}
+									name="password"
+									variant="outlined"
+									margin="dense"
+									fullWidth
+									label={i18n.t("userModal.form.password")}
+									error={touched.password && Boolean(errors.password)}
+									helperText={touched.password && errors.password}
+									type={showPassword ? 'text' : 'password'}
+									InputProps={{
+										style: { borderRadius: 8 },
+										endAdornment: (
+											<InputAdornment position="end">
+												<IconButton
+													aria-label="toggle password visibility"
+													onClick={() => setShowPassword((e) => !e)}
+												>
+													{showPassword ? <VisibilityOff /> : <Visibility />}
+												</IconButton>
+											</InputAdornment>
+										)
+									}}
+								/>
+
 								<Can
 									role={loggedInUser.profile}
 									perform="user-modal:editQueues"
@@ -245,82 +291,30 @@ const UserModal = ({ open, onClose, userId }) => {
 										<QueueSelect
 											selectedQueueIds={selectedQueueIds}
 											onChange={values => setSelectedQueueIds(values)}
+											title="Departamentos"
 										/>
 									)}
 								/>
-								<Can
-									role={loggedInUser.profile}
-									perform="user-modal:editProfile"
-									yes={() => (
-										<FormControl variant="outlined" margin="dense" className={classes.maxWidth} fullWidth>
-											<InputLabel>
-												{i18n.t("userModal.form.whatsapp")}
-											</InputLabel>
-											<Field
-												as={Select}
-												value={whatsappId}
-												onChange={(e) => setWhatsappId(e.target.value)}
-												label={i18n.t("userModal.form.whatsapp")}
 
-											>
-												<MenuItem value={''}>&nbsp;</MenuItem>
-												{whatsApps.map((whatsapp) => (
-													<MenuItem key={whatsapp.id} value={whatsapp.id}>{whatsapp.name}</MenuItem>
-												))}
-											</Field>
-										</FormControl>
-									)}
-								/>										
-								<Can
-									role={loggedInUser.profile}
-									perform="user-modal:editProfile"
-									yes={() => (!loading &&
-										<div className={classes.textField}>
-											<FormControl
-												variant="outlined"
-												className={classes.maxWidth}
-												margin="dense"
-												fullWidth
-											>
-												<>
-													<InputLabel id="profile-selection-input-label">
-														{i18n.t("userModal.form.allTicket")}
-													</InputLabel>
 
-													<Field
-														as={Select}
-														label={i18n.t("allTicket.form.viewTags")}
-														name="allTicket"
-														labelId="allTicket-selection-label"
-														id="allTicket-selection"
-														required
-													>
-														<MenuItem value="enabled">{i18n.t("userModal.form.allTicketEnabled")}</MenuItem>
-														<MenuItem value="desabled">{i18n.t("userModal.form.allTicketDesabled")}</MenuItem>
-													</Field>
-												</>
-											</FormControl>
-										</div>
 
-									)}
-								/>
-								
+
+
+
 							</DialogContent>
 							<DialogActions>
 								<Button
 									onClick={handleClose}
-									color="secondary"
+									className={classes.cancelButton}
 									disabled={isSubmitting}
-									variant="outlined"
 								>
 									{i18n.t("userModal.buttons.cancel")}
 								</Button>
 								<Button
 									type="submit"
-									color="primary"
 									disabled={isSubmitting}
 									variant="contained"
-									className={classes.btnWrapper}
+									className={classes.addButton}
 								>
 									{userId
 										? `${i18n.t("userModal.buttons.okEdit")}`

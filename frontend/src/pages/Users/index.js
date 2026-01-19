@@ -84,6 +84,67 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "scroll",
     ...theme.scrollbarStyles,
   },
+  searchContainer: {
+    display: "flex",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
+    borderRadius: "50px",
+    padding: "5px 15px",
+    marginRight: "10px",
+  },
+  searchInput: {
+    border: "none",
+    backgroundColor: "transparent",
+    outline: "none",
+    marginLeft: "10px",
+    width: "150px",
+  },
+  addButton: {
+    backgroundColor: "#2563eb",
+    color: "white",
+    borderRadius: "50px",
+    padding: "8px 20px",
+    fontWeight: "bold",
+    textTransform: "uppercase",
+    "&:hover": {
+      backgroundColor: "#1d4ed8",
+    },
+  },
+  tableHeader: {
+    fontWeight: "bold",
+    color: "#555",
+  },
+  avatar: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
+    backgroundColor: "#ccc",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: "10px",
+    color: "white",
+    fontSize: "18px",
+    fontWeight: "bold",
+  },
+  nameContainer: {
+    display: "flex",
+    alignItems: "center",
+    position: "relative" // For status dot
+  },
+  statusDot: {
+    width: "10px",
+    height: "10px",
+    borderRadius: "50%",
+    backgroundColor: "#44b700", // Online color
+    border: "2px solid white",
+    position: "absolute",
+    bottom: 0,
+    left: 28, // Adjust based on avatar size
+  },
+  iconButton: {
+    color: "#757575",
+  },
 }));
 
 const Users = () => {
@@ -188,13 +249,28 @@ const Users = () => {
     }
   };
 
+  const getInitials = (name) => {
+    if (!name) return "";
+    return name.charAt(0).toUpperCase();
+  };
+
+  const getRandomColor = (name) => {
+    // Simple hash for consistent color
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+    return '#' + "00000".substring(0, 6 - c.length) + c;
+  }
+
+
   return (
     <MainContainer>
       <ConfirmationModal
         title={
           deletingUser &&
-          `${i18n.t("users.confirmationModal.deleteTitle")} ${
-            deletingUser.name
+          `${i18n.t("users.confirmationModal.deleteTitle")} ${deletingUser.name
           }?`
         }
         open={confirmModalOpen}
@@ -212,22 +288,18 @@ const Users = () => {
       <MainHeader>
         <Title>{i18n.t("users.title")}</Title>
         <MainHeaderButtonsWrapper>
-          <TextField
-            placeholder={i18n.t("contacts.searchPlaceholder")}
-            type="search"
-            value={searchParam}
-            onChange={handleSearch}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon style={{ color: "gray" }} />
-                </InputAdornment>
-              ),
-            }}
-          />
+          <div className={classes.searchContainer}>
+            <SearchIcon style={{ color: "gray" }} />
+            <input
+              className={classes.searchInput}
+              placeholder={i18n.t("contacts.searchPlaceholder")}
+              type="search"
+              value={searchParam}
+              onChange={handleSearch}
+            />
+          </div>
           <Button
-            variant="contained"
-            color="primary"
+            className={classes.addButton}
             onClick={handleOpenUserModal}
           >
             {i18n.t("users.buttons.add")}
@@ -242,35 +314,38 @@ const Users = () => {
         <Table size="small">
           <TableHead>
             <TableRow>
-			<TableCell align="center">
-                {i18n.t("users.table.id")}
-              </TableCell>
-              <TableCell align="center">{i18n.t("users.table.status")}</TableCell>
-              <TableCell align="center">{i18n.t("users.table.name")}</TableCell>
-              <TableCell align="center">
+              <TableCell align="center" className={classes.tableHeader}>{i18n.t("users.table.name")}</TableCell>
+              <TableCell align="center" className={classes.tableHeader}>{i18n.t("users.table.profile")}</TableCell>
+              <TableCell align="center" className={classes.tableHeader}>
                 {i18n.t("users.table.email")}
               </TableCell>
-              <TableCell align="center">
-                {i18n.t("users.table.profile")}
+              <TableCell align="center" className={classes.tableHeader}>
+                Ultima vez visto
               </TableCell>
-              <TableCell align="center">
+              <TableCell align="center" className={classes.tableHeader}>
                 {i18n.t("users.table.actions")}
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             <>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-				  <TableCell align="center">{user.id}</TableCell>
-				  <TableCell align="center"><UserStatusIcon user={user} /></TableCell>
-                  <TableCell align="center">{user.name}</TableCell>
-                  <TableCell align="center">{user.email}</TableCell>
+              {users.map((user, index) => (
+                <TableRow key={user.id} style={{ backgroundColor: index % 2 === 0 ? "#fff" : "#fbfbfb" }}>
+                  <TableCell align="center">
+                    <div className={classes.nameContainer}>
+                      <div className={classes.avatar} style={{ backgroundColor: "#ccc" }}>{getInitials(user.name)}</div>
+                      {user.online && <div className={classes.statusDot} />}
+                      {user.name}
+                    </div>
+                  </TableCell>
                   <TableCell align="center">{user.profile}</TableCell>
+                  <TableCell align="center">{user.email}</TableCell>
+                  <TableCell align="center">{user.updatedAt}</TableCell> {/* Placeholder for Last Seen */}
                   <TableCell align="center">
                     <IconButton
                       size="small"
                       onClick={() => handleEditUser(user)}
+                      className={classes.iconButton}
                     >
                       <EditIcon />
                     </IconButton>
@@ -281,13 +356,14 @@ const Users = () => {
                         setConfirmModalOpen(true);
                         setDeletingUser(user);
                       }}
+                      className={classes.iconButton}
                     >
                       <DeleteOutlineIcon />
                     </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
-              {loading && <TableRowSkeleton columns={4} />}
+              {loading && <TableRowSkeleton columns={5} />}
             </>
           </TableBody>
         </Table>

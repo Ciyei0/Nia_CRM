@@ -80,7 +80,6 @@ const TagModal = ({ open, onClose, tagId, reload }) => {
 	};
 
 	const [tag, setTag] = useState(initialState);
-	const [ kanban, setKanban] = useState(0);
 
 	useEffect(() => {
 		try {
@@ -88,7 +87,6 @@ const TagModal = ({ open, onClose, tagId, reload }) => {
 				if (!tagId) return;
 
 				const { data } = await api.get(`/tags/${tagId}`);
-				setKanban(data.kanban);
 				setTag(prevState => {
 					return { ...prevState, ...data };
 				});
@@ -104,12 +102,10 @@ const TagModal = ({ open, onClose, tagId, reload }) => {
 		onClose();
 	};
 
-	const handleKanbanChange = (e) => {
-		setKanban( e.target.checked ? 1 : 0);
-	};
+
 
 	const handleSaveTag = async values => {
-		const tagData = { ...values, userId: user.id, kanban };
+		const tagData = { ...values, userId: user.id };
 		try {
 			if (tagId) {
 				await api.put(`/tags/${tagId}`, tagData);
@@ -198,25 +194,7 @@ const TagModal = ({ open, onClose, tagId, reload }) => {
 										margin="dense"
 									/>
 								</div>
-								{(user.profile === "admin" || user.profile === "supervisor") && (
-                                <>
-								<div className={classes.multFieldLine}>
-        							<FormControlLabel
-          								control={
-            								<Checkbox
-             									checked={kanban === 1}
-             									onChange={handleKanbanChange}
-              									value={kanban}
-              									color="primary"
-            								/>
-          								}
-          								label="Kanban"
-          								labelPlacement="start"
-        							/>
-      							</div>
-      							<br />
-                                </>
-								)}
+
 								{colorPickerModalOpen && (
 									<div>
 										<ColorBox

@@ -116,7 +116,7 @@ class Ticket extends Model<Ticket> {
   static setUUID(ticket: Ticket) {
     ticket.uuid = uuidv4();
   }
-  
+
   @Default(false)
   @Column
   useIntegration: boolean;
@@ -149,6 +149,9 @@ class Ticket extends Model<Ticket> {
   @Default(0)
   @Column
   amountUsedBotQueues: number;
+  @Default(true)
+  @Column
+  isBot: boolean;
 }
 
 export default Ticket;
