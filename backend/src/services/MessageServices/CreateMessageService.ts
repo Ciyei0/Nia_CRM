@@ -14,7 +14,8 @@ interface MessageData {
   mediaUrl?: string;
   ack?: number;
   queueId?: number;
-  isForwarded?: boolean;  
+  isForwarded?: boolean;
+  quotedMsgId?: string;
 }
 interface Request {
   messageData: MessageData;

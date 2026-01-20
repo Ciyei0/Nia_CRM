@@ -3,6 +3,7 @@ import AppError from "../../errors/AppError";
 import Ticket from "../../models/Ticket";
 import Message from "../../models/Message";
 import formatBody from "../../helpers/Mustache";
+import CreateMessageService from "../../services/MessageServices/CreateMessageService";
 
 interface Request {
     body: string;
@@ -71,23 +72,37 @@ const SendWhatsAppCloudMessage = async ({
         };
     }
 
+    const textBody = formatBody(body, ticket.contact);
+
     const payload = {
         messaging_product: "whatsapp",
         recipient_type: "individual",
         to: recipientNumber,
         type: "text",
         text: {
-            body: formatBody(body, ticket.contact)
+            body: textBody
         },
         ...(Object.keys(context).length > 0 && { context })
     };
 
     try {
         const response = await axios.post(url, payload, { headers });
+        const messageId = response.data.messages[0].id;
 
-        // Cloud API returns { messaging_product: 'whatsapp', contacts: [...], messages: [{ id: 'wamid.HB...' }] }
-        // We update the last message of the ticket
-        await ticket.update({ lastMessage: formatBody(body, ticket.contact) });
+        const messageData = {
+            id: messageId,
+            ticketId: ticket.id,
+            body: textBody,
+            fromMe: true,
+            read: true,
+            mediaType: "chat",
+            ack: 1,
+            quotedMsgId: quotedMsg ? quotedMsg.id : undefined
+        };
+
+        await CreateMessageService({ messageData, companyId: ticket.companyId });
+
+        await ticket.update({ lastMessage: textBody });
 
         return response.data;
     } catch (error: any) {
