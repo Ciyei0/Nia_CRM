@@ -7,11 +7,20 @@ import TicketHeaderSkeleton from "../TicketHeaderSkeleton";
 const useStyles = makeStyles(theme => ({
 	ticketHeader: {
 		display: "flex",
-		backgroundColor: theme.palette.tabHeaderBackground,
+		background: theme.mode === 'light'
+			? "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)"
+			: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)",
 		flex: "none",
-		borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
+		borderBottom: "none",
+		boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+		padding: "8px 16px",
+		alignItems: "center",
+		minHeight: 64,
+		position: "relative",
+		zIndex: 10,
 		[theme.breakpoints.down("sm")]: {
-			flexWrap: "wrap"
+			flexWrap: "wrap",
+			padding: "8px 12px",
 		}
 	},
 }));

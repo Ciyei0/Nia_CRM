@@ -13,7 +13,7 @@ const TicketInfo = ({ contact, ticket, onClick }) => {
 	useEffect(() => {
 		if (contact) {
 			setContactName(contact.name);
-			if(document.body.offsetWidth < 600) {
+			if (document.body.offsetWidth < 600) {
 				if (contact.name.length > 10) {
 					const truncadName = contact.name.substring(0, 10) + '...';
 					setContactName(truncadName);
@@ -24,7 +24,7 @@ const TicketInfo = ({ contact, ticket, onClick }) => {
 		if (user && contact) {
 			setUserName(`${i18n.t("messagesList.header.assignedTo")} ${user.name}`);
 
-			if(document.body.offsetWidth < 600) {
+			if (document.body.offsetWidth < 600) {
 				setUserName(`${user.name}`);
 			}
 		}
@@ -34,15 +34,44 @@ const TicketInfo = ({ contact, ticket, onClick }) => {
 	return (
 		<CardHeader
 			onClick={onClick}
-			style={{ cursor: "pointer" }}
-			titleTypographyProps={{ noWrap: true }}
-			subheaderTypographyProps={{ noWrap: true }}
-			avatar={        <Avatar
-          style={{ backgroundColor: generateColor(contact?.number), color: "white", fontWeight: "bold" }}
-          src={contact.profilePicUrl}
-          alt="contact_image">
-          {getInitials(contact?.name)}
-        </Avatar>}
+			style={{
+				cursor: "pointer",
+				padding: "8px 12px",
+			}}
+			titleTypographyProps={{
+				noWrap: true,
+				style: {
+					fontWeight: 600,
+					fontSize: "1rem",
+					background: "linear-gradient(90deg, #667eea 0%, #764ba2 100%)",
+					WebkitBackgroundClip: "text",
+					WebkitTextFillColor: "transparent",
+				}
+			}}
+			subheaderTypographyProps={{
+				noWrap: true,
+				style: {
+					fontSize: "0.8rem",
+					color: "#6b7280",
+					marginTop: 2,
+				}
+			}}
+			avatar={
+				<Avatar
+					style={{
+						background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+						color: "white",
+						fontWeight: "bold",
+						width: 44,
+						height: 44,
+						fontSize: "1rem",
+						boxShadow: "0 4px 12px rgba(102, 126, 234, 0.3)",
+					}}
+					src={contact.profilePicUrl}
+					alt="contact_image">
+					{getInitials(contact?.name)}
+				</Avatar>
+			}
 			title={`${contactName} #${ticket.id}`}
 			subheader={ticket.user && `${userName}`}
 		/>

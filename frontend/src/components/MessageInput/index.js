@@ -33,38 +33,64 @@ const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
 const useStyles = makeStyles(theme => ({
 	mainWrapper: {
-		backgroundColor: theme.palette.bordabox, //DARK MODE PLW DESIGN//
+		background: theme.mode === 'light'
+			? "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)"
+			: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)",
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "center",
-		borderTop: "1px solid rgba(0, 0, 0, 0.12)",
+		borderTop: "none",
+		boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.08)",
 	},
 
 	newMessageBox: {
-		background: "#eee",
+		background: "transparent",
 		width: "100%",
 		display: "flex",
-		padding: "7px",
+		padding: "12px 16px",
 		alignItems: "center",
+		gap: 8,
 	},
 
 	messageInputWrapper: {
-		padding: 6,
-		marginRight: 7,
-		background: "#fff",
+		padding: "8px 16px",
+		marginRight: 0,
+		background: theme.mode === 'light'
+			? "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)"
+			: "linear-gradient(135deg, #2d3748 0%, #1a202c 100%)",
 		display: "flex",
-		borderRadius: 20,
+		borderRadius: 25,
 		flex: 1,
+		boxShadow: theme.mode === 'light'
+			? "0 2px 12px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255,255,255,0.8)"
+			: "0 2px 12px rgba(0, 0, 0, 0.3)",
+		border: theme.mode === 'light'
+			? "1px solid rgba(102, 126, 234, 0.15)"
+			: "1px solid rgba(255,255,255,0.08)",
+		transition: "all 0.3s ease",
+		"&:focus-within": {
+			boxShadow: "0 4px 20px rgba(102, 126, 234, 0.25)",
+			border: "1px solid rgba(102, 126, 234, 0.4)",
+		},
 	},
 
 	messageInput: {
-		paddingLeft: 10,
+		paddingLeft: 8,
 		flex: 1,
 		border: "none",
+		fontSize: "0.95rem",
+		color: theme.mode === 'light' ? "#2d3748" : "#e2e8f0",
+		"&::placeholder": {
+			color: theme.mode === 'light' ? "#9ca3af" : "#6b7280",
+		},
 	},
 
 	sendMessageIcons: {
-		color: "grey",
+		color: "#667eea",
+		transition: "all 0.2s ease",
+		"&:hover": {
+			color: "#764ba2",
+		},
 	},
 
 	uploadInput: {
@@ -73,24 +99,30 @@ const useStyles = makeStyles(theme => ({
 
 	viewMediaInputWrapper: {
 		display: "flex",
-		padding: "10px 13px",
+		padding: "12px 16px",
 		position: "relative",
 		justifyContent: "space-between",
 		alignItems: "center",
-		backgroundColor: "#eee",
-		borderTop: "1px solid rgba(0, 0, 0, 0.12)",
+		background: theme.mode === 'light'
+			? "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)"
+			: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)",
+		borderTop: "none",
+		boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.08)",
 	},
 
 	emojiBox: {
 		position: "absolute",
-		bottom: 63,
+		bottom: 70,
 		width: 40,
-		borderTop: "1px solid #e8e8e8",
+		borderRadius: "16px",
+		overflow: "hidden",
+		boxShadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
+		zIndex: 100,
 	},
 
 	circleLoading: {
-		color: green[500],
-		opacity: "70%",
+		color: "#667eea",
+		opacity: "85%",
 		position: "absolute",
 		top: "20%",
 		left: "50%",
@@ -98,22 +130,34 @@ const useStyles = makeStyles(theme => ({
 	},
 
 	audioLoading: {
-		color: green[500],
-		opacity: "70%",
+		color: "#667eea",
+		opacity: "85%",
 	},
 
 	recorderWrapper: {
 		display: "flex",
 		alignItems: "center",
 		alignContent: "middle",
+		gap: 8,
+		padding: "4px 12px",
+		background: "rgba(239, 68, 68, 0.1)",
+		borderRadius: 20,
 	},
 
 	cancelAudioIcon: {
-		color: "red",
+		color: "#ef4444",
+		transition: "all 0.2s ease",
+		"&:hover": {
+			color: "#dc2626",
+		},
 	},
 
 	sendAudioIcon: {
-		color: "green",
+		color: "#10b981",
+		transition: "all 0.2s ease",
+		"&:hover": {
+			color: "#059669",
+		},
 	},
 
 	replyginMsgWrapper: {
@@ -121,45 +165,56 @@ const useStyles = makeStyles(theme => ({
 		width: "100%",
 		alignItems: "center",
 		justifyContent: "center",
-		paddingTop: 8,
-		paddingLeft: 73,
-		paddingRight: 7,
+		paddingTop: 12,
+		paddingLeft: 16,
+		paddingRight: 16,
 	},
 
 	replyginMsgContainer: {
 		flex: 1,
-		marginRight: 5,
+		marginRight: 8,
 		overflowY: "hidden",
-		backgroundColor: "rgba(0, 0, 0, 0.05)",
-		borderRadius: "7.5px",
+		background: theme.mode === 'light'
+			? "linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)"
+			: "linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%)",
+		borderRadius: "12px",
 		display: "flex",
 		position: "relative",
+		border: "1px solid rgba(102, 126, 234, 0.2)",
 	},
 
 	replyginMsgBody: {
-		padding: 10,
+		padding: 12,
 		height: "auto",
 		display: "block",
 		whiteSpace: "pre-wrap",
 		overflow: "hidden",
+		fontSize: "0.9rem",
+		color: theme.mode === 'light' ? "#4b5563" : "#d1d5db",
 	},
 
 	replyginContactMsgSideColor: {
 		flex: "none",
 		width: "4px",
-		backgroundColor: "#35cd96",
+		background: "linear-gradient(180deg, #10b981 0%, #059669 100%)",
+		borderRadius: "4px 0 0 4px",
 	},
 
 	replyginSelfMsgSideColor: {
 		flex: "none",
 		width: "4px",
-		backgroundColor: "#6bcbef",
+		background: "linear-gradient(180deg, #667eea 0%, #764ba2 100%)",
+		borderRadius: "4px 0 0 4px",
 	},
 
 	messageContactName: {
 		display: "flex",
-		color: "#6bcbef",
-		fontWeight: 500,
+		background: "linear-gradient(90deg, #667eea 0%, #764ba2 100%)",
+		WebkitBackgroundClip: "text",
+		WebkitTextFillColor: "transparent",
+		fontWeight: 600,
+		fontSize: "0.85rem",
+		marginBottom: 4,
 	},
 }));
 

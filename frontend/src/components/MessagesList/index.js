@@ -47,236 +47,310 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     minWidth: 300,
     minHeight: 200,
+    background: theme.mode === 'light'
+      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+      : 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
   },
 
   messagesList: {
-    backgroundImage: theme.mode === 'light' ? `url(${whatsBackground})` : `url(${whatsBackgroundDark})`, //DARK MODE PLW DESIGN//
+    backgroundImage: theme.mode === 'light'
+      ? `linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)), url(${whatsBackground})`
+      : `linear-gradient(rgba(26,26,46,0.95), rgba(22,33,62,0.95)), url(${whatsBackgroundDark})`,
+    backgroundSize: 'cover',
     display: "flex",
     flexDirection: "column",
     flexGrow: 1,
-    padding: "20px 20px 20px 20px",
-    overflowY: "scroll",
+    padding: "24px 20px",
+    overflowY: "auto",
     ...theme.scrollbarStyles,
+    "&::-webkit-scrollbar": {
+      width: "8px",
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "rgba(102, 126, 234, 0.4)",
+      borderRadius: "4px",
+    },
   },
 
   circleLoading: {
-    color: green[500],
+    color: "#667eea",
     position: "absolute",
-    opacity: "70%",
+    opacity: "85%",
     top: 0,
     left: "50%",
     marginTop: 12,
+    filter: "drop-shadow(0 2px 4px rgba(102, 126, 234, 0.3))",
   },
 
   messageLeft: {
     marginRight: 20,
-    marginTop: 2,
+    marginTop: 8,
+    marginBottom: 4,
     minWidth: 100,
-    maxWidth: 600,
+    maxWidth: 520,
     height: "auto",
     display: "block",
     position: "relative",
+    transition: "all 0.2s ease-in-out",
+    "&:hover": {
+      transform: "translateX(4px)",
+    },
     "&:hover #messageActionsButton": {
       display: "flex",
       position: "absolute",
       top: 0,
       right: 0,
     },
-
     whiteSpace: "pre-wrap",
-    backgroundColor: "#ffffff",
-    color: "#303030",
+    background: theme.mode === 'light'
+      ? "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)"
+      : "linear-gradient(135deg, #2d3748 0%, #1a202c 100%)",
+    color: theme.mode === 'light' ? "#2d3748" : "#e2e8f0",
     alignSelf: "flex-start",
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 8,
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
-    paddingLeft: 5,
-    paddingRight: 5,
-    paddingTop: 5,
-    paddingBottom: 0,
-    boxShadow: "0 1px 1px #b3b3b3",
+    borderRadius: "18px",
+    borderTopLeftRadius: "4px",
+    paddingLeft: 14,
+    paddingRight: 14,
+    paddingTop: 10,
+    paddingBottom: 6,
+    boxShadow: theme.mode === 'light'
+      ? "0 4px 15px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05)"
+      : "0 4px 15px rgba(0, 0, 0, 0.3)",
+    border: theme.mode === 'light' ? "1px solid rgba(0,0,0,0.04)" : "1px solid rgba(255,255,255,0.05)",
   },
 
   quotedContainerLeft: {
-    margin: "-3px -80px 6px -6px",
+    margin: "4px -10px 10px -10px",
     overflow: "hidden",
-    backgroundColor: "#f0f0f0",
-    borderRadius: "7.5px",
+    background: theme.mode === 'light'
+      ? "linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%)"
+      : "linear-gradient(135deg, #374151 0%, #1f2937 100%)",
+    borderRadius: "12px",
     display: "flex",
     position: "relative",
   },
 
   quotedMsg: {
-    padding: 10,
-    maxWidth: 300,
+    padding: 12,
+    maxWidth: 280,
     height: "auto",
     display: "block",
     whiteSpace: "pre-wrap",
     overflow: "hidden",
+    fontSize: "0.9rem",
+    opacity: 0.85,
   },
 
   quotedSideColorLeft: {
     flex: "none",
     width: "4px",
-    backgroundColor: "#6bcbef",
+    background: "linear-gradient(180deg, #667eea 0%, #764ba2 100%)",
+    borderRadius: "4px 0 0 4px",
   },
 
   messageRight: {
     marginLeft: 20,
-    marginTop: 2,
+    marginTop: 8,
+    marginBottom: 4,
     minWidth: 100,
-    maxWidth: 600,
+    maxWidth: 520,
     height: "auto",
     display: "block",
     position: "relative",
+    transition: "all 0.2s ease-in-out",
+    "&:hover": {
+      transform: "translateX(-4px)",
+    },
     "&:hover #messageActionsButton": {
       display: "flex",
       position: "absolute",
       top: 0,
       right: 0,
     },
-
     whiteSpace: "pre-wrap",
-    backgroundColor: "#dcf8c6",
-    color: "#303030",
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    color: "#ffffff",
     alignSelf: "flex-end",
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 0,
-    paddingLeft: 5,
-    paddingRight: 5,
-    paddingTop: 5,
-    paddingBottom: 0,
-    boxShadow: "0 1px 1px #b3b3b3",
+    borderRadius: "18px",
+    borderBottomRightRadius: "4px",
+    paddingLeft: 14,
+    paddingRight: 14,
+    paddingTop: 10,
+    paddingBottom: 6,
+    boxShadow: "0 4px 15px rgba(102, 126, 234, 0.25), 0 2px 6px rgba(118, 75, 162, 0.15)",
   },
 
   quotedContainerRight: {
-    margin: "-3px -80px 6px -6px",
+    margin: "4px -10px 10px -10px",
     overflowY: "hidden",
-    backgroundColor: "#cfe9ba",
-    borderRadius: "7.5px",
+    background: "rgba(255, 255, 255, 0.15)",
+    borderRadius: "12px",
     display: "flex",
     position: "relative",
+    backdropFilter: "blur(4px)",
   },
 
   quotedMsgRight: {
-    padding: 10,
-    maxWidth: 300,
+    padding: 12,
+    maxWidth: 280,
     height: "auto",
     whiteSpace: "pre-wrap",
+    fontSize: "0.9rem",
+    opacity: 0.9,
   },
 
   quotedSideColorRight: {
     flex: "none",
     width: "4px",
-    backgroundColor: "#35cd96",
+    background: "rgba(255, 255, 255, 0.5)",
+    borderRadius: "4px 0 0 4px",
   },
 
   messageActionsButton: {
     display: "none",
     position: "relative",
-    color: "#999",
+    color: theme.mode === 'light' ? "#6b7280" : "#9ca3af",
     zIndex: 1,
-    backgroundColor: "inherit",
+    backgroundColor: "transparent",
     opacity: "90%",
-    "&:hover, &.Mui-focusVisible": { backgroundColor: "inherit" },
+    transition: "all 0.2s ease",
+    "&:hover, &.Mui-focusVisible": {
+      backgroundColor: "rgba(102, 126, 234, 0.1)",
+      color: "#667eea",
+    },
   },
 
   messageContactName: {
     display: "flex",
-    color: "#6bcbef",
-    fontWeight: 500,
+    background: "linear-gradient(90deg, #667eea 0%, #764ba2 100%)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    fontWeight: 600,
+    fontSize: "0.85rem",
+    marginBottom: 4,
   },
 
   textContentItem: {
     overflowWrap: "break-word",
-    padding: "3px 80px 6px 6px",
+    padding: "4px 70px 8px 4px",
+    fontSize: "0.95rem",
+    lineHeight: 1.45,
   },
-  
+
   textContentItemEdited: {
     overflowWrap: "break-word",
-    padding: "3px 120px 6px 6px",
+    padding: "4px 110px 8px 4px",
+    fontSize: "0.95rem",
+    lineHeight: 1.45,
   },
 
   textContentItemDeleted: {
     fontStyle: "italic",
-    color: "rgba(0, 0, 0, 0.36)",
+    color: theme.mode === 'light' ? "rgba(0, 0, 0, 0.4)" : "rgba(255, 255, 255, 0.4)",
     overflowWrap: "break-word",
-    padding: "3px 80px 6px 6px",
+    padding: "4px 70px 8px 4px",
+    fontSize: "0.95rem",
   },
+
   forwardMessage: {
-    fontSize: 12,
+    fontSize: 11,
     fontStyle: "italic",
     position: "absolute",
-    top: 0,
-    left: 5,
-    color: "#999",
+    top: 2,
+    left: 8,
+    color: theme.mode === 'light' ? "#6b7280" : "#9ca3af",
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
+    gap: 4,
   },
+
   messageMedia: {
     objectFit: "cover",
-    width: 250,
-    height: 200,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
+    width: 280,
+    height: 220,
+    borderRadius: "12px",
+    transition: "transform 0.3s ease",
+    "&:hover": {
+      transform: "scale(1.02)",
+    },
   },
 
   timestamp: {
-    fontSize: 11,
+    fontSize: 10,
     position: "absolute",
-    bottom: 0,
-    right: 5,
-    color: "#999",
+    bottom: 4,
+    right: 8,
+    color: theme.mode === 'light' ? "#9ca3af" : "rgba(255, 255, 255, 0.6)",
+    fontWeight: 500,
   },
 
   dailyTimestamp: {
     alignItems: "center",
     textAlign: "center",
     alignSelf: "center",
-    width: "110px",
-    backgroundColor: "#e1f3fb",
-    margin: "10px",
-    borderRadius: "10px",
-    boxShadow: "0 1px 1px #b3b3b3",
+    width: "auto",
+    minWidth: "100px",
+    padding: "6px 16px",
+    background: theme.mode === 'light'
+      ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+      : "linear-gradient(135deg, #4c1d95 0%, #5b21b6 100%)",
+    margin: "16px 0",
+    borderRadius: "20px",
+    boxShadow: "0 4px 12px rgba(102, 126, 234, 0.25)",
   },
 
   dailyTimestampText: {
-    color: "#808888",
-    padding: 8,
+    color: "#ffffff",
+    padding: 0,
     alignSelf: "center",
     marginLeft: "0px",
+    fontWeight: 500,
+    fontSize: "0.8rem",
+    letterSpacing: "0.3px",
   },
 
   ackIcons: {
-    fontSize: 18,
+    fontSize: 16,
     verticalAlign: "middle",
     marginLeft: 4,
+    opacity: 0.7,
   },
 
   deletedIcon: {
-    fontSize: 18,
+    fontSize: 16,
     verticalAlign: "middle",
     marginRight: 4,
+    opacity: 0.6,
   },
 
   ackDoneAllIcon: {
-    color: green[500],
-    fontSize: 18,
+    color: "#10b981",
+    fontSize: 16,
     verticalAlign: "middle",
     marginLeft: 4,
+    filter: "drop-shadow(0 1px 2px rgba(16, 185, 129, 0.3))",
   },
 
   downloadMedia: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "inherit",
-    padding: 10,
+    backgroundColor: "transparent",
+    padding: 12,
+    "& .MuiButton-root": {
+      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      color: "#fff",
+      borderRadius: "12px",
+      padding: "10px 20px",
+      textTransform: "none",
+      fontWeight: 500,
+      boxShadow: "0 4px 12px rgba(102, 126, 234, 0.25)",
+      border: "none",
+      "&:hover": {
+        background: "linear-gradient(135deg, #5a6fd6 0%, #6a3f91 100%)",
+        boxShadow: "0 6px 16px rgba(102, 126, 234, 0.35)",
+      },
+    },
   },
 }));
 
@@ -461,111 +535,111 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
       return <LocationPreview image={imageLocation} link={linkLocation} description={descriptionLocation} />
     }
     else
-    if (message.mediaType === "contactMessage") {
-      let array = message.body.split("\n");
-      let obj = [];
-      let contact = "";
-      for (let index = 0; index < array.length; index++) {
-        const v = array[index];
-        let values = v.split(":");
-        for (let ind = 0; ind < values.length; ind++) {
-          if (values[ind].indexOf("+") !== -1) {
-            obj.push({ number: values[ind] });
-          }
-          if (values[ind].indexOf("FN") !== -1) {
-            contact = values[ind + 1];
-          }
-        }
-      }
-      //console.log(array);
-      //console.log(contact);
-      //console.log(obj[0].number);
-      return <VCardPreview contact={contact} numbers={obj[0].number} />
-    }
-    /* else if (message.mediaType === "vcard") {
-      let array = message.body.split("\n");
-      let obj = [];
-      let contact = "";
-      for (let index = 0; index < array.length; index++) {
-        const v = array[index];
-        let values = v.split(":");
-        for (let ind = 0; ind < values.length; ind++) {
-          if (values[ind].indexOf("+") !== -1) {
-            obj.push({ number: values[ind] });
-          }
-          if (values[ind].indexOf("FN") !== -1) {
-            contact = values[ind + 1];
-          }
-        }
-      }
-      return <VcardPreview contact={contact} numbers={obj[0].number} />
-    } */
-    /*else if (message.mediaType === "multi_vcard") {
-      console.log("multi_vcard")
-      console.log(message)
-      
-      if(message.body !== null && message.body !== "") {
-        let newBody = JSON.parse(message.body)
-        return (
-          <>
-            {
-            newBody.map(v => (
-              <VcardPreview contact={v.name} numbers={v.number} />
-            ))
+      if (message.mediaType === "contactMessage") {
+        let array = message.body.split("\n");
+        let obj = [];
+        let contact = "";
+        for (let index = 0; index < array.length; index++) {
+          const v = array[index];
+          let values = v.split(":");
+          for (let ind = 0; ind < values.length; ind++) {
+            if (values[ind].indexOf("+") !== -1) {
+              obj.push({ number: values[ind] });
             }
-          </>
-        )
-      } else return (<></>)
-    }*/
-    else if (message.mediaType === "image") {
-      return <ModalImageCors imageUrl={message.mediaUrl} />;
-    } else if (message.mediaType === "audio") {
+            if (values[ind].indexOf("FN") !== -1) {
+              contact = values[ind + 1];
+            }
+          }
+        }
+        //console.log(array);
+        //console.log(contact);
+        //console.log(obj[0].number);
+        return <VCardPreview contact={contact} numbers={obj[0].number} />
+      }
+      /* else if (message.mediaType === "vcard") {
+        let array = message.body.split("\n");
+        let obj = [];
+        let contact = "";
+        for (let index = 0; index < array.length; index++) {
+          const v = array[index];
+          let values = v.split(":");
+          for (let ind = 0; ind < values.length; ind++) {
+            if (values[ind].indexOf("+") !== -1) {
+              obj.push({ number: values[ind] });
+            }
+            if (values[ind].indexOf("FN") !== -1) {
+              contact = values[ind + 1];
+            }
+          }
+        }
+        return <VcardPreview contact={contact} numbers={obj[0].number} />
+      } */
+      /*else if (message.mediaType === "multi_vcard") {
+        console.log("multi_vcard")
+        console.log(message)
+        
+        if(message.body !== null && message.body !== "") {
+          let newBody = JSON.parse(message.body)
+          return (
+            <>
+              {
+              newBody.map(v => (
+                <VcardPreview contact={v.name} numbers={v.number} />
+              ))
+              }
+            </>
+          )
+        } else return (<></>)
+      }*/
+      else if (message.mediaType === "image") {
+        return <ModalImageCors imageUrl={message.mediaUrl} />;
+      } else if (message.mediaType === "audio") {
 
-      //console.log(isIOS);
+        //console.log(isIOS);
 
-      if (isIOS) {
-        message.mediaUrl = message.mediaUrl.replace("ogg", "mp3");
+        if (isIOS) {
+          message.mediaUrl = message.mediaUrl.replace("ogg", "mp3");
 
+          return (
+            <audio controls>
+              <source src={message.mediaUrl} type="audio/mp3"></source>
+            </audio>
+          );
+        } else {
+
+          return (
+            <audio controls>
+              <source src={message.mediaUrl} type="audio/ogg"></source>
+            </audio>
+          );
+        }
+      } else if (message.mediaType === "video") {
         return (
-          <audio controls>
-            <source src={message.mediaUrl} type="audio/mp3"></source>
-          </audio>
+          <video
+            className={classes.messageMedia}
+            src={message.mediaUrl}
+            controls
+          />
         );
       } else {
-
         return (
-          <audio controls>
-            <source src={message.mediaUrl} type="audio/ogg"></source>
-          </audio>
+          <>
+            <div className={classes.downloadMedia}>
+              <Button
+                startIcon={<GetApp />}
+                color="primary"
+                variant="outlined"
+                target="_blank"
+                href={message.mediaUrl}
+              >
+                Download
+              </Button>
+            </div>
+            <Divider />
+          </>
         );
       }
-    } else if (message.mediaType === "video") {
-      return (
-        <video
-          className={classes.messageMedia}
-          src={message.mediaUrl}
-          controls
-        />
-      );
-    } else {
-      return (
-        <>
-          <div className={classes.downloadMedia}>
-            <Button
-              startIcon={<GetApp />}
-              color="primary"
-              variant="outlined"
-              target="_blank"
-              href={message.mediaUrl}
-            >
-              Download
-            </Button>
-          </div>
-          <Divider />
-        </>
-      );
-    }
-};
+  };
 
   /*
     const renderMessageAck = (message) => {
@@ -584,23 +658,23 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
     };
     */
 
-    const renderMessageAck = (message) => {
-      if (message.ack === 0) {
-        return <AccessTime fontSize="small" className={classes.ackIcons} />;
-      }
-      if (message.ack === 1) {
-        return <Done fontSize="small" className={classes.ackIcons} />;
-      }
-      if (message.ack === 2) {
-        return <Done fontSize="small" className={classes.ackIcons} />;
-      }
-      if (message.ack === 3) {
-        return <DoneAll fontSize="small" className={classes.ackIcons} />;
-      }
-      if (message.ack === 4 || message.ack === 5) {
-        return <DoneAll fontSize="small" className={classes.ackDoneAllIcon} style={{color:'#0377FC'}} />;
-      }
-    };
+  const renderMessageAck = (message) => {
+    if (message.ack === 0) {
+      return <AccessTime fontSize="small" className={classes.ackIcons} />;
+    }
+    if (message.ack === 1) {
+      return <Done fontSize="small" className={classes.ackIcons} />;
+    }
+    if (message.ack === 2) {
+      return <Done fontSize="small" className={classes.ackIcons} />;
+    }
+    if (message.ack === 3) {
+      return <DoneAll fontSize="small" className={classes.ackIcons} />;
+    }
+    if (message.ack === 4 || message.ack === 5) {
+      return <DoneAll fontSize="small" className={classes.ackDoneAllIcon} style={{ color: '#0377FC' }} />;
+    }
+  };
 
   const renderDailyTimestamps = (message, index) => {
     if (index === 0) {
@@ -842,7 +916,7 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
                   {message.quotedMsg && renderQuotedMessage(message)}
                   {message.mediaType !== "reactionMessage" && (
                     <MarkdownWrapper>
-                      {message.mediaType === "locationMessage" || message.mediaType === "contactMessage" 
+                      {message.mediaType === "locationMessage" || message.mediaType === "contactMessage"
                         ? null
                         : message.body}
                     </MarkdownWrapper>
@@ -853,7 +927,7 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
                         <MarkdownWrapper>
                           {"_*" + (message.fromMe ? 'Você' : (message?.contact?.name ?? 'Contato')) + "*_ reagiu... "}
                         </MarkdownWrapper>
-                        <Badge 
+                        <Badge
                           className={classes.badge}
                           overlap="circular"
                           anchorOrigin={{
@@ -870,7 +944,7 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
                       </span>
                     </>
                   )}
-                                  
+
                   <span className={classes.timestamp}>
                     {format(parseISO(message.createdAt), "HH:mm")}
                   </span>
@@ -885,16 +959,16 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
               {renderNumberTicket(message, index)}
               {renderMessageDivider(message, index)}
               <div className={classes.messageRight}
-              onDoubleClick={(e) => hanldeReplyMessage(e, message)}
-            >
-              {showSelectMessageCheckbox && (
-                <SelectMessageCheckbox
-                  // showSelectMessageCheckbox={showSelectMessageCheckbox}
-                  message={message}
-                // selectedMessagesList={selectedMessagesList}
-                // setSelectedMessagesList={setSelectedMessagesList}
-                />
-              )}
+                onDoubleClick={(e) => hanldeReplyMessage(e, message)}
+              >
+                {showSelectMessageCheckbox && (
+                  <SelectMessageCheckbox
+                    // showSelectMessageCheckbox={showSelectMessageCheckbox}
+                    message={message}
+                  // selectedMessagesList={selectedMessagesList}
+                  // setSelectedMessagesList={setSelectedMessagesList}
+                  />
+                )}
                 <IconButton
                   variant="contained"
                   size="small"
@@ -938,7 +1012,7 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
                         <MarkdownWrapper>
                           {"_*" + (message.fromMe ? 'Você' : (message?.contact?.name ?? 'Contato')) + "*_ reagiu... "}
                         </MarkdownWrapper>
-                        <Badge 
+                        <Badge
                           className={classes.badge}
                           overlap="circular"
                           anchorOrigin={{
@@ -955,8 +1029,8 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
                       </span>
                     </>
                   )}
-                  
-                
+
+
                   <span className={classes.timestamp}>
                     {format(parseISO(message.createdAt), "HH:mm")}
                     {renderMessageAck(message)}
