@@ -293,7 +293,7 @@ const Connections = () => {
 		}
 
 		// URL for the popup
-		const url = `https://web.facebook.com/v20.0/dialog/oauth?client_id=${clientId}&redirect_uri=${redirectUri}/fb-callback&response_type=code&scope=whatsapp_business_management,whatsapp_business_messaging`;
+		const url = `https://web.facebook.com/v20.0/dialog/oauth?client_id=${clientId}&redirect_uri=${redirectUri}/fb-callback&response_type=code&scope=business_management,whatsapp_business_management,whatsapp_business_messaging`;
 
 		// Open popup
 		const width = 600;
