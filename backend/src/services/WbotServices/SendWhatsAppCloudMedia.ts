@@ -27,7 +27,10 @@ const SendWhatsAppCloudMedia = async ({ media, ticket, body }: Request): Promise
 
         // 1. Upload Media
         const form = new FormData();
-        form.append("file", fs.createReadStream(media.path));
+        form.append("file", fs.createReadStream(media.path), {
+            filename: media.originalname,
+            contentType: media.mimetype
+        });
         form.append("type", media.mimetype);
         form.append("messaging_product", "whatsapp");
 
