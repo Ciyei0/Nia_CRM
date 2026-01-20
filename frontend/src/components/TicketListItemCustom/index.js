@@ -43,16 +43,15 @@ const useStyles = makeStyles((theme) => ({
     cursor: "unset",
   },
   queueTag: {
-    background: "#FCFCFC",
-    color: "#000",
-    marginRight: 1,
-    padding: 1,
-    fontWeight: 'bold',
-    paddingLeft: 5,
-    paddingRight: 5,
-    borderRadius: 3,
-    fontSize: "0.8em",
-    whiteSpace: "nowrap"
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    color: "#fff",
+    marginRight: 4,
+    padding: "2px 8px",
+    fontWeight: 500,
+    borderRadius: 12,
+    fontSize: "0.7em",
+    whiteSpace: "nowrap",
+    boxShadow: "0 2px 4px rgba(102, 126, 234, 0.2)",
   },
   noTicketsDiv: {
     display: "flex",
@@ -78,16 +77,15 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: "1.4",
   },
   connectionTag: {
-    background: "green",
-    color: "#FFF",
-    marginRight: 1,
-    padding: 1,
-    fontWeight: 'bold',
-    paddingLeft: 5,
-    paddingRight: 5,
-    borderRadius: 3,
-    fontSize: "0.8em",
-    whiteSpace: "nowrap"
+    background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+    color: "#fff",
+    marginRight: 4,
+    padding: "2px 8px",
+    fontWeight: 500,
+    borderRadius: 12,
+    fontSize: "0.7em",
+    whiteSpace: "nowrap",
+    boxShadow: "0 2px 4px rgba(16, 185, 129, 0.2)",
   },
   noTicketsTitle: {
     textAlign: "center",
@@ -186,13 +184,13 @@ const useStyles = makeStyles((theme) => ({
       transform: "scale(1) translate(0%, -40%)",
     },
   },
-    presence: {
+  presence: {
     color: theme?.mode === 'light' ? "blue" : "lightgreen",
     fontWeight: "bold",
   }
 }));
-  {/*PLW DESIGN INSERIDO O dentro do const handleChangeTab*/}
-  const TicketListItemCustom = ({ ticket }) => {
+{/*PLW DESIGN INSERIDO O dentro do const handleChangeTab*/ }
+const TicketListItemCustom = ({ ticket }) => {
   const classes = useStyles();
   const history = useHistory();
   const [loading, setLoading] = useState(false);
@@ -211,7 +209,7 @@ const useStyles = makeStyles((theme) => ({
   const { profile } = user;
   const [transferTicketModalOpen, setTransferTicketModalOpen] = useState(false);
   const presenceMessage = { composing: "Digitando...", recording: "Gravando..." };
-  
+
   useEffect(() => {
     if (ticket.userId && ticket.user) {
       setTicketUser(ticket.user?.name?.toUpperCase());
@@ -231,7 +229,7 @@ const useStyles = makeStyles((theme) => ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  {/*CÓDIGO NOVO SAUDAÇÃO*/}
+  {/*CÓDIGO NOVO SAUDAÇÃO*/ }
   const handleCloseTicket = async (id) => {
     setTag(ticket?.tags);
     setLoading(true);
@@ -274,7 +272,7 @@ const useStyles = makeStyles((theme) => ({
       } else if (minutesDifference >= 30 && minutesDifference < 60) {
         labelText = `(${minutesDifference} m atrás)`;
         labelColor = 'Orange';
-      } else if (minutesDifference > 60  && hoursDifference < 24) {
+      } else if (minutesDifference > 60 && hoursDifference < 24) {
         labelText = `(${hoursDifference} h atrás)`;
         labelColor = 'red';
       } else if (hoursDifference >= 24) {
@@ -324,62 +322,62 @@ const useStyles = makeStyles((theme) => ({
     history.push(`/tickets/${ticket.uuid}`);
   };
 
-    const handleAcepptTicket = async (id) => {
-        setLoading(true);
-        try {
-            await api.put(`/tickets/${id}`, {
-                status: "open",
-                userId: user?.id,
-            });
-            
-            let settingIndex;
+  const handleAcepptTicket = async (id) => {
+    setLoading(true);
+    try {
+      await api.put(`/tickets/${id}`, {
+        status: "open",
+        userId: user?.id,
+      });
 
-            try {
-                const { data } = await api.get("/settings/");
-                
-                settingIndex = data.filter((s) => s.key === "sendGreetingAccepted");
-                
-            } catch (err) {
-                toastError(err);
-                   
-            }
-            
-            if (settingIndex[0].value === "enabled" && !ticket.isGroup) {
-                handleSendMessage(ticket.id);
-                
-            }
+      let settingIndex;
 
-        } catch (err) {
-            setLoading(false);
-            
-            toastError(err);
-        }
-        if (isMounted.current) {
-            setLoading(false);
-        }
+      try {
+        const { data } = await api.get("/settings/");
 
-        // handleChangeTab(null, "tickets");
-        // handleChangeTab(null, "open");
-        history.push(`/tickets/${ticket.uuid}`);
+        settingIndex = data.filter((s) => s.key === "sendGreetingAccepted");
+
+      } catch (err) {
+        toastError(err);
+
+      }
+
+      if (settingIndex[0].value === "enabled" && !ticket.isGroup) {
+        handleSendMessage(ticket.id);
+
+      }
+
+    } catch (err) {
+      setLoading(false);
+
+      toastError(err);
+    }
+    if (isMounted.current) {
+      setLoading(false);
+    }
+
+    // handleChangeTab(null, "tickets");
+    // handleChangeTab(null, "open");
+    history.push(`/tickets/${ticket.uuid}`);
+  };
+
+  const handleSendMessage = async (id) => {
+
+    const msg = `{{ms}} *{{name}}*, meu nome é *${user?.name}* e agora vou prosseguir com seu atendimento!`;
+    const message = {
+      read: 1,
+      fromMe: true,
+      mediaUrl: "",
+      body: `*Mensagem Automática:*\n${msg.trim()}`,
     };
-	
-	    const handleSendMessage = async (id) => {
-        
-        const msg = `{{ms}} *{{name}}*, meu nome é *${user?.name}* e agora vou prosseguir com seu atendimento!`;
-        const message = {
-            read: 1,
-            fromMe: true,
-            mediaUrl: "",
-            body: `*Mensagem Automática:*\n${msg.trim()}`,
-        };
-        try {
-            await api.post(`/messages/${id}`, message);
-        } catch (err) {
-            toastError(err);
-            
-        }
-    };
-	{/*CÓDIGO NOVO SAUDAÇÃO*/}
+    try {
+      await api.post(`/messages/${id}`, message);
+    } catch (err) {
+      toastError(err);
+
+    }
+  };
+  {/*CÓDIGO NOVO SAUDAÇÃO*/ }
 
   const handleSelectTicket = (ticket) => {
     const code = uuidv4();
@@ -434,11 +432,11 @@ const useStyles = makeStyles((theme) => ({
   return (
     <React.Fragment key={ticket.id}>
 
-    <TransferTicketModalCustom
-    modalOpen={transferTicketModalOpen}
-    onClose={handleCloseTransferTicketModal}
-    ticketid={ticket.id}
-  />
+      <TransferTicketModalCustom
+        modalOpen={transferTicketModalOpen}
+        onClose={handleCloseTransferTicketModal}
+        ticketid={ticket.id}
+      />
 
       <TicketMessagesDialog
         open={openTicketMessageDialog}
@@ -472,7 +470,7 @@ const useStyles = makeStyles((theme) => ({
               }}
               src={ticket?.contact?.profilePicUrl}>
               {getInitials(ticket?.contact?.name || "")}
-              </Avatar>
+            </Avatar>
             :
             <Avatar
               style={{
@@ -485,7 +483,7 @@ const useStyles = makeStyles((theme) => ({
               }}
               src={ticket?.contact?.profilePicUrl}>
               {getInitials(ticket?.contact?.name || "")}
-              </Avatar>
+            </Avatar>
           }
         </ListItemAvatar>
         <ListItemText
@@ -493,16 +491,16 @@ const useStyles = makeStyles((theme) => ({
 
           primary={
             <span className={classes.contactNameWrapper}>
-            <Typography
-            noWrap
-            component='span'
-            variant='body2'
-            color='textPrimary'
-          >
-            <strong>{ticket.contact.name} {lastInteractionLabel}</strong>
-        <ListItemSecondaryAction>
-          <Box className={classes.ticketInfo1}>{renderTicketInfo()}</Box>
-        </ListItemSecondaryAction>
+              <Typography
+                noWrap
+                component='span'
+                variant='body2'
+                color='textPrimary'
+              >
+                <strong>{ticket.contact.name} {lastInteractionLabel}</strong>
+                <ListItemSecondaryAction>
+                  <Box className={classes.ticketInfo1}>{renderTicketInfo()}</Box>
+                </ListItemSecondaryAction>
                 {profile === "admin" && (
                   <Tooltip title="Espiar Conversa">
                     <VisibilityIcon
@@ -518,7 +516,7 @@ const useStyles = makeStyles((theme) => ({
                   </Tooltip>
                 )}
               </Typography>
-        </span>
+            </span>
 
           }
           secondary={
@@ -543,7 +541,7 @@ const useStyles = makeStyles((theme) => ({
 
                 <span style={{ marginTop: 4, }} className={classes.secondaryContentSecond} >
                   {ticket?.whatsapp?.name ? <Badge className={classes.connectionTag}>{ticket?.whatsapp?.name?.toUpperCase()}</Badge> : <br></br>}
-                  {ticketUser ? <Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticketUser}</Badge> : <br></br>}				  
+                  {ticketUser ? <Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticketUser}</Badge> : <br></br>}
                   <Badge style={{ backgroundColor: ticket.queue?.color || "#7c7c7c" }} className={classes.connectionTag}>{ticket.queue?.name?.toUpperCase() || "SEM FILA"}</Badge>
                 </span>
 
@@ -600,156 +598,177 @@ const useStyles = makeStyles((theme) => ({
           )}
 
         </ListItemSecondaryAction>
-<span className={classes.secondaryContentSecond}>
-  {ticket.status === "pending" && (
-    <>
-      <ButtonWithSpinner
-        style={{
-          backgroundColor: 'green',
-          color: 'white',
-          padding: '0px',
-          bottom: '17px',
-          borderRadius: '0px',
-          left: '8px',
-          fontSize: '0.6rem'
-        }}
-        variant="contained"
-        className={classes.acceptButton}
-        size="small"
-        loading={loading}
-        onClick={e => handleAcepptTicket(ticket.id)}
-      >
-        {i18n.t("ticketsList.buttons.accept")}
-      </ButtonWithSpinner>
+        <span className={classes.secondaryContentSecond}>
+          {ticket.status === "pending" && (
+            <>
+              <ButtonWithSpinner
+                style={{
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  color: 'white',
+                  padding: '4px 12px',
+                  marginBottom: '4px',
+                  borderRadius: '16px',
+                  left: '8px',
+                  fontSize: '0.65rem',
+                  fontWeight: 500,
+                  boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)',
+                  textTransform: 'none',
+                }}
+                variant="contained"
+                className={classes.acceptButton}
+                size="small"
+                loading={loading}
+                onClick={e => handleAcepptTicket(ticket.id)}
+              >
+                {i18n.t("ticketsList.buttons.accept")}
+              </ButtonWithSpinner>
 
-      <ButtonWithSpinner
-        style={{
-          backgroundColor: 'red',
-          color: 'white',
-          padding: '0px',
-          bottom: '0px',
-          borderRadius: '0px',
-          left: '8px',
-          fontSize: '0.6rem'
-        }}
-        variant="contained"
-        className={classes.acceptButton}
-        size="small"
-        loading={loading}
-        onClick={e => handleCloseTicket(ticket.id)}
-      >
-        {i18n.t("ticketsList.buttons.closed")}
-      </ButtonWithSpinner>
-    </>
-  )}
+              <ButtonWithSpinner
+                style={{
+                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                  color: 'white',
+                  padding: '4px 12px',
+                  marginBottom: '4px',
+                  borderRadius: '16px',
+                  left: '8px',
+                  fontSize: '0.65rem',
+                  fontWeight: 500,
+                  boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)',
+                  textTransform: 'none',
+                }}
+                variant="contained"
+                className={classes.acceptButton}
+                size="small"
+                loading={loading}
+                onClick={e => handleCloseTicket(ticket.id)}
+              >
+                {i18n.t("ticketsList.buttons.closed")}
+              </ButtonWithSpinner>
+            </>
+          )}
 
-  {ticket.status === "attending" && (
-    <>
-      <ButtonWithSpinner
-        style={{
-          backgroundColor: 'green',
-          color: 'white',
-          padding: '0px',
-          bottom: '17px',
-          borderRadius: '0px',
-          left: '8px',
-          fontSize: '0.6rem'
-        }}
-        variant="contained"
-        className={classes.acceptButton}
-        size="small"
-        loading={loading}
-        onClick={e => handleAcepptTicket(ticket.id)}
-      >
-        {i18n.t("ticketsList.buttons.accept")}
-      </ButtonWithSpinner>
+          {ticket.status === "attending" && (
+            <>
+              <ButtonWithSpinner
+                style={{
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  color: 'white',
+                  padding: '4px 12px',
+                  marginBottom: '4px',
+                  borderRadius: '16px',
+                  left: '8px',
+                  fontSize: '0.65rem',
+                  fontWeight: 500,
+                  boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)',
+                  textTransform: 'none',
+                }}
+                variant="contained"
+                className={classes.acceptButton}
+                size="small"
+                loading={loading}
+                onClick={e => handleAcepptTicket(ticket.id)}
+              >
+                {i18n.t("ticketsList.buttons.accept")}
+              </ButtonWithSpinner>
 
-      <ButtonWithSpinner
-        style={{
-          backgroundColor: 'red',
-          color: 'white',
-          padding: '0px',
-          bottom: '0px',
-          borderRadius: '0px',
-          left: '8px',
-          fontSize: '0.6rem'
-        }}
-        variant="contained"
-        className={classes.acceptButton}
-        size="small"
-        loading={loading}
-        onClick={e => handleCloseTicket(ticket.id)}
-      >
-        {i18n.t("ticketsList.buttons.closed")}
-      </ButtonWithSpinner>
-    </>
-  )}
+              <ButtonWithSpinner
+                style={{
+                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                  color: 'white',
+                  padding: '4px 12px',
+                  marginBottom: '4px',
+                  borderRadius: '16px',
+                  left: '8px',
+                  fontSize: '0.65rem',
+                  fontWeight: 500,
+                  boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)',
+                  textTransform: 'none',
+                }}
+                variant="contained"
+                className={classes.acceptButton}
+                size="small"
+                loading={loading}
+                onClick={e => handleCloseTicket(ticket.id)}
+              >
+                {i18n.t("ticketsList.buttons.closed")}
+              </ButtonWithSpinner>
+            </>
+          )}
 
-  {ticket.status !== "closed" && ticket.status !== "pending" && ticket.status !== "attending" && (
-    <>
-      <ButtonWithSpinner
-        style={{
-          backgroundColor: 'blue',
-          color: 'white',
-          padding: '0px',
-          bottom: '17px',
-          borderRadius: '0px',
-          left: '8px',
-          fontSize: '0.6rem'
-        }}
-        variant="contained"
-        className={classes.acceptButton}
-        size="small"
-        loading={loading}
-        onClick={e => handleOpenTransferModal()}
-      >
-        {i18n.t("ticketsList.buttons.transfer")}
-      </ButtonWithSpinner>
+          {ticket.status !== "closed" && ticket.status !== "pending" && ticket.status !== "attending" && (
+            <>
+              <ButtonWithSpinner
+                style={{
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: 'white',
+                  padding: '4px 12px',
+                  marginBottom: '4px',
+                  borderRadius: '16px',
+                  left: '8px',
+                  fontSize: '0.65rem',
+                  fontWeight: 500,
+                  boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)',
+                  textTransform: 'none',
+                }}
+                variant="contained"
+                className={classes.acceptButton}
+                size="small"
+                loading={loading}
+                onClick={e => handleOpenTransferModal()}
+              >
+                {i18n.t("ticketsList.buttons.transfer")}
+              </ButtonWithSpinner>
 
-      <ButtonWithSpinner
-        style={{
-          backgroundColor: 'red',
-          color: 'white',
-          padding: '0px',
-          bottom: '0px',
-          borderRadius: '0px',
-          left: '8px',
-          fontSize: '0.6rem'
-        }}
-        variant="contained"
-        className={classes.acceptButton}
-        size="small"
-        loading={loading}
-        onClick={e => handleCloseTicket(ticket.id)}
-      >
-        {i18n.t("ticketsList.buttons.closed")}
-      </ButtonWithSpinner>
-    </>
-  )}
+              <ButtonWithSpinner
+                style={{
+                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                  color: 'white',
+                  padding: '4px 12px',
+                  marginBottom: '4px',
+                  borderRadius: '16px',
+                  left: '8px',
+                  fontSize: '0.65rem',
+                  fontWeight: 500,
+                  boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)',
+                  textTransform: 'none',
+                }}
+                variant="contained"
+                className={classes.acceptButton}
+                size="small"
+                loading={loading}
+                onClick={e => handleCloseTicket(ticket.id)}
+              >
+                {i18n.t("ticketsList.buttons.closed")}
+              </ButtonWithSpinner>
+            </>
+          )}
 
-  {ticket.status === "closed" && (
-    <ButtonWithSpinner
-      style={{
-        backgroundColor: 'red',
-        color: 'white',
-        padding: '0px',
-        bottom: '0px',
-        borderRadius: '0px',
-        left: '8px',
-        fontSize: '0.6rem'
-      }}
-      variant="contained"
-      className={classes.acceptButton}
-      size="small"
-      loading={loading}
-      onClick={e => handleReopenTicket(ticket.id)}
-    >
-      {i18n.t("ticketsList.buttons.reopen")}
-    </ButtonWithSpinner>
-  )}
-</span>
+          {ticket.status === "closed" && (
+            <ButtonWithSpinner
+              style={{
+                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                color: 'white',
+                padding: '4px 12px',
+                marginBottom: '4px',
+                borderRadius: '16px',
+                left: '8px',
+                fontSize: '0.65rem',
+                fontWeight: 500,
+                boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)',
+                textTransform: 'none',
+              }}
+              variant="contained"
+              className={classes.acceptButton}
+              size="small"
+              loading={loading}
+              onClick={e => handleReopenTicket(ticket.id)}
+            >
+              {i18n.t("ticketsList.buttons.reopen")}
+            </ButtonWithSpinner>
+          )}
+        </span>
 
-      
+
       </ListItem>
 
       <Divider variant="inset" component="li" />

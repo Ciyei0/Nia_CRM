@@ -47,13 +47,13 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     minWidth: 300,
     minHeight: 200,
-    background: theme.mode === 'light'
+    background: theme.palette.type === 'light'
       ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
       : 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
   },
 
   messagesList: {
-    backgroundImage: theme.mode === 'light'
+    backgroundImage: theme.palette.type === 'light'
       ? `linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)), url(${whatsBackground})`
       : `linear-gradient(rgba(26,26,46,0.95), rgba(22,33,62,0.95)), url(${whatsBackgroundDark})`,
     backgroundSize: 'cover',
@@ -102,10 +102,10 @@ const useStyles = makeStyles((theme) => ({
       right: 0,
     },
     whiteSpace: "pre-wrap",
-    background: theme.mode === 'light'
+    background: theme.palette.type === 'light'
       ? "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)"
       : "linear-gradient(135deg, #2d3748 0%, #1a202c 100%)",
-    color: theme.mode === 'light' ? "#2d3748" : "#e2e8f0",
+    color: theme.palette.type === 'light' ? "#2d3748" : "#e2e8f0",
     alignSelf: "flex-start",
     borderRadius: "18px",
     borderTopLeftRadius: "4px",
@@ -113,16 +113,16 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: 14,
     paddingTop: 10,
     paddingBottom: 6,
-    boxShadow: theme.mode === 'light'
+    boxShadow: theme.palette.type === 'light'
       ? "0 4px 15px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05)"
       : "0 4px 15px rgba(0, 0, 0, 0.3)",
-    border: theme.mode === 'light' ? "1px solid rgba(0,0,0,0.04)" : "1px solid rgba(255,255,255,0.05)",
+    border: theme.palette.type === 'light' ? "1px solid rgba(0,0,0,0.04)" : "1px solid rgba(255,255,255,0.05)",
   },
 
   quotedContainerLeft: {
     margin: "4px -10px 10px -10px",
     overflow: "hidden",
-    background: theme.mode === 'light'
+    background: theme.palette.type === 'light'
       ? "linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%)"
       : "linear-gradient(135deg, #374151 0%, #1f2937 100%)",
     borderRadius: "12px",
@@ -209,7 +209,7 @@ const useStyles = makeStyles((theme) => ({
   messageActionsButton: {
     display: "none",
     position: "relative",
-    color: theme.mode === 'light' ? "#6b7280" : "#9ca3af",
+    color: theme.palette.type === 'light' ? "#6b7280" : "#9ca3af",
     zIndex: 1,
     backgroundColor: "transparent",
     opacity: "90%",
@@ -246,7 +246,7 @@ const useStyles = makeStyles((theme) => ({
 
   textContentItemDeleted: {
     fontStyle: "italic",
-    color: theme.mode === 'light' ? "rgba(0, 0, 0, 0.4)" : "rgba(255, 255, 255, 0.4)",
+    color: theme.palette.type === 'light' ? "rgba(0, 0, 0, 0.4)" : "rgba(255, 255, 255, 0.4)",
     overflowWrap: "break-word",
     padding: "4px 70px 8px 4px",
     fontSize: "0.95rem",
@@ -258,7 +258,7 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     top: 2,
     left: 8,
-    color: theme.mode === 'light' ? "#6b7280" : "#9ca3af",
+    color: theme.palette.type === 'light' ? "#6b7280" : "#9ca3af",
     display: "flex",
     alignItems: "center",
     gap: 4,
@@ -280,7 +280,7 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     bottom: 4,
     right: 8,
-    color: theme.mode === 'light' ? "#9ca3af" : "rgba(255, 255, 255, 0.6)",
+    color: theme.palette.type === 'light' ? "#9ca3af" : "rgba(255, 255, 255, 0.6)",
     fontWeight: 500,
   },
 
@@ -291,7 +291,7 @@ const useStyles = makeStyles((theme) => ({
     width: "auto",
     minWidth: "100px",
     padding: "6px 16px",
-    background: theme.mode === 'light'
+    background: theme.palette.type === 'light'
       ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
       : "linear-gradient(135deg, #4c1d95 0%, #5b21b6 100%)",
     margin: "16px 0",

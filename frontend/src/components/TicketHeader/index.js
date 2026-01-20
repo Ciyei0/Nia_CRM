@@ -7,7 +7,7 @@ import TicketHeaderSkeleton from "../TicketHeaderSkeleton";
 const useStyles = makeStyles(theme => ({
 	ticketHeader: {
 		display: "flex",
-		background: theme.mode === 'light'
+		background: theme.palette.type === 'light'
 			? "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)"
 			: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)",
 		flex: "none",

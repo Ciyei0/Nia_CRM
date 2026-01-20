@@ -33,7 +33,7 @@ const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
 const useStyles = makeStyles(theme => ({
 	mainWrapper: {
-		background: theme.mode === 'light'
+		background: theme.palette.type === 'light'
 			? "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)"
 			: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)",
 		display: "flex",
@@ -55,16 +55,16 @@ const useStyles = makeStyles(theme => ({
 	messageInputWrapper: {
 		padding: "8px 16px",
 		marginRight: 0,
-		background: theme.mode === 'light'
+		background: theme.palette.type === 'light'
 			? "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)"
 			: "linear-gradient(135deg, #2d3748 0%, #1a202c 100%)",
 		display: "flex",
 		borderRadius: 25,
 		flex: 1,
-		boxShadow: theme.mode === 'light'
+		boxShadow: theme.palette.type === 'light'
 			? "0 2px 12px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255,255,255,0.8)"
 			: "0 2px 12px rgba(0, 0, 0, 0.3)",
-		border: theme.mode === 'light'
+		border: theme.palette.type === 'light'
 			? "1px solid rgba(102, 126, 234, 0.15)"
 			: "1px solid rgba(255,255,255,0.08)",
 		transition: "all 0.3s ease",
@@ -79,9 +79,9 @@ const useStyles = makeStyles(theme => ({
 		flex: 1,
 		border: "none",
 		fontSize: "0.95rem",
-		color: theme.mode === 'light' ? "#2d3748" : "#e2e8f0",
+		color: theme.palette.type === 'light' ? "#2d3748" : "#e2e8f0",
 		"&::placeholder": {
-			color: theme.mode === 'light' ? "#9ca3af" : "#6b7280",
+			color: theme.palette.type === 'light' ? "#9ca3af" : "#6b7280",
 		},
 	},
 
@@ -103,7 +103,7 @@ const useStyles = makeStyles(theme => ({
 		position: "relative",
 		justifyContent: "space-between",
 		alignItems: "center",
-		background: theme.mode === 'light'
+		background: theme.palette.type === 'light'
 			? "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)"
 			: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)",
 		borderTop: "none",
@@ -174,7 +174,7 @@ const useStyles = makeStyles(theme => ({
 		flex: 1,
 		marginRight: 8,
 		overflowY: "hidden",
-		background: theme.mode === 'light'
+		background: theme.palette.type === 'light'
 			? "linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)"
 			: "linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%)",
 		borderRadius: "12px",
@@ -190,7 +190,7 @@ const useStyles = makeStyles(theme => ({
 		whiteSpace: "pre-wrap",
 		overflow: "hidden",
 		fontSize: "0.9rem",
-		color: theme.mode === 'light' ? "#4b5563" : "#d1d5db",
+		color: theme.palette.type === 'light' ? "#4b5563" : "#d1d5db",
 	},
 
 	replyginContactMsgSideColor: {
