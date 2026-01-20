@@ -27,12 +27,6 @@ app.set("queues", {
 const bodyparser = require('body-parser');
 app.use(bodyParser.json({ limit: '10mb' }));
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log(`[REQUEST] ${req.method} ${req.path}`);
-  next();
-});
-
-
 app.use(
   cors({
     credentials: true,

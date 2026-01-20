@@ -61,7 +61,6 @@ const CreateMessageService = async ({
   }
 
   const io = getIO();
-  console.log(`CreateMessageService: Emitting appMessage for ticket ${message.ticketId} (Action: create)`); // Using console.log to ensure it hits stdout
   io.to(message.ticketId.toString())
     .to(`company-${companyId}-${message.ticket.status}`)
     .to(`company-${companyId}-notification`)

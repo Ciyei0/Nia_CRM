@@ -42,7 +42,6 @@ export const receive = async (req: Request, res: Response): Promise<Response> =>
     try {
         const body = req.body;
 
-        console.log(`[WEBHOOK] Received body: ${JSON.stringify(body)}`);
         logger.info(`WhatsApp Webhook received: ${JSON.stringify(body)}`);
 
         // Check if this is a WhatsApp message
