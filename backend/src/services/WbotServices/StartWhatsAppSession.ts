@@ -10,6 +10,8 @@ export const StartWhatsAppSession = async (
   whatsapp: Whatsapp,
   companyId: number
 ): Promise<void> => {
+  if (whatsapp.channel === "whatsapp_cloud") return;
+
   await whatsapp.update({ status: "OPENING" });
 
   const io = getIO();
