@@ -68,8 +68,9 @@ const ExchangeFacebookTokenService = async (
         // Try to find WhatsApp Business Account
         if (businessResponse.data.data && businessResponse.data.data.length > 0) {
             const businessId = businessResponse.data.data[0].id;
+            console.log(`Found Business ID: ${businessId}`);
 
-            // Get WhatsApp Business Accounts for this business
+            // 1. Try "Owned" WABAs
             const wabaUrl = `https://graph.facebook.com/v20.0/${businessId}/owned_whatsapp_business_accounts`;
             try {
                 const wabaResponse = await axios.get(wabaUrl, {
@@ -78,10 +79,25 @@ const ExchangeFacebookTokenService = async (
 
                 if (wabaResponse.data.data && wabaResponse.data.data.length > 0) {
                     whatsappAccountId = wabaResponse.data.data[0].id;
+                    console.log(`Found Owned WABA ID: ${whatsappAccountId}`);
+                } else {
+                    console.log("No owned WABAs found. Checking client WABAs...");
+                    // 2. Fallback to "Client" WABAs (Shared)
+                    const clientWabaUrl = `https://graph.facebook.com/v20.0/${businessId}/client_whatsapp_business_accounts`;
+                    const clientWabaResponse = await axios.get(clientWabaUrl, {
+                        params: { access_token: longLivedToken }
+                    });
+
+                    if (clientWabaResponse.data.data && clientWabaResponse.data.data.length > 0) {
+                        whatsappAccountId = clientWabaResponse.data.data[0].id;
+                        console.log(`Found Client WABA ID: ${whatsappAccountId}`);
+                    }
                 }
             } catch (wabaError) {
-                console.log("Could not fetch WhatsApp Business Account, continuing without it");
+                console.log("Error fetching WhatsApp Business Account:", wabaError);
             }
+        } else {
+            console.log("No businesses found for this user.");
         }
 
         return {
