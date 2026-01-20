@@ -4,6 +4,8 @@ import AppError from "../../errors/AppError";
 import GetTicketWbot from "../../helpers/GetTicketWbot";
 import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
+import Whatsapp from "../../models/Whatsapp";
+import SendWhatsAppCloudMessage from "./SendWhatsAppCloudMessage";
 
 import formatBody from "../../helpers/Mustache";
 import { map_msg } from "../../utils/global";
@@ -12,7 +14,7 @@ interface Request {
   body: string;
   ticket: Ticket;
   quotedMsg?: Message;
-  isForwarded?: boolean;  
+  isForwarded?: boolean;
 }
 
 const SendWhatsAppMessage = async ({
@@ -22,6 +24,16 @@ const SendWhatsAppMessage = async ({
   isForwarded = false
 }: Request): Promise<WAMessage> => {
   let options = {};
+
+  if (!ticket.whatsapp && ticket.whatsappId) {
+    ticket.whatsapp = await Whatsapp.findByPk(ticket.whatsappId);
+  }
+
+  if (ticket.whatsapp && ticket.whatsapp.channel === "whatsapp_cloud") {
+    // @ts-ignore
+    return SendWhatsAppCloudMessage({ body, ticket, quotedMsg });
+  }
+
   const wbot = await GetTicketWbot(ticket);
 
 
