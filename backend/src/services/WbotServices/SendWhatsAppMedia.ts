@@ -122,13 +122,13 @@ const SendWhatsAppMedia = async ({
   isForwarded = false
 }: Request): Promise<WAMessage> => {
   try {
-    const wbot = await GetTicketWbot(ticket);
-
     const whatsapp = await Ticket.findByPk(ticket.id, { include: ["whatsapp"] }).then(t => t?.whatsapp);
     if (whatsapp?.channel === "whatsapp_cloud") {
       const SendWhatsAppCloudMedia = require("./SendWhatsAppCloudMedia").default;
       return await SendWhatsAppCloudMedia({ media, ticket, body });
     }
+
+    const wbot = await GetTicketWbot(ticket);
 
     const pathMedia = media.path;
     const typeMessage = media.mimetype.split("/")[0];
