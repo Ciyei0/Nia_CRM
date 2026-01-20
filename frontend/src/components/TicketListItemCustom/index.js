@@ -43,15 +43,14 @@ const useStyles = makeStyles((theme) => ({
     cursor: "unset",
   },
   queueTag: {
-    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    color: "#fff",
+    backgroundColor: "#e8f4fd",
+    color: "#1565c0",
     marginRight: 4,
     padding: "2px 8px",
     fontWeight: 500,
-    borderRadius: 12,
+    borderRadius: 4,
     fontSize: "0.7em",
     whiteSpace: "nowrap",
-    boxShadow: "0 2px 4px rgba(102, 126, 234, 0.2)",
   },
   noTicketsDiv: {
     display: "flex",
@@ -77,15 +76,14 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: "1.4",
   },
   connectionTag: {
-    background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-    color: "#fff",
+    backgroundColor: "#e8f5e9",
+    color: "#2e7d32",
     marginRight: 4,
     padding: "2px 8px",
     fontWeight: 500,
-    borderRadius: 12,
+    borderRadius: 4,
     fontSize: "0.7em",
     whiteSpace: "nowrap",
-    boxShadow: "0 2px 4px rgba(16, 185, 129, 0.2)",
   },
   noTicketsTitle: {
     textAlign: "center",
@@ -603,16 +601,16 @@ const TicketListItemCustom = ({ ticket }) => {
             <>
               <ButtonWithSpinner
                 style={{
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  backgroundColor: '#00a884',
                   color: 'white',
-                  padding: '4px 12px',
-                  marginBottom: '4px',
-                  borderRadius: '16px',
+                  padding: '3px 10px',
+                  marginBottom: '2px',
+                  borderRadius: '4px',
                   left: '8px',
                   fontSize: '0.65rem',
                   fontWeight: 500,
-                  boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)',
                   textTransform: 'none',
+                  boxShadow: 'none',
                 }}
                 variant="contained"
                 className={classes.acceptButton}
@@ -625,16 +623,16 @@ const TicketListItemCustom = ({ ticket }) => {
 
               <ButtonWithSpinner
                 style={{
-                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                  backgroundColor: '#ea4335',
                   color: 'white',
-                  padding: '4px 12px',
-                  marginBottom: '4px',
-                  borderRadius: '16px',
+                  padding: '3px 10px',
+                  marginBottom: '2px',
+                  borderRadius: '4px',
                   left: '8px',
                   fontSize: '0.65rem',
                   fontWeight: 500,
-                  boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)',
                   textTransform: 'none',
+                  boxShadow: 'none',
                 }}
                 variant="contained"
                 className={classes.acceptButton}
@@ -651,16 +649,16 @@ const TicketListItemCustom = ({ ticket }) => {
             <>
               <ButtonWithSpinner
                 style={{
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  backgroundColor: '#00a884',
                   color: 'white',
-                  padding: '4px 12px',
-                  marginBottom: '4px',
-                  borderRadius: '16px',
+                  padding: '3px 10px',
+                  marginBottom: '2px',
+                  borderRadius: '4px',
                   left: '8px',
                   fontSize: '0.65rem',
                   fontWeight: 500,
-                  boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)',
                   textTransform: 'none',
+                  boxShadow: 'none',
                 }}
                 variant="contained"
                 className={classes.acceptButton}
@@ -673,16 +671,16 @@ const TicketListItemCustom = ({ ticket }) => {
 
               <ButtonWithSpinner
                 style={{
-                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                  backgroundColor: '#ea4335',
                   color: 'white',
-                  padding: '4px 12px',
-                  marginBottom: '4px',
-                  borderRadius: '16px',
+                  padding: '3px 10px',
+                  marginBottom: '2px',
+                  borderRadius: '4px',
                   left: '8px',
                   fontSize: '0.65rem',
                   fontWeight: 500,
-                  boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)',
                   textTransform: 'none',
+                  boxShadow: 'none',
                 }}
                 variant="contained"
                 className={classes.acceptButton}
@@ -699,16 +697,16 @@ const TicketListItemCustom = ({ ticket }) => {
             <>
               <ButtonWithSpinner
                 style={{
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  backgroundColor: '#1565c0',
                   color: 'white',
-                  padding: '4px 12px',
-                  marginBottom: '4px',
-                  borderRadius: '16px',
+                  padding: '3px 10px',
+                  marginBottom: '2px',
+                  borderRadius: '4px',
                   left: '8px',
                   fontSize: '0.65rem',
                   fontWeight: 500,
-                  boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)',
                   textTransform: 'none',
+                  boxShadow: 'none',
                 }}
                 variant="contained"
                 className={classes.acceptButton}
@@ -721,16 +719,16 @@ const TicketListItemCustom = ({ ticket }) => {
 
               <ButtonWithSpinner
                 style={{
-                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                  backgroundColor: '#ea4335',
                   color: 'white',
-                  padding: '4px 12px',
-                  marginBottom: '4px',
-                  borderRadius: '16px',
+                  padding: '3px 10px',
+                  marginBottom: '2px',
+                  borderRadius: '4px',
                   left: '8px',
                   fontSize: '0.65rem',
                   fontWeight: 500,
-                  boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)',
                   textTransform: 'none',
+                  boxShadow: 'none',
                 }}
                 variant="contained"
                 className={classes.acceptButton}
@@ -746,16 +744,16 @@ const TicketListItemCustom = ({ ticket }) => {
           {ticket.status === "closed" && (
             <ButtonWithSpinner
               style={{
-                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                backgroundColor: '#fb8c00',
                 color: 'white',
-                padding: '4px 12px',
-                marginBottom: '4px',
-                borderRadius: '16px',
+                padding: '3px 10px',
+                marginBottom: '2px',
+                borderRadius: '4px',
                 left: '8px',
                 fontSize: '0.65rem',
                 fontWeight: 500,
-                boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)',
                 textTransform: 'none',
+                boxShadow: 'none',
               }}
               variant="contained"
               className={classes.acceptButton}
