@@ -53,6 +53,7 @@ export const receive = async (req: Request, res: Response): Promise<Response> =>
         if (body.entry && Array.isArray(body.entry)) {
             for (const entry of body.entry) {
                 const whatsappAccountId = entry.id;
+                logger.info(`Webhook Analysis: Received WABA ID: ${whatsappAccountId}`);
 
                 // Find the WhatsApp connection by account ID
                 const whatsapp = await Whatsapp.findOne({
@@ -63,8 +64,10 @@ export const receive = async (req: Request, res: Response): Promise<Response> =>
                 });
 
                 if (!whatsapp) {
-                    logger.warn(`No WhatsApp Cloud connection found for account ID: ${whatsappAccountId}`);
+                    logger.error(`CRITICAL: No WhatsApp Cloud connection found for account ID: ${whatsappAccountId} in DB.`);
                     continue;
+                } else {
+                    logger.info(`Webhook Analysis: Connection found! ID: ${whatsapp.id}, Name: ${whatsapp.name}`);
                 }
 
                 // Process changes (messages, status updates, etc.)
