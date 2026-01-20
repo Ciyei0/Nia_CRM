@@ -100,9 +100,9 @@ const SendWhatsAppCloudMessage = async ({
             quotedMsgId: quotedMsg ? quotedMsg.id : undefined
         };
 
-        await CreateMessageService({ messageData, companyId: ticket.companyId });
-
         await ticket.update({ lastMessage: textBody });
+
+        await CreateMessageService({ messageData, companyId: ticket.companyId });
 
         return response.data;
     } catch (error: any) {
