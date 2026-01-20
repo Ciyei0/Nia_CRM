@@ -238,7 +238,11 @@ async function processIncomingMessage(
         };
 
 
+
+        logger.info(`WebhookController: Calling CreateMessageService for message ${messageId}`);
         await CreateMessageService({ messageData, companyId: whatsapp.companyId });
+        logger.info(`WebhookController: CreateMessageService finished for message ${messageId}`);
+
 
         // Update ticket with last message
         await ticket.update({

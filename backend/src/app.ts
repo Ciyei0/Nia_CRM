@@ -14,6 +14,7 @@ import { messageQueue, sendScheduledMessages } from "./queues";
 import routes from "./routes";
 import { logger } from "./utils/logger";
 
+
 Sentry.init({ dsn: process.env.SENTRY_DSN });
 
 const app = express();
