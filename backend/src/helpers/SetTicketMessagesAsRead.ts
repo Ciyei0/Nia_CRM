@@ -5,47 +5,63 @@ import Message from "../models/Message";
 import Ticket from "../models/Ticket";
 import { logger } from "../utils/logger";
 import GetTicketWbot from "./GetTicketWbot";
+import Whatsapp from "../models/Whatsapp";
 
 const SetTicketMessagesAsRead = async (ticket: Ticket): Promise<void> => {
   await ticket.update({ unreadMessages: 0 });
   // await cacheLayer.set(`contacts:${ticket.contactId}:unreads`, "0");
 
   try {
-    const wbot = await GetTicketWbot(ticket);
-
-    const getJsonMessage = await Message.findAll({
-      where: {
-        ticketId: ticket.id,
-        fromMe: false,
-        read: false
-      },
-      order: [["createdAt", "DESC"]]
-    });
-
-    if (getJsonMessage.length > 0) {
-      const lastMessages: proto.IWebMessageInfo = JSON.parse(
-        JSON.stringify(getJsonMessage[0].dataJson)
-      );
-
-      if (lastMessages.key && lastMessages.key.fromMe === false) {
-        await (wbot as WASocket).chatModify(
-          { markRead: true, lastMessages: [lastMessages] },
-          `${ticket.contact.number}@${
-            ticket.isGroup ? "g.us" : "s.whatsapp.net"
-          }`
-        );
-      }
+    if (!ticket.whatsapp && ticket.whatsappId) {
+      ticket.whatsapp = await Whatsapp.findByPk(ticket.whatsappId);
     }
 
-    await Message.update(
-      { read: true },
-      {
+    if (ticket.whatsapp?.channel === "whatsapp_cloud") {
+      await Message.update(
+        { read: true },
+        {
+          where: {
+            ticketId: ticket.id,
+            read: false
+          }
+        }
+      );
+    } else {
+      const wbot = await GetTicketWbot(ticket);
+
+      const getJsonMessage = await Message.findAll({
         where: {
           ticketId: ticket.id,
+          fromMe: false,
           read: false
+        },
+        order: [["createdAt", "DESC"]]
+      });
+
+      if (getJsonMessage.length > 0) {
+        const lastMessages: proto.IWebMessageInfo = JSON.parse(
+          JSON.stringify(getJsonMessage[0].dataJson)
+        );
+
+        if (lastMessages.key && lastMessages.key.fromMe === false) {
+          await (wbot as WASocket).chatModify(
+            { markRead: true, lastMessages: [lastMessages] },
+            `${ticket.contact.number}@${ticket.isGroup ? "g.us" : "s.whatsapp.net"
+            }`
+          );
         }
       }
-    );
+
+      await Message.update(
+        { read: true },
+        {
+          where: {
+            ticketId: ticket.id,
+            read: false
+          }
+        }
+      );
+    }
   } catch (err) {
     logger.warn(
       `Could not mark messages as read. Maybe whatsapp session disconnected? Err: ${err}`
