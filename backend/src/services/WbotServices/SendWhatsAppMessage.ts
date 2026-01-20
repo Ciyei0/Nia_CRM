@@ -25,14 +25,9 @@ const SendWhatsAppMessage = async ({
 }: Request): Promise<WAMessage> => {
   let options = {};
 
-  console.log("SendWhatsAppMessage Debug: ticket.id", ticket.id);
-  console.log("SendWhatsAppMessage Debug: ticket.whatsappId", ticket.whatsappId);
-
-  if (!ticket.whatsapp && ticket.whatsappId) {
+  if ((!ticket.whatsapp || !ticket.whatsapp.channel) && ticket.whatsappId) {
     ticket.whatsapp = await Whatsapp.findByPk(ticket.whatsappId);
   }
-
-  console.log("SendWhatsAppMessage Debug: ticket.whatsapp?.channel", ticket.whatsapp?.channel);
 
   if (ticket.whatsapp && ticket.whatsapp.channel === "whatsapp_cloud") {
     // @ts-ignore
