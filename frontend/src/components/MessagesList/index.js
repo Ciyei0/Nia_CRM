@@ -47,16 +47,12 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     minWidth: 300,
     minHeight: 200,
-    background: theme.palette.type === 'light'
-      ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-      : 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
   },
 
   messagesList: {
-    backgroundImage: theme.palette.type === 'light'
-      ? `linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)), url(${whatsBackground})`
-      : `linear-gradient(rgba(26,26,46,0.95), rgba(22,33,62,0.95)), url(${whatsBackgroundDark})`,
-    backgroundSize: 'cover',
+    backgroundImage: `linear-gradient(rgba(255,255,255,0.95), rgba(255,255,255,0.95)), url(${whatsBackground})`,
+    backgroundSize: "cover",
     display: "flex",
     flexDirection: "column",
     flexGrow: 1,
@@ -102,10 +98,8 @@ const useStyles = makeStyles((theme) => ({
       right: 0,
     },
     whiteSpace: "pre-wrap",
-    background: theme.palette.type === 'light'
-      ? "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)"
-      : "linear-gradient(135deg, #2d3748 0%, #1a202c 100%)",
-    color: theme.palette.type === 'light' ? "#2d3748" : "#e2e8f0",
+    background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
+    color: "#2d3748",
     alignSelf: "flex-start",
     borderRadius: "18px",
     borderTopLeftRadius: "4px",
@@ -113,10 +107,8 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: 14,
     paddingTop: 10,
     paddingBottom: 6,
-    boxShadow: theme.palette.type === 'light'
-      ? "0 4px 15px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05)"
-      : "0 4px 15px rgba(0, 0, 0, 0.3)",
-    border: theme.palette.type === 'light' ? "1px solid rgba(0,0,0,0.04)" : "1px solid rgba(255,255,255,0.05)",
+    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05)",
+    border: "1px solid rgba(0,0,0,0.04)",
   },
 
   quotedContainerLeft: {
