@@ -132,14 +132,8 @@ const useStyles = makeStyles((theme) => ({
   },
 
   acceptButton: {
-    position: "absolute",
-    right: "108px",
-  },
-
-
-  acceptButton: {
-    position: "absolute",
-    left: "50%",
+    // position: "absolute",
+    // right: "108px",
   },
 
 
@@ -158,12 +152,10 @@ const useStyles = makeStyles((theme) => ({
   },
   secondaryContentSecond: {
     display: 'flex',
-    // marginTop: 5,
-    //marginLeft: "5px",
-    alignItems: "flex-start",
-    flexWrap: "wrap",
+    alignItems: "center",
+    flexWrap: "nowrap",
     flexDirection: "row",
-    alignContent: "flex-start",
+    gap: 4,
   },
   ticketInfo1: {
     position: "relative",
@@ -537,10 +529,10 @@ const TicketListItemCustom = ({ ticket }) => {
                   </>
                 )}
 
-                <span style={{ marginTop: 4, }} className={classes.secondaryContentSecond} >
-                  {ticket?.whatsapp?.name ? <Badge className={classes.connectionTag}>{ticket?.whatsapp?.name?.toUpperCase()}</Badge> : <br></br>}
-                  {ticketUser ? <Badge style={{ backgroundColor: "#000000" }} className={classes.connectionTag}>{ticketUser}</Badge> : <br></br>}
-                  <Badge style={{ backgroundColor: ticket.queue?.color || "#7c7c7c" }} className={classes.connectionTag}>{ticket.queue?.name?.toUpperCase() || "SEM FILA"}</Badge>
+                <span style={{ marginTop: 4 }} className={classes.secondaryContentSecond} >
+                  {ticket?.whatsapp?.name && <Badge className={classes.connectionTag}>{ticket?.whatsapp?.name?.toUpperCase()}</Badge>}
+                  {ticketUser && <Badge className={classes.queueTag}>{ticketUser}</Badge>}
+                  <Badge className={classes.queueTag}>{ticket.queue?.name?.toUpperCase() || "SEM FILA"}</Badge>
                 </span>
 
                 {/* <span style={{ marginTop: 2, fontSize: 5 }} className={classes.secondaryContentSecond} >
@@ -604,9 +596,7 @@ const TicketListItemCustom = ({ ticket }) => {
                   backgroundColor: '#00a884',
                   color: 'white',
                   padding: '3px 10px',
-                  marginBottom: '2px',
                   borderRadius: '4px',
-                  left: '8px',
                   fontSize: '0.65rem',
                   fontWeight: 500,
                   textTransform: 'none',
@@ -626,9 +616,7 @@ const TicketListItemCustom = ({ ticket }) => {
                   backgroundColor: '#ea4335',
                   color: 'white',
                   padding: '3px 10px',
-                  marginBottom: '2px',
                   borderRadius: '4px',
-                  left: '8px',
                   fontSize: '0.65rem',
                   fontWeight: 500,
                   textTransform: 'none',
@@ -652,9 +640,7 @@ const TicketListItemCustom = ({ ticket }) => {
                   backgroundColor: '#00a884',
                   color: 'white',
                   padding: '3px 10px',
-                  marginBottom: '2px',
                   borderRadius: '4px',
-                  left: '8px',
                   fontSize: '0.65rem',
                   fontWeight: 500,
                   textTransform: 'none',
@@ -674,9 +660,7 @@ const TicketListItemCustom = ({ ticket }) => {
                   backgroundColor: '#ea4335',
                   color: 'white',
                   padding: '3px 10px',
-                  marginBottom: '2px',
                   borderRadius: '4px',
-                  left: '8px',
                   fontSize: '0.65rem',
                   fontWeight: 500,
                   textTransform: 'none',
@@ -700,9 +684,7 @@ const TicketListItemCustom = ({ ticket }) => {
                   backgroundColor: '#1565c0',
                   color: 'white',
                   padding: '3px 10px',
-                  marginBottom: '2px',
                   borderRadius: '4px',
-                  left: '8px',
                   fontSize: '0.65rem',
                   fontWeight: 500,
                   textTransform: 'none',
@@ -722,9 +704,7 @@ const TicketListItemCustom = ({ ticket }) => {
                   backgroundColor: '#ea4335',
                   color: 'white',
                   padding: '3px 10px',
-                  marginBottom: '2px',
                   borderRadius: '4px',
-                  left: '8px',
                   fontSize: '0.65rem',
                   fontWeight: 500,
                   textTransform: 'none',
@@ -747,9 +727,7 @@ const TicketListItemCustom = ({ ticket }) => {
                 backgroundColor: '#fb8c00',
                 color: 'white',
                 padding: '3px 10px',
-                marginBottom: '2px',
                 borderRadius: '4px',
-                left: '8px',
                 fontSize: '0.65rem',
                 fontWeight: 500,
                 textTransform: 'none',
