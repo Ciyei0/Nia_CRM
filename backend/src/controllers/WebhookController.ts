@@ -156,6 +156,7 @@ async function processIncomingMessage(
             undefined // queueId
         );
 
+
         // Extract message body based on type
         let body = "";
         let mediaUrl = null;
@@ -168,7 +169,7 @@ async function processIncomingMessage(
             case "image":
                 body = message.image?.caption || "[Imagen]";
                 mediaType = "image";
-                mediaUrl = message.image?.id; // Media ID to fetch later
+                mediaUrl = message.image?.id;
                 break;
             case "video":
                 body = message.video?.caption || "[Video]";
@@ -210,6 +211,19 @@ async function processIncomingMessage(
                 body = `[Mensaje tipo: ${messageType}]`;
         }
 
+        // If it's a media message, download the file
+        if (mediaUrl && mediaType) {
+            try {
+                const DownloadWhatsAppMedia = require("../services/WbotServices/DownloadWhatsAppMedia").default;
+                const fileName = await DownloadWhatsAppMedia({ mediaId: mediaUrl, whatsapp });
+                mediaUrl = fileName; // Update mediaUrl with the local filename
+            } catch (error) {
+                logger.error(`Failed to download media for message ${messageId}: ${error}`);
+                body += " (Error al descargar multimedia)";
+                mediaUrl = null; // Prevent saving invalid ID
+            }
+        }
+
         // Create message in database
         const messageData = {
             id: messageId,
@@ -222,6 +236,7 @@ async function processIncomingMessage(
             mediaUrl,
             companyId: whatsapp.companyId
         };
+
 
         await CreateMessageService({ messageData, companyId: whatsapp.companyId });
 

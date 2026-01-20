@@ -14,7 +14,7 @@ interface Request {
   media: Express.Multer.File;
   ticket: Ticket;
   body?: string;
-  isForwarded?: boolean;  
+  isForwarded?: boolean;
 }
 
 const publicFolder = path.resolve(__dirname, "..", "..", "..", "public");
@@ -123,6 +123,12 @@ const SendWhatsAppMedia = async ({
 }: Request): Promise<WAMessage> => {
   try {
     const wbot = await GetTicketWbot(ticket);
+
+    const whatsapp = await Ticket.findByPk(ticket.id, { include: ["whatsapp"] }).then(t => t?.whatsapp);
+    if (whatsapp?.channel === "whatsapp_cloud") {
+      const SendWhatsAppCloudMedia = require("./SendWhatsAppCloudMedia").default;
+      return await SendWhatsAppCloudMedia({ media, ticket, body });
+    }
 
     const pathMedia = media.path;
     const typeMessage = media.mimetype.split("/")[0];
