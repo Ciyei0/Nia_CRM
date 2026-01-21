@@ -130,7 +130,7 @@ export const send = async (req: Request, res: Response): Promise<Response> => {
 
     const companyId = whatsapp.companyId;
 
-    const CheckValidNumber = await CheckContactNumber(numberToTest, companyId);
+    const CheckValidNumber = await CheckContactNumber(numberToTest, companyId, whatsapp.id);
     const number = CheckValidNumber.jid.replace(/\D/g, "");
     const profilePicUrl = await GetProfilePicUrl(
       number,
@@ -184,7 +184,7 @@ export const send = async (req: Request, res: Response): Promise<Response> => {
         });
       }, 1000);
     }
-    
+
     SetTicketMessagesAsRead(ticket);
 
     return res.send({ mensagem: "Mensagem enviada" });
@@ -201,9 +201,9 @@ export const send = async (req: Request, res: Response): Promise<Response> => {
 
 export const addReaction = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const {messageId} = req.params;
-    const {type} = req.body; // O tipo de reação, por exemplo, 'like', 'heart', etc.
-    const {companyId, id} = req.user;
+    const { messageId } = req.params;
+    const { type } = req.body; // O tipo de reação, por exemplo, 'like', 'heart', etc.
+    const { companyId, id } = req.user;
 
     const message = await Message.findByPk(messageId);
 
@@ -212,7 +212,7 @@ export const addReaction = async (req: Request, res: Response): Promise<Response
     });
 
     if (!message) {
-      return res.status(404).send({message: "Mensagem não encontrada"});
+      return res.status(404).send({ message: "Mensagem não encontrada" });
     }
 
     // Envia a reação via WhatsApp
@@ -224,7 +224,7 @@ export const addReaction = async (req: Request, res: Response): Promise<Response
 
     // Atualiza a mensagem com a nova reação no banco de dados (opcional, dependendo da necessidade)
     const updatedMessage = await message.update({
-      reactions: [...message.reactions, {type: type, userId: id}]
+      reactions: [...message.reactions, { type: type, userId: id }]
     });
 
     const io = getIO();
@@ -241,9 +241,9 @@ export const addReaction = async (req: Request, res: Response): Promise<Response
   } catch (error) {
     console.error('Erro ao adicionar reação:', error);
     if (error instanceof AppError) {
-      return res.status(400).send({message: error.message});
+      return res.status(400).send({ message: error.message });
     }
-    return res.status(500).send({message: 'Erro ao adicionar reação', error: error.message});
+    return res.status(500).send({ message: 'Erro ao adicionar reação', error: error.message });
   }
 };
 
@@ -353,11 +353,11 @@ export const edit = async (req: Request, res: Response): Promise<Response> => {
   const { companyId } = req.user;
   const { body }: MessageData = req.body;
   console.log(body)
-  const { ticket , message } = await EditWhatsAppMessage({messageId, body});
+  const { ticket, message } = await EditWhatsAppMessage({ messageId, body });
 
   const io = getIO();
- io.emit(`company-${companyId}-appMessage`, {
-    action:"update",
+  io.emit(`company-${companyId}-appMessage`, {
+    action: "update",
     message,
     ticket: ticket,
     contact: ticket.contact,

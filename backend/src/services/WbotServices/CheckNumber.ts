@@ -1,5 +1,6 @@
 import GetDefaultWhatsApp from "../../helpers/GetDefaultWhatsApp";
 import { getWbot } from "../../libs/wbot";
+import Whatsapp from "../../models/Whatsapp";
 import { logger } from "../../utils/logger";
 
 interface IOnWhatsapp {
@@ -17,11 +18,28 @@ const checker = async (number: string, wbot: any) => {
 
 const CheckContactNumber = async (
   number: string,
-  companyId: number
+  companyId: number,
+  whatsappId?: number
 ): Promise<IOnWhatsapp> => {
-  const defaultWhatsapp = await GetDefaultWhatsApp(companyId);
+  let whatsapp: Whatsapp | null = null;
 
-  const wbot = getWbot(defaultWhatsapp.id);
+  if (whatsappId) {
+    whatsapp = await Whatsapp.findByPk(whatsappId);
+  }
+
+  if (!whatsapp) {
+    whatsapp = await GetDefaultWhatsApp(companyId);
+  }
+
+  if (whatsapp.channel === "whatsapp_cloud") {
+    // Cloud API does not support onWhatsApp check in the same way, assume valid or handle differently
+    return {
+      jid: `${number}@s.whatsapp.net`,
+      exists: true
+    };
+  }
+
+  const wbot = getWbot(whatsapp.id);
   const isNumberExit = await checker(number, wbot);
 
   if (!isNumberExit.exists) {
