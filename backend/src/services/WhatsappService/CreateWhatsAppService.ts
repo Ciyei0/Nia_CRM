@@ -32,7 +32,7 @@ interface Request {
   facebookUserId?: string;
   whatsappAccountId?: string;
   integrationId?: number;
-}}
+}
 
 interface Response {
   whatsapp: Whatsapp;

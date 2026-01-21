@@ -28,7 +28,6 @@ interface WhatsappData {
   expiresInactiveMessage?: string;
   integrationId?: number;
 }
-}
 
 interface Request {
   whatsappData: WhatsappData;
@@ -69,7 +68,6 @@ const UpdateWhatsAppService = async ({
     timeToTransfer,
     promptId,
     maxUseBotQueues,
-    timeUseBotQueues,
     timeUseBotQueues,
     expiresTicket,
     expiresInactiveMessage,
