@@ -31,7 +31,8 @@ interface Request {
   facebookAccessToken?: string;
   facebookUserId?: string;
   whatsappAccountId?: string;
-}
+  integrationId?: number;
+}}
 
 interface Response {
   whatsapp: Whatsapp;
@@ -62,7 +63,8 @@ const CreateWhatsAppService = async ({
   channel = "baileys",
   facebookAccessToken,
   facebookUserId,
-  whatsappAccountId
+  whatsappAccountId,
+  integrationId
 }: Request): Promise<Response> => {
   const company = await Company.findOne({
     where: {
@@ -177,7 +179,8 @@ const CreateWhatsAppService = async ({
       channel,
       facebookAccessToken,
       facebookUserId,
-      whatsappAccountId
+      whatsappAccountId,
+      integrationId
     },
     { include: ["queues"] }
   );
