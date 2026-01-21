@@ -86,8 +86,10 @@ const WhatsAppModal = ({ open, onClose, whatsAppId }) => {
   const [selectedQueueId, setSelectedQueueId] = useState(null)
   const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [prompts, setPrompts] = useState([]);
-  
-    useEffect(() => {
+  const [integrations, setIntegrations] = useState([]);
+  const [selectedIntegration, setSelectedIntegration] = useState(null);
+
+  useEffect(() => {
     const fetchSession = async () => {
       if (!whatsAppId) return;
 
@@ -97,7 +99,8 @@ const WhatsAppModal = ({ open, onClose, whatsAppId }) => {
 
         const whatsQueueIds = data.queues?.map((queue) => queue.id);
         setSelectedQueueIds(whatsQueueIds);
-		setSelectedQueueId(data.transferQueueId);
+        setSelectedQueueId(data.transferQueueId);
+        setSelectedIntegration(data.integrationId);
       } catch (err) {
         toastError(err);
       }
@@ -119,6 +122,17 @@ const WhatsAppModal = ({ open, onClose, whatsAppId }) => {
   useEffect(() => {
     (async () => {
       try {
+        const { data } = await api.get("/queueIntegration");
+        setIntegrations(data.queueIntegrations);
+      } catch (err) {
+        toastError(err);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
         const { data } = await api.get("/queue");
         setQueues(data);
       } catch (err) {
@@ -128,9 +142,10 @@ const WhatsAppModal = ({ open, onClose, whatsAppId }) => {
   }, []);
 
   const handleSaveWhatsApp = async (values) => {
-const whatsappData = {
+    const whatsappData = {
       ...values, queueIds: selectedQueueIds, transferQueueId: selectedQueueId,
-      promptId: selectedPrompt ? selectedPrompt : null
+      promptId: selectedPrompt ? selectedPrompt : null,
+      integrationId: selectedIntegration ? selectedIntegration : null
     };
     delete whatsappData["queues"];
     delete whatsappData["session"];
@@ -155,13 +170,16 @@ const whatsappData = {
 
   const handleChangePrompt = (e) => {
     setSelectedPrompt(e.target.value);
-    setSelectedQueueIds([]);
+  };
+
+  const handleChangeIntegration = (e) => {
+    setSelectedIntegration(e.target.value);
   };
 
   const handleClose = () => {
     onClose();
     setWhatsApp(initialState);
-	  setSelectedQueueId(null);
+    setSelectedQueueId(null);
     setSelectedQueueIds([]);
   };
 
@@ -352,37 +370,76 @@ const whatsappData = {
                     ))}
                   </Select>
                 </FormControl>
+                <FormControl
+                  margin="dense"
+                  variant="outlined"
+                  fullWidth
+                >
+                  <InputLabel>
+                    {i18n.t("queueModal.form.integrationId")}
+                  </InputLabel>
+                  <Select
+                    labelId="dialog-select-integration-label"
+                    id="dialog-select-integration"
+                    name="integrationId"
+                    value={selectedIntegration || ""}
+                    onChange={handleChangeIntegration}
+                    label={i18n.t("queueModal.form.integrationId")}
+                    fullWidth
+                    MenuProps={{
+                      anchorOrigin: {
+                        vertical: "bottom",
+                        horizontal: "left",
+                      },
+                      transformOrigin: {
+                        vertical: "top",
+                        horizontal: "left",
+                      },
+                      getContentAnchorEl: null,
+                    }}
+                  >
+                    <MenuItem value={null}>{"Ninguna"}</MenuItem>
+                    {integrations.map((integration) => (
+                      <MenuItem
+                        key={integration.id}
+                        value={integration.id}
+                      >
+                        {integration.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
                 <div>
                   <h3>{i18n.t("whatsappModal.form.queueRedirection")}</h3>
                   <p>{i18n.t("whatsappModal.form.queueRedirectionDesc")}</p>
-				<Grid container spacing={2}>
-                  <Grid item sm={6} >
-                    <Field
-                      fullWidth
-                      type="number"
-                      as={TextField}
-                      label='Transferir após x (minutos)'
-                      name="timeToTransfer"
-                      error={touched.timeToTransfer && Boolean(errors.timeToTransfer)}
-                      helperText={touched.timeToTransfer && errors.timeToTransfer}
-                      variant="outlined"
-                      margin="dense"
-                      className={classes.textField}
-                      InputLabelProps={{ shrink: values.timeToTransfer ? true : false }}
-                    />
+                  <Grid container spacing={2}>
+                    <Grid item sm={6} >
+                      <Field
+                        fullWidth
+                        type="number"
+                        as={TextField}
+                        label='Transferir após x (minutos)'
+                        name="timeToTransfer"
+                        error={touched.timeToTransfer && Boolean(errors.timeToTransfer)}
+                        helperText={touched.timeToTransfer && errors.timeToTransfer}
+                        variant="outlined"
+                        margin="dense"
+                        className={classes.textField}
+                        InputLabelProps={{ shrink: values.timeToTransfer ? true : false }}
+                      />
 
-                  </Grid>
+                    </Grid>
 
-                  <Grid item sm={6}>
-                    <QueueSelect
-                      selectedQueueIds={selectedQueueId}
-                      onChange={(selectedId) => {
-                        setSelectedQueueId(selectedId)
-                      }}
-                      multiple={false}
-                      title={'Fila de Transferência'}
-                    />
-                  </Grid>
+                    <Grid item sm={6}>
+                      <QueueSelect
+                        selectedQueueIds={selectedQueueId}
+                        onChange={(selectedId) => {
+                          setSelectedQueueId(selectedId)
+                        }}
+                        multiple={false}
+                        title={'Fila de Transferência'}
+                      />
+                    </Grid>
 
                   </Grid>
                   <Grid spacing={2} container>
