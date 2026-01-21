@@ -8,7 +8,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Autocomplete, {
-	createFilterOptions,
+  createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
@@ -19,7 +19,7 @@ import ContactModal from "../ContactModal";
 import toastError from "../../errors/toastError";
 import { makeStyles } from "@material-ui/core/styles";
 import { AuthContext } from "../../context/Auth/AuthContext";
-import {  WhatsApp } from "@material-ui/icons";
+import { WhatsApp } from "@material-ui/icons";
 import { Grid, ListItemText, MenuItem, Select } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import { toast } from "react-toastify";
@@ -55,9 +55,9 @@ const NewTicketModal = ({ modalOpen, onClose, initialContact }) => {
   const { user } = useContext(AuthContext);
   const { companyId, whatsappId } = user;
 
-  const [ openAlert, setOpenAlert ] = useState(false);
-	const [ userTicketOpen, setUserTicketOpen] = useState("");
-	const [ queueTicketOpen, setQueueTicketOpen] = useState("");
+  const [openAlert, setOpenAlert] = useState(false);
+  const [userTicketOpen, setUserTicketOpen] = useState("");
+  const [queueTicketOpen, setQueueTicketOpen] = useState("");
 
   useEffect(() => {
     if (initialContact?.id !== undefined) {
@@ -75,7 +75,7 @@ const NewTicketModal = ({ modalOpen, onClose, initialContact }) => {
           .then(({ data }) => setWhatsapps(data));
       };
 
-      if (whatsappId !== null && whatsappId!== undefined) {
+      if (whatsappId !== null && whatsappId !== undefined) {
         setSelectedWhatsapp(whatsappId)
       }
 
@@ -145,10 +145,10 @@ const NewTicketModal = ({ modalOpen, onClose, initialContact }) => {
   const handleSaveTicket = async contactId => {
     if (!contactId) return;
     if (selectedQueue === "" && user.profile !== 'admin') {
-      toast.error("Selecione uma fila");
+      toast.error("Seleccione un departamento");
       return;
     }
-    
+
     setLoading(true);
     try {
       const queueId = selectedQueue !== "" ? selectedQueue : null;
@@ -159,12 +159,12 @@ const NewTicketModal = ({ modalOpen, onClose, initialContact }) => {
         whatsappId,
         userId: user.id,
         status: "open",
-      });      
+      });
 
       onClose(ticket);
     } catch (err) {
-      
-      const ticket  = JSON.parse(err.response.data.error);
+
+      const ticket = JSON.parse(err.response.data.error);
 
       if (ticket.userId !== user?.id) {
         setOpenAlert(true);
@@ -177,7 +177,7 @@ const NewTicketModal = ({ modalOpen, onClose, initialContact }) => {
         setLoading(false);
         onClose(ticket);
       }
-    }  
+    }
     setLoading(false);
   };
 
@@ -191,7 +191,7 @@ const NewTicketModal = ({ modalOpen, onClose, initialContact }) => {
   };
 
   const handleCloseContactModal = () => {
-    setContactModalOpen(false);    
+    setContactModalOpen(false);
   };
 
   const handleAddNewContactTicket = contact => {
@@ -318,7 +318,7 @@ const NewTicketModal = ({ modalOpen, onClose, initialContact }) => {
                 }}
                 renderValue={() => {
                   if (selectedQueue === "") {
-                    return "Selecione uma fila"
+                    return "Seleccione un departamento"
                   }
                   const queue = user.queues.find(q => q.id === selectedQueue)
                   return queue.name
@@ -357,7 +357,7 @@ const NewTicketModal = ({ modalOpen, onClose, initialContact }) => {
                 }}
                 renderValue={() => {
                   if (selectedWhatsapp === "") {
-                    return "Selecione uma Conexão"
+                    return "Seleccione una Conexión"
                   }
                   const whatsapp = whatsapps.find(w => w.id === selectedWhatsapp)
                   return whatsapp.name

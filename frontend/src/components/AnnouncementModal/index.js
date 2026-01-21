@@ -248,8 +248,8 @@ const AnnouncementModal = ({ open, onClose, announcementId, reload }) => {
                         name="status"
                         error={touched.status && Boolean(errors.status)}
                       >
-                        <MenuItem value={true}>Ativo</MenuItem>
-                        <MenuItem value={false}>Inativo</MenuItem>
+                        <MenuItem value={true}>Activo</MenuItem>
+                        <MenuItem value={false}>Inactivo</MenuItem>
                       </Field>
                     </FormControl>
                   </Grid>

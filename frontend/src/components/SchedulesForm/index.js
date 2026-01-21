@@ -34,11 +34,11 @@ function SchedulesForm(props) {
   const classes = useStyles();
 
   const [schedules, setSchedules] = useState([
-    { weekday: "Segunda-feira", weekdayEn: "monday", startTime: "", endTime: "", },
-    { weekday: "Terça-feira", weekdayEn: "tuesday", startTime: "", endTime: "", },
-    { weekday: "Quarta-feira", weekdayEn: "wednesday", startTime: "", endTime: "", },
-    { weekday: "Quinta-feira", weekdayEn: "thursday", startTime: "", endTime: "", },
-    { weekday: "Sexta-feira", weekdayEn: "friday", startTime: "", endTime: "" },
+    { weekday: "Lunes", weekdayEn: "monday", startTime: "", endTime: "", },
+    { weekday: "Martes", weekdayEn: "tuesday", startTime: "", endTime: "", },
+    { weekday: "Miércoles", weekdayEn: "wednesday", startTime: "", endTime: "", },
+    { weekday: "Jueves", weekdayEn: "thursday", startTime: "", endTime: "", },
+    { weekday: "Viernes", weekdayEn: "friday", startTime: "", endTime: "" },
     { weekday: "Sábado", weekdayEn: "saturday", startTime: "", endTime: "" },
     { weekday: "Domingo", weekdayEn: "sunday", startTime: "", endTime: "" },
   ]);
@@ -73,48 +73,48 @@ function SchedulesForm(props) {
               <Grid spacing={4} container>
                 {values.schedules.map((item, index) => {
                   return (
-                      <Container>
-                          <FastField
-                            as={TextField}
-                            label="Dia da Semana"
-                            name={`schedules[${index}].weekday`}
-                            disabled
+                    <Container>
+                      <FastField
+                        as={TextField}
+                        label="Día de la Semana"
+                        name={`schedules[${index}].weekday`}
+                        disabled
+                        variant="outlined"
+                        style={{ marginRight: "3.2%", width: "30%" }}
+                        margin="dense"
+                      />
+                      <FastField
+                        name={`schedules[${index}].startTime`}
+                      >
+                        {({ field }) => (
+                          <NumberFormat
+                            label="Hora de Inicio"
+                            {...field}
                             variant="outlined"
-                            style={{ marginRight: "3.2%", width: "30%" }}
                             margin="dense"
+                            customInput={TextField}
+                            format="##:##"
+                            style={{ marginRight: "3.2%", width: "30%" }}
                           />
-                          <FastField
-                            name={`schedules[${index}].startTime`}
-                            >
-                            {({ field }) => (
-                              <NumberFormat
-                                label="Hora de Inicial"
-                                {...field}
-                                variant="outlined"
-                                margin="dense"
-                                customInput={TextField}
-                                format="##:##"
-                                style={{ marginRight: "3.2%", width: "30%" }}
-                              />
-                            )}
-                          </FastField>
-                          <FastField
-                            name={`schedules[${index}].endTime`}
-                            >
-                            {({ field }) => (
-                              <NumberFormat
-                                label="Hora de Final"
-                                {...field}
-                                variant="outlined"
-                                margin="dense"
-                                customInput={TextField}
-                                format="##:##"
-                                style={{ marginRight: "3.2%", width: "30%" }}
-                              />
-                            )}
-                          </FastField>
+                        )}
+                      </FastField>
+                      <FastField
+                        name={`schedules[${index}].endTime`}
+                      >
+                        {({ field }) => (
+                          <NumberFormat
+                            label="Hora Final"
+                            {...field}
+                            variant="outlined"
+                            margin="dense"
+                            customInput={TextField}
+                            format="##:##"
+                            style={{ marginRight: "3.2%", width: "30%" }}
+                          />
+                        )}
+                      </FastField>
 
-                      </Container>
+                    </Container>
 
                   );
                 })}

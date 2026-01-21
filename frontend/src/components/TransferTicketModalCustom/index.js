@@ -219,7 +219,7 @@ const TransferTicketModalCustom = ({ modalOpen, onClose, ticketid }) => {
             </Select>
           </FormControl>
           {/* CONEXAO */}
-          <Grid container spacing={2} style={{marginTop: '15px'}}>
+          <Grid container spacing={2} style={{ marginTop: '15px' }}>
             <Grid xs={12} item>
               <Select
                 required
@@ -243,7 +243,7 @@ const TransferTicketModalCustom = ({ modalOpen, onClose, ticketid }) => {
                 }}
                 renderValue={() => {
                   if (selectedWhatsapp === "") {
-                    return "Selecione uma Conexão"
+                    return "Seleccione una Conexión"
                   }
                   const whatsapp = whatsapps.find(w => w.id === selectedWhatsapp)
                   return whatsapp.name

@@ -70,8 +70,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const QuickeMessageSchema = Yup.object().shape({
-    shortcode: Yup.string().required("Obrigatório"),
-    //   message: Yup.string().required("Obrigatório"),
+    shortcode: Yup.string().required("Obligatorio"),
+    //   message: Yup.string().required("Obligatorio"),
 });
 
 const QuickMessageDialog = ({ open, onClose, quickemessageId, reload }) => {
@@ -115,7 +115,7 @@ const QuickMessageDialog = ({ open, onClose, quickemessageId, reload }) => {
     };
 
     const handleAttachmentFile = (e) => {
-      
+
         const file = head(e.target.files);
         if (file) {
             setAttachment(file);
@@ -247,27 +247,27 @@ const QuickMessageDialog = ({ open, onClose, quickemessageId, reload }) => {
                                             fullWidth
                                         />
                                     </Grid>
-									{(profile === "admin") && (
-									  <Grid xs={12} item>
-										<FormControl variant="outlined" margin="dense" fullWidth>
-										  <InputLabel id="geral-selection-label">
-											{i18n.t("quickMessages.dialog.geral")}
-										  </InputLabel>
-										  <Field
-											as={Select}
-											label={i18n.t("quickMessages.dialog.geral")}
-											placeholder={i18n.t("quickMessages.dialog.geral")}
-											labelId="geral-selection-label"
-											id="geral"
-											name="geral"
-											error={touched.geral && Boolean(errors.geral)}
-										  >
-											<MenuItem value={true}>Ativo</MenuItem>
-											<MenuItem value={false}>Inativo</MenuItem>
-										  </Field>
-										</FormControl>
-									  </Grid>
-									  )}
+                                    {(profile === "admin") && (
+                                        <Grid xs={12} item>
+                                            <FormControl variant="outlined" margin="dense" fullWidth>
+                                                <InputLabel id="geral-selection-label">
+                                                    {i18n.t("quickMessages.dialog.geral")}
+                                                </InputLabel>
+                                                <Field
+                                                    as={Select}
+                                                    label={i18n.t("quickMessages.dialog.geral")}
+                                                    placeholder={i18n.t("quickMessages.dialog.geral")}
+                                                    labelId="geral-selection-label"
+                                                    id="geral"
+                                                    name="geral"
+                                                    error={touched.geral && Boolean(errors.geral)}
+                                                >
+                                                    <MenuItem value={true}>Activo</MenuItem>
+                                                    <MenuItem value={false}>Inactivo</MenuItem>
+                                                </Field>
+                                            </FormControl>
+                                        </Grid>
+                                    )}
                                     <Grid xs={12} item>
                                         <Field
                                             as={TextField}

@@ -426,8 +426,8 @@ const messages = {
       transferTicketModal: {
         title: "Transferir Ticket",
         fieldLabel: "Escribe para buscar usuarios",
-        fieldQueueLabel: "Transferir a cola",
-        fieldQueuePlaceholder: "Seleccione una cola",
+        fieldQueueLabel: "Transferir a departamento",
+        fieldQueuePlaceholder: "Seleccione un departamento",
         noOptions: "No se encontró ningún usuario con ese nombre",
         buttons: {
           ok: "Transferir",
