@@ -163,9 +163,12 @@ const TicketActionButtonsCustom = ({ ticket, onDrawerOpen }) => {
 	const handleToggleBot = async () => {
 		setLoading(true);
 		try {
+			const newIsBot = !ticket.isBot;
 			await api.put(`/tickets/${ticket.id}`, {
-				isBot: !ticket.isBot
+				isBot: newIsBot
 			});
+			// Update the ticket in context to reflect the change
+			setCurrentTicket({ ...ticket, isBot: newIsBot, code: "#open" });
 			setLoading(false);
 		} catch (err) {
 			setLoading(false);
