@@ -8,6 +8,7 @@ import CreateOrUpdateContactService from "../services/ContactServices/CreateOrUp
 import FindOrCreateTicketService from "../services/TicketServices/FindOrCreateTicketService";
 import CreateMessageService from "../services/MessageServices/CreateMessageService";
 import ShowQueueIntegrationService from "../services/QueueIntegrationServices/ShowQueueIntegrationService";
+import Queue from "../models/Queue";
 import { logger } from "../utils/logger";
 import request from "request";
 
@@ -264,11 +265,27 @@ async function processIncomingMessage(
         logger.info(`Message saved: ${messageId} for ticket ${ticket.id}`);
 
         // Integration Logic (N8N / Webhook)
-        if (whatsapp.integrationId) {
-            try {
-                const integration = await ShowQueueIntegrationService(whatsapp.integrationId, whatsapp.companyId);
+        let integrationId = whatsapp.integrationId;
 
-                if (integration.type === "n8n" || integration.type === "webhook") {
+        // Prioritize Queue Integration if ticket is assigned to a queue
+        if (ticket.queueId) {
+            const queue = await Queue.findByPk(ticket.queueId);
+            if (queue && queue.integrationId) {
+                integrationId = queue.integrationId;
+                logger.info(`WebhookController: Found Ticket Queue Integration ID: ${integrationId}`);
+            }
+        }
+
+        if (integrationId) {
+            try {
+                const integration = await ShowQueueIntegrationService(integrationId, whatsapp.companyId);
+
+                logger.info(`WebhookController: Integration Detail - ID: ${integration.id}, Name: ${integration.name}, Type: ${integration.type}, URL: ${integration.urlN8N}`);
+
+                const integrationType = integration.type ? integration.type.toLowerCase() : "";
+
+                // Check for n8n, webhook, or webhooks (plural/mixed case)
+                if (integrationType === "n8n" || integrationType.includes("webhook")) {
                     if (integration.urlN8N) {
                         const options = {
                             method: "POST",
@@ -282,23 +299,32 @@ async function processIncomingMessage(
                                 contact: contactData,
                                 ticket: ticket,
                                 type: messageType,
-                                body
+                                body,
+                                source: "whatsapp_cloud_webhook"
                             }
                         };
+
+                        logger.info(`WebhookController: Sending POST to: ${integration.urlN8N}`);
+
                         request(options, function (error, response) {
                             if (error) {
-                                logger.error(`Error sending to integration: ${error}`);
+                                logger.error(`WebhookController: Error sending to integration: ${error}`);
                             } else {
-                                logger.info(`Sent to integration: ${response.statusCode}`);
+                                logger.info(`WebhookController: Sent to integration. StatusCode: ${response ? response.statusCode : "unknown"}`);
                             }
                         });
+                    } else {
+                        logger.warn(`WebhookController: Integration type matches but NO URL defined.`);
                     }
+                } else {
+                    logger.warn(`WebhookController: Integration type '${integration.type}' not handled by this logic.`);
                 }
             } catch (error) {
-                logger.error(`Error handling integration: ${error}`);
+                logger.error(`WebhookController: Error handling integration: ${error}`);
             }
+        } else {
+            logger.info("WebhookController: No integration assigned to Connection or Queue associated with this ticket.");
         }
-
     } catch (error) {
         logger.error(`Error processing incoming message: ${error}`);
     }
