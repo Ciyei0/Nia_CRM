@@ -7,7 +7,9 @@ import { getIO } from "../libs/socket";
 import CreateOrUpdateContactService from "../services/ContactServices/CreateOrUpdateContactService";
 import FindOrCreateTicketService from "../services/TicketServices/FindOrCreateTicketService";
 import CreateMessageService from "../services/MessageServices/CreateMessageService";
+import ShowQueueIntegrationService from "../services/QueueIntegrationServices/ShowQueueIntegrationService";
 import { logger } from "../utils/logger";
+import request from "request";
 
 // Verify token for webhook validation (Facebook sends a GET request)
 const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || "niacrm_webhook_token";
@@ -260,6 +262,43 @@ async function processIncomingMessage(
             });
 
         logger.info(`Message saved: ${messageId} for ticket ${ticket.id}`);
+
+        // Integration Logic (N8N / Webhook)
+        if (whatsapp.integrationId) {
+            try {
+                const integration = await ShowQueueIntegrationService(whatsapp.integrationId, whatsapp.companyId);
+
+                if (integration.type === "n8n" || integration.type === "webhook") {
+                    if (integration.urlN8N) {
+                        const options = {
+                            method: "POST",
+                            url: integration.urlN8N,
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            json: {
+                                ...message,
+                                fromMe: false,
+                                contact: contactData,
+                                ticket: ticket,
+                                type: messageType,
+                                body
+                            }
+                        };
+                        request(options, function (error, response) {
+                            if (error) {
+                                logger.error(`Error sending to integration: ${error}`);
+                            } else {
+                                logger.info(`Sent to integration: ${response.statusCode}`);
+                            }
+                        });
+                    }
+                }
+            } catch (error) {
+                logger.error(`Error handling integration: ${error}`);
+            }
+        }
+
     } catch (error) {
         logger.error(`Error processing incoming message: ${error}`);
     }
