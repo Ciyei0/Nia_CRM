@@ -1,9 +1,10 @@
 import React, { useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
 
-import { makeStyles, createTheme, ThemeProvider } from "@material-ui/core/styles";
-import { IconButton } from "@material-ui/core";
-import { MoreVert, Replay, ContactPhone, Android } from "@material-ui/icons";
+import { makeStyles, createTheme, ThemeProvider, withStyles } from "@material-ui/core/styles";
+import { IconButton, Switch, Box, Typography } from "@material-ui/core";
+import { MoreVert, Replay, ContactPhone } from "@material-ui/icons";
+import SmartToyIcon from "@material-ui/icons/Android";
 
 import { i18n } from "../../translate/i18n";
 import api from "../../services/api";
@@ -15,8 +16,64 @@ import { TicketsContext } from "../../context/Tickets/TicketsContext";
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import UndoRoundedIcon from '@material-ui/icons/UndoRounded';
 import Tooltip from '@material-ui/core/Tooltip';
-import { green } from '@material-ui/core/colors';
+import { green, grey } from '@material-ui/core/colors';
 
+// Custom styled switch for bot toggle
+const BotSwitch = withStyles((theme) => ({
+	root: {
+		width: 52,
+		height: 28,
+		padding: 0,
+		margin: theme.spacing(0, 1),
+	},
+	switchBase: {
+		padding: 2,
+		'&$checked': {
+			transform: 'translateX(24px)',
+			color: theme.palette.common.white,
+			'& + $track': {
+				backgroundColor: '#4caf50',
+				opacity: 1,
+				border: 'none',
+			},
+			'& $thumb': {
+				backgroundColor: '#fff',
+			},
+		},
+		'&$focusVisible $thumb': {
+			color: '#4caf50',
+			border: '6px solid #fff',
+		},
+	},
+	thumb: {
+		width: 24,
+		height: 24,
+		boxShadow: '0 2px 4px 0 rgba(0,0,0,0.2)',
+	},
+	track: {
+		borderRadius: 28 / 2,
+		backgroundColor: grey[400],
+		opacity: 1,
+		transition: theme.transitions.create(['background-color', 'border']),
+	},
+	checked: {},
+	focusVisible: {},
+}))(({ classes, ...props }) => {
+	return (
+		<Switch
+			focusVisibleClassName={classes.focusVisible}
+			disableRipple
+			classes={{
+				root: classes.root,
+				switchBase: classes.switchBase,
+				thumb: classes.thumb,
+				track: classes.track,
+				checked: classes.checked,
+			}}
+			{...props}
+		/>
+	);
+});
 
 const useStyles = makeStyles(theme => ({
 	actionButtons: {
@@ -24,14 +81,40 @@ const useStyles = makeStyles(theme => ({
 		flex: "none",
 		alignSelf: "center",
 		marginLeft: "auto",
+		display: "flex",
+		alignItems: "center",
 		"& > *": {
 			margin: theme.spacing(0.5),
 		},
 	},
+	botToggleContainer: {
+		display: "flex",
+		alignItems: "center",
+		backgroundColor: props => props.isBot ? "rgba(76, 175, 80, 0.1)" : "rgba(158, 158, 158, 0.1)",
+		borderRadius: 20,
+		padding: "4px 12px 4px 8px",
+		marginRight: 8,
+		transition: "all 0.3s ease",
+		border: props => props.isBot ? "1px solid rgba(76, 175, 80, 0.3)" : "1px solid rgba(158, 158, 158, 0.3)",
+	},
+	botIcon: {
+		fontSize: 20,
+		marginRight: 4,
+		color: props => props.isBot ? green[500] : grey[500],
+		transition: "color 0.3s ease",
+	},
+	botLabel: {
+		fontSize: "0.75rem",
+		fontWeight: 600,
+		color: props => props.isBot ? green[700] : grey[600],
+		marginRight: 4,
+		transition: "color 0.3s ease",
+		whiteSpace: "nowrap",
+	},
 }));
 
 const TicketActionButtonsCustom = ({ ticket, onDrawerOpen }) => {
-	const classes = useStyles();
+	const classes = useStyles({ isBot: ticket.isBot });
 	const history = useHistory();
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [loading, setLoading] = useState(false);
@@ -104,6 +187,21 @@ const TicketActionButtonsCustom = ({ ticket, onDrawerOpen }) => {
 			)}
 			{ticket.status === "open" && (
 				<>
+					{/* Bot Toggle Switch */}
+					<Tooltip title={ticket.isBot ? "Bot activo - Click para desactivar" : "Bot inactivo - Click para activar"}>
+						<Box className={classes.botToggleContainer}>
+							<SmartToyIcon className={classes.botIcon} />
+							<Typography className={classes.botLabel}>
+								{ticket.isBot ? "BOT" : "BOT"}
+							</Typography>
+							<BotSwitch
+								checked={ticket.isBot}
+								onChange={handleToggleBot}
+								disabled={loading}
+							/>
+						</Box>
+					</Tooltip>
+
 					<Tooltip title={i18n.t("messagesList.header.buttons.return")}>
 						<IconButton onClick={e => handleUpdateTicketStatus(e, "pending", null)}>
 							<UndoRoundedIcon />
@@ -120,12 +218,6 @@ const TicketActionButtonsCustom = ({ ticket, onDrawerOpen }) => {
 					<Tooltip title="Datos de contacto">
 						<IconButton onClick={onDrawerOpen}>
 							<ContactPhone />
-						</IconButton>
-					</Tooltip>
-
-					<Tooltip title="Activar/Desactivar Bot">
-						<IconButton onClick={handleToggleBot}>
-							{ticket.isBot ? <Android style={{ color: green[500] }} /> : <Android />}
 						</IconButton>
 					</Tooltip>
 
