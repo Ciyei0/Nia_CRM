@@ -134,7 +134,8 @@ export const send = async (req: Request, res: Response): Promise<Response> => {
     const number = CheckValidNumber.jid.replace(/\D/g, "");
     const profilePicUrl = await GetProfilePicUrl(
       number,
-      companyId
+      companyId,
+      whatsapp.id
     );
     const contactData = {
       name: `${number}`,
