@@ -25,13 +25,20 @@ const CheckContactNumber = async (
 
   if (whatsappId) {
     whatsapp = await Whatsapp.findByPk(whatsappId);
+    logger.info(`CheckContactNumber: Checked specific whatsappId ${whatsappId}. Found: ${!!whatsapp}`);
   }
 
   if (!whatsapp) {
     whatsapp = await GetDefaultWhatsApp(companyId);
+    logger.info(`CheckContactNumber: Using default whatsapp for company ${companyId}. ID: ${whatsapp?.id}`);
+  }
+
+  if (whatsapp) {
+    logger.info(`CheckContactNumber: Whatsapp Channel: ${whatsapp.channel}`);
   }
 
   if (whatsapp.channel === "whatsapp_cloud") {
+    logger.info("CheckContactNumber: Channel is whatsapp_cloud, skipping wbot check.");
     // Cloud API does not support onWhatsApp check in the same way, assume valid or handle differently
     return {
       jid: `${number}@s.whatsapp.net`,
