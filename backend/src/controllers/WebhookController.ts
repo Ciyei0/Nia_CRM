@@ -300,27 +300,26 @@ async function processIncomingMessage(
                         logger.info(`WebhookController: Sending POST to: ${integration.urlN8N}`);
                         logger.info(`WebhookController: Payload: ${JSON.stringify(payload)}`);
 
-                        try {
-                            const response = await axios.post(integration.urlN8N, payload, {
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
-                                timeout: 30000 // 30 second timeout
+                        // Fire-and-forget: Don't await - just send and continue
+                        // This prevents timeout blocking if n8n is slow
+                        axios.post(integration.urlN8N, payload, {
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            timeout: 5000 // Short timeout since we're not waiting
+                        })
+                            .then(response => {
+                                logger.info(`WebhookController: Sent to integration successfully. StatusCode: ${response.status}`);
+                            })
+                            .catch((axiosError: any) => {
+                                if (axiosError.response) {
+                                    logger.error(`WebhookController: Integration responded with error. Status: ${axiosError.response.status}`);
+                                } else if (axiosError.code === 'ECONNABORTED') {
+                                    logger.warn(`WebhookController: Integration request timed out (fire-and-forget, not blocking)`);
+                                } else {
+                                    logger.error(`WebhookController: Error sending to integration: ${axiosError.message}`);
+                                }
                             });
-                            logger.info(`WebhookController: Sent to integration successfully. StatusCode: ${response.status}`);
-                            logger.info(`WebhookController: Response data: ${JSON.stringify(response.data)}`);
-                        } catch (axiosError: any) {
-                            if (axiosError.response) {
-                                // Server responded with error status
-                                logger.error(`WebhookController: Integration responded with error. Status: ${axiosError.response.status}, Data: ${JSON.stringify(axiosError.response.data)}`);
-                            } else if (axiosError.request) {
-                                // Request was made but no response received
-                                logger.error(`WebhookController: No response from integration. Error: ${axiosError.message}`);
-                            } else {
-                                // Error setting up request
-                                logger.error(`WebhookController: Error setting up request: ${axiosError.message}`);
-                            }
-                        }
                     } else {
                         logger.warn(`WebhookController: Integration type matches but NO URL defined.`);
                     }
