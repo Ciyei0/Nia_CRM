@@ -10,7 +10,7 @@ import CreateMessageService from "../services/MessageServices/CreateMessageServi
 import ShowQueueIntegrationService from "../services/QueueIntegrationServices/ShowQueueIntegrationService";
 import Queue from "../models/Queue";
 import { logger } from "../utils/logger";
-import request from "request";
+import axios from "axios";
 
 // Verify token for webhook validation (Facebook sends a GET request)
 const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || "niacrm_webhook_token";
@@ -287,32 +287,40 @@ async function processIncomingMessage(
                 // Check for n8n, webhook, or webhooks (plural/mixed case)
                 if (integrationType === "n8n" || integrationType.includes("webhook")) {
                     if (integration.urlN8N) {
-                        const options = {
-                            method: "POST",
-                            url: integration.urlN8N,
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            json: {
-                                ...message,
-                                fromMe: false,
-                                contact: contactData,
-                                ticket: ticket,
-                                type: messageType,
-                                body,
-                                source: "whatsapp_cloud_webhook"
-                            }
+                        const payload = {
+                            ...message,
+                            fromMe: false,
+                            contact: contactData,
+                            ticket: ticket,
+                            type: messageType,
+                            body,
+                            source: "whatsapp_cloud_webhook"
                         };
 
                         logger.info(`WebhookController: Sending POST to: ${integration.urlN8N}`);
+                        logger.info(`WebhookController: Payload: ${JSON.stringify(payload)}`);
 
-                        request(options, function (error, response) {
-                            if (error) {
-                                logger.error(`WebhookController: Error sending to integration: ${error}`);
+                        try {
+                            const response = await axios.post(integration.urlN8N, payload, {
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                timeout: 30000 // 30 second timeout
+                            });
+                            logger.info(`WebhookController: Sent to integration successfully. StatusCode: ${response.status}`);
+                            logger.info(`WebhookController: Response data: ${JSON.stringify(response.data)}`);
+                        } catch (axiosError: any) {
+                            if (axiosError.response) {
+                                // Server responded with error status
+                                logger.error(`WebhookController: Integration responded with error. Status: ${axiosError.response.status}, Data: ${JSON.stringify(axiosError.response.data)}`);
+                            } else if (axiosError.request) {
+                                // Request was made but no response received
+                                logger.error(`WebhookController: No response from integration. Error: ${axiosError.message}`);
                             } else {
-                                logger.info(`WebhookController: Sent to integration. StatusCode: ${response ? response.statusCode : "unknown"}`);
+                                // Error setting up request
+                                logger.error(`WebhookController: Error setting up request: ${axiosError.message}`);
                             }
-                        });
+                        }
                     } else {
                         logger.warn(`WebhookController: Integration type matches but NO URL defined.`);
                     }
