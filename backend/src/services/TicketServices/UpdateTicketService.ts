@@ -32,6 +32,7 @@ interface TicketData {
   integrationId?: number | null;
   promptId?: number | null;
   lastMessage?: string;
+  isBot?: boolean;
 }
 
 interface Request {
@@ -60,6 +61,7 @@ const UpdateTicketService = async ({
     let promptId: number | null = ticketData.promptId || null;
     let useIntegration: boolean | null = ticketData.useIntegration || false;
     let integrationId: number | null = ticketData.integrationId || null;
+    let isBot: boolean | undefined = ticketData.isBot;
 
     console.log("ticketData", ticketData);
 
@@ -280,7 +282,8 @@ const UpdateTicketService = async ({
       whatsappId,
       chatbot,
       queueOptionId,
-      lastMessage: lastMessage !== null ? lastMessage : ticket.lastMessage
+      lastMessage: lastMessage !== null ? lastMessage : ticket.lastMessage,
+      ...(isBot !== undefined && { isBot })
     });
 
     await ticket.reload();

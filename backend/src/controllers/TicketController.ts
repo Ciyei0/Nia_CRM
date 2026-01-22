@@ -32,6 +32,7 @@ interface TicketData {
   useIntegration: boolean;
   promptId: number;
   integrationId: number;
+  isBot: boolean;
 }
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
