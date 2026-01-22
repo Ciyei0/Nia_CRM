@@ -10,7 +10,7 @@ import CreateMessageService from "../services/MessageServices/CreateMessageServi
 import ShowQueueIntegrationService from "../services/QueueIntegrationServices/ShowQueueIntegrationService";
 import Queue from "../models/Queue";
 import { logger } from "../utils/logger";
-import axios from "axios";
+import request from "request";
 
 // Verify token for webhook validation (Facebook sends a GET request)
 const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || "niacrm_webhook_token";
@@ -300,26 +300,23 @@ async function processIncomingMessage(
                         logger.info(`WebhookController: Sending POST to: ${integration.urlN8N}`);
                         logger.info(`WebhookController: Payload: ${JSON.stringify(payload)}`);
 
-                        // Fire-and-forget: Don't await - just send and continue
-                        // This prevents timeout blocking if n8n is slow
-                        axios.post(integration.urlN8N, payload, {
+                        const options = {
+                            method: "POST",
+                            url: integration.urlN8N,
                             headers: {
                                 "Content-Type": "application/json"
                             },
-                            timeout: 5000 // Short timeout since we're not waiting
-                        })
-                            .then(response => {
-                                logger.info(`WebhookController: Sent to integration successfully. StatusCode: ${response.status}`);
-                            })
-                            .catch((axiosError: any) => {
-                                if (axiosError.response) {
-                                    logger.error(`WebhookController: Integration responded with error. Status: ${axiosError.response.status}`);
-                                } else if (axiosError.code === 'ECONNABORTED') {
-                                    logger.warn(`WebhookController: Integration request timed out (fire-and-forget, not blocking)`);
-                                } else {
-                                    logger.error(`WebhookController: Error sending to integration: ${axiosError.message}`);
-                                }
-                            });
+                            json: payload
+                        };
+
+                        // Fire-and-forget using request library (callback-based)
+                        request(options, function (error, response) {
+                            if (error) {
+                                logger.error(`WebhookController: Error sending to integration: ${error}`);
+                            } else {
+                                logger.info(`WebhookController: Sent to integration. StatusCode: ${response ? response.statusCode : "unknown"}`);
+                            }
+                        });
                     } else {
                         logger.warn(`WebhookController: Integration type matches but NO URL defined.`);
                     }
