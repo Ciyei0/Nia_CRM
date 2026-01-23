@@ -13,6 +13,9 @@ interface QueueData {
   orderQueue?: number;
   integrationId?: number;
   promptId?: number;
+  autoAssignmentEnabled?: boolean;
+  assignOfflineUsers?: boolean;
+  autoAssignUserIds?: number[];
 }
 
 const UpdateQueueService = async (

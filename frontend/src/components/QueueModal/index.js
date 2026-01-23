@@ -160,6 +160,11 @@ const QueueModal = ({ open, onClose, queueId }) => {
         data.promptId ? setSelectedPrompt(data.promptId) : setSelectedPrompt(null);
         setSchedules(data.schedules);
 
+        // Load auto-assignment settings from backend
+        setAutoAssignmentEnabled(data.autoAssignmentEnabled || false);
+        setAssignOffline(data.assignOfflineUsers || false);
+        setAutoAssignUsers(data.autoAssignUserIds || []);
+
         // Fetch users to see which ones are assigned to this queue
         // As queue return usually doesn't include full user list, we will need to refetch users or rely on a property if backend supports it.
         // For now, let's assume valid API doesn't return user list inside queue easily, we'll fetch all users in the UserAssignment component
@@ -217,7 +222,10 @@ const QueueModal = ({ open, onClose, queueId }) => {
       const queueData = {
         ...values,
         schedules,
-        promptId: selectedPrompt ? selectedPrompt : null
+        promptId: selectedPrompt ? selectedPrompt : null,
+        autoAssignmentEnabled,
+        assignOfflineUsers: assignOffline,
+        autoAssignUserIds: autoAssignUsers
       };
 
       if (queueId) {
