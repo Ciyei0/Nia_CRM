@@ -9,8 +9,10 @@ import FindOrCreateTicketService from "../services/TicketServices/FindOrCreateTi
 import CreateMessageService from "../services/MessageServices/CreateMessageService";
 import ShowQueueIntegrationService from "../services/QueueIntegrationServices/ShowQueueIntegrationService";
 import Queue from "../models/Queue";
+import User from "../models/User";
 import { logger } from "../utils/logger";
 import request from "request";
+import { Op } from "sequelize";
 
 // Verify token for webhook validation (Facebook sends a GET request)
 const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || "niacrm_webhook_token";
@@ -158,6 +160,70 @@ async function processIncomingMessage(
             whatsapp.companyId,
             undefined // queueId
         );
+
+        // Auto-assign queue and user if ticket has no queue
+        if (!ticket.queueId) {
+            // Get queues from whatsapp connection
+            const whatsappWithQueues = await Whatsapp.findByPk(whatsapp.id, {
+                include: [{ model: Queue, as: "queues" }]
+            });
+
+            const queues = whatsappWithQueues?.queues || [];
+
+            // If only 1 queue, assign it automatically
+            if (queues.length === 1) {
+                const firstQueue = queues[0];
+                let assignedUserId: number | null = null;
+                let ticketStatus = "pending";
+
+                // Check if queue has auto-assignment enabled
+                const queueWithSettings = await Queue.findByPk(firstQueue.id);
+                if (queueWithSettings?.autoAssignmentEnabled &&
+                    queueWithSettings.autoAssignUserIds &&
+                    queueWithSettings.autoAssignUserIds.length > 0) {
+
+                    const eligibleUserIds = queueWithSettings.autoAssignUserIds;
+
+                    // Get eligible users
+                    const whereClause: any = { id: { [Op.in]: eligibleUserIds } };
+                    if (!queueWithSettings.assignOfflineUsers) {
+                        whereClause.online = true;
+                    }
+
+                    const eligibleUsers = await User.findAll({ where: whereClause });
+
+                    if (eligibleUsers.length > 0) {
+                        // Round-robin: pick user with least open tickets
+                        const userTicketCounts = await Promise.all(
+                            eligibleUsers.map(async (user) => ({
+                                userId: user.id,
+                                count: await Ticket.count({
+                                    where: {
+                                        userId: user.id,
+                                        status: "open",
+                                        companyId: whatsapp.companyId
+                                    }
+                                })
+                            }))
+                        );
+
+                        userTicketCounts.sort((a, b) => a.count - b.count);
+                        assignedUserId = userTicketCounts[0].userId;
+                        ticketStatus = "open";
+                        logger.info(`Auto-assigning ticket ${ticket.id} to user ${assignedUserId}`);
+                    }
+                }
+
+                // Update ticket with queue and optional user
+                await ticket.update({
+                    queueId: firstQueue.id,
+                    status: ticketStatus,
+                    userId: assignedUserId
+                });
+
+                logger.info(`Ticket ${ticket.id} assigned to queue ${firstQueue.id}`);
+            }
+        }
 
 
         // Extract message body based on type
