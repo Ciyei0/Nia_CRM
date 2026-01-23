@@ -6,6 +6,8 @@ import ShowTicketService from "./ShowTicketService";
 import FindOrCreateATicketTrakingService from "./FindOrCreateATicketTrakingService";
 import Setting from "../../models/Setting";
 import Whatsapp from "../../models/Whatsapp";
+import Tag from "../../models/Tag";
+import TicketTag from "../../models/TicketTag";
 
 interface TicketData {
   status?: string;
@@ -35,7 +37,7 @@ const FindOrCreateTicketService = async (
   if (ticket) {
     await ticket.update({ unreadMessages, whatsappId });
   }
-  
+
   if (ticket?.status === "closed") {
     await ticket.update({ queueId: null, userId: null });
   }
@@ -66,7 +68,7 @@ const FindOrCreateTicketService = async (
     const msgIsGroupBlock = await Setting.findOne({
       where: { key: "timeCreateNewTicket" }
     });
-  
+
     const value = msgIsGroupBlock ? parseInt(msgIsGroupBlock.value, 10) : 7200;
   }
 
@@ -97,10 +99,13 @@ const FindOrCreateTicketService = async (
       });
     }
   }
-  
-    const whatsapp = await Whatsapp.findOne({
+
+  const whatsapp = await Whatsapp.findOne({
     where: { id: whatsappId }
   });
+
+  // Variable para saber si se creó un nuevo ticket
+  let isNewTicket = false;
 
   if (!ticket) {
     ticket = await Ticket.create({
@@ -112,12 +117,25 @@ const FindOrCreateTicketService = async (
       whatsapp,
       companyId
     });
+    isNewTicket = true;
     await FindOrCreateATicketTrakingService({
       ticketId: ticket.id,
       companyId,
       whatsappId,
       userId: ticket.userId
     });
+
+    // Asignar etiqueta predeterminada si existe
+    const defaultTag = await Tag.findOne({
+      where: { companyId, isDefault: true }
+    });
+
+    if (defaultTag) {
+      await TicketTag.create({
+        ticketId: ticket.id,
+        tagId: defaultTag.id
+      });
+    }
   }
 
   ticket = await ShowTicketService(ticket.id, companyId);
@@ -126,3 +144,4 @@ const FindOrCreateTicketService = async (
 };
 
 export default FindOrCreateTicketService;
+

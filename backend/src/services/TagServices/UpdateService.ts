@@ -9,6 +9,7 @@ interface TagData {
   name?: string;
   color?: string;
   kanban?: number;
+  isDefault?: boolean;
 }
 
 interface Request {
@@ -26,7 +27,7 @@ const UpdateUserService = async ({
     name: Yup.string().min(3)
   });
 
-  const { name, color, kanban } = tagData;
+  const { name, color, kanban, isDefault } = tagData;
 
   try {
     await schema.validate({ name });
@@ -34,10 +35,19 @@ const UpdateUserService = async ({
     throw new AppError(err.message);
   }
 
+  // Si se marca como predeterminada, desmarcar cualquier otra de la misma empresa
+  if (isDefault) {
+    await Tag.update(
+      { isDefault: false },
+      { where: { companyId: tag.companyId, isDefault: true } }
+    );
+  }
+
   await tag.update({
     name,
     color,
-    kanban
+    kanban,
+    isDefault
   });
 
   await tag.reload();

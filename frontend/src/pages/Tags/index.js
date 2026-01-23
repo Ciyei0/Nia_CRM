@@ -22,6 +22,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import EditIcon from "@material-ui/icons/Edit";
+import StarIcon from "@material-ui/icons/Star";
 import MainContainer from "../../components/MainContainer";
 import MainHeader from "../../components/MainHeader";
 import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper";
@@ -127,6 +128,33 @@ const useStyles = makeStyles((theme) => ({
   },
   iconButton: {
     color: "#757575",
+  },
+  tagChip: {
+    padding: "8px 16px",
+    borderRadius: "20px",
+    fontWeight: 600,
+    fontSize: "13px",
+    color: "#fff",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "6px",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+  },
+  defaultBadge: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: "#fff3cd",
+    color: "#856404",
+    padding: "4px 10px",
+    borderRadius: 12,
+    fontSize: 11,
+    fontWeight: 600,
+    marginLeft: 8,
+  },
+  starIcon: {
+    fontSize: 14,
+    color: "#ffc107",
   },
 }));
 
@@ -295,12 +323,25 @@ const Tags = () => {
           <TableBody>
             <>
               {tags.map((tag, index) => (
-                <TableRow key={tag.id} style={{ backgroundColor: index % 2 === 0 ? "#fff" : "#f1f1f1" }}>
+                <TableRow key={tag.id} style={{ backgroundColor: index % 2 === 0 ? "#fff" : "#f9f9f9" }}>
                   <TableCell align="center">
-                    {tag.name}
+                    <span
+                      className={classes.tagChip}
+                      style={{ backgroundColor: tag.color || "#666" }}
+                    >
+                      {tag.name}
+                    </span>
+                    {tag.isDefault && (
+                      <span className={classes.defaultBadge}>
+                        <StarIcon className={classes.starIcon} />
+                        Predeterminada
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell align="center">
-                    <div className={classes.colorPill} style={{ backgroundColor: tag.color }} />
+                    <Tooltip title={tag.color || "Sin color"} arrow>
+                      <div className={classes.colorPill} style={{ backgroundColor: tag.color }} />
+                    </Tooltip>
                   </TableCell>
                   <TableCell align="center">
                     <IconButton size="small" onClick={() => handleEditTag(tag)} className={classes.iconButton}>

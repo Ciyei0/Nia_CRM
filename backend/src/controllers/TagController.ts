@@ -32,14 +32,15 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
-  const { name, color, kanban } = req.body;
+  const { name, color, kanban, isDefault } = req.body;
   const { companyId } = req.user;
 
   const tag = await CreateService({
     name,
     color,
     companyId,
-    kanban
+    kanban,
+    isDefault
   });
 
   const io = getIO();
@@ -56,7 +57,7 @@ export const kanban = async (req: Request, res: Response): Promise<Response> => 
 
   const tags = await KanbanListService({ companyId });
 
-  return res.json({lista:tags});
+  return res.json({ lista: tags });
 };
 
 export const show = async (req: Request, res: Response): Promise<Response> => {

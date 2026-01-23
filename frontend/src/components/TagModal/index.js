@@ -13,7 +13,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { Colorize } from "@material-ui/icons";
+import { Colorize, Star, StarBorder } from "@material-ui/icons";
 import { ColorBox } from 'material-ui-color';
 
 import { i18n } from "../../translate/i18n";
@@ -60,6 +60,24 @@ const useStyles = makeStyles(theme => ({
 		width: 20,
 		height: 20,
 	},
+	defaultSwitch: {
+		marginTop: theme.spacing(2),
+		padding: theme.spacing(1.5),
+		backgroundColor: "#f8f9fa",
+		borderRadius: 8,
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "space-between",
+	},
+	defaultSwitchLabel: {
+		display: "flex",
+		alignItems: "center",
+		gap: 8,
+	},
+	starIcon: {
+		color: "#ffc107",
+		fontSize: 20,
+	},
 }));
 
 const TagSchema = Yup.object().shape({
@@ -76,7 +94,8 @@ const TagModal = ({ open, onClose, tagId, reload }) => {
 	const initialState = {
 		name: "",
 		color: "",
-		kanban: 0
+		kanban: 0,
+		isDefault: false
 	};
 
 	const [tag, setTag] = useState(initialState);
@@ -208,6 +227,22 @@ const TagModal = ({ open, onClose, tagId, reload }) => {
 										/>
 									</div>
 								)}
+
+								{/* Switch de etiqueta predeterminada */}
+								<div className={classes.defaultSwitch}>
+									<div className={classes.defaultSwitchLabel}>
+										{tag.isDefault ? <Star className={classes.starIcon} /> : <StarBorder style={{ fontSize: 20, color: "#9e9e9e" }} />}
+										<div>
+											<div style={{ fontWeight: 600, fontSize: 14 }}>Etiqueta predeterminada</div>
+											<div style={{ fontSize: 12, color: "#666" }}>Los chats nuevos la recibirán automáticamente</div>
+										</div>
+									</div>
+									<Switch
+										checked={tag.isDefault || false}
+										onChange={(e) => setTag(prev => ({ ...prev, isDefault: e.target.checked }))}
+										color="primary"
+									/>
+								</div>
 							</DialogContent>
 							<DialogActions>
 								<Button
