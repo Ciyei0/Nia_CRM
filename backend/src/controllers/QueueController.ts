@@ -76,8 +76,19 @@ export const deleteMedia = async (
 };
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
-  const { name, color, greetingMessage, outOfHoursMessage, schedules, orderQueue, integrationId, promptId } =
-    req.body;
+  const {
+    name,
+    color,
+    greetingMessage,
+    outOfHoursMessage,
+    schedules,
+    orderQueue,
+    integrationId,
+    promptId,
+    autoAssignmentEnabled,
+    assignOfflineUsers,
+    autoAssignUserIds
+  } = req.body;
   const { companyId } = req.user;
   console.log("queue", integrationId, promptId)
   const queue = await CreateQueueService({
@@ -89,7 +100,10 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     schedules,
     orderQueue: orderQueue === "" ? null : orderQueue,
     integrationId: integrationId === "" ? null : integrationId,
-    promptId: promptId === "" ? null : promptId
+    promptId: promptId === "" ? null : promptId,
+    autoAssignmentEnabled: autoAssignmentEnabled || false,
+    assignOfflineUsers: assignOfflineUsers || false,
+    autoAssignUserIds: autoAssignUserIds || []
   });
 
   const io = getIO();
@@ -116,8 +130,19 @@ export const update = async (
 ): Promise<Response> => {
   const { queueId } = req.params;
   const { companyId } = req.user;
-  const { name, color, greetingMessage, outOfHoursMessage, schedules, orderQueue, integrationId, promptId } =
-    req.body;
+  const {
+    name,
+    color,
+    greetingMessage,
+    outOfHoursMessage,
+    schedules,
+    orderQueue,
+    integrationId,
+    promptId,
+    autoAssignmentEnabled,
+    assignOfflineUsers,
+    autoAssignUserIds
+  } = req.body;
   const queue = await UpdateQueueService(queueId, {
     name,
     color,
@@ -126,7 +151,10 @@ export const update = async (
     schedules,
     orderQueue: orderQueue === "" ? null : orderQueue,
     integrationId: integrationId === "" ? null : integrationId,
-    promptId: promptId === "" ? null : promptId
+    promptId: promptId === "" ? null : promptId,
+    autoAssignmentEnabled: autoAssignmentEnabled || false,
+    assignOfflineUsers: assignOfflineUsers || false,
+    autoAssignUserIds: autoAssignUserIds || []
   }, companyId);
 
   const io = getIO();
