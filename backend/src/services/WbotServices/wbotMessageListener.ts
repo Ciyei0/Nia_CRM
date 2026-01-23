@@ -1160,8 +1160,82 @@ const verifyQueue = async (
       // return;
     }
 
+    // Auto-assignment logic
+    let assignedUserId: number | null = null;
+    let ticketStatus = "pending";
+
+    // Check if queue has auto-assignment enabled
+    const queueWithSettings = await Queue.findByPk(firstQueue.id);
+    if (queueWithSettings?.autoAssignmentEnabled &&
+      queueWithSettings.autoAssignUserIds &&
+      queueWithSettings.autoAssignUserIds.length > 0) {
+
+      // Get list of users eligible for auto-assignment
+      const eligibleUserIds = queueWithSettings.autoAssignUserIds;
+
+      // If assignOfflineUsers is false, filter only online users
+      if (!queueWithSettings.assignOfflineUsers) {
+        const onlineUsers = await User.findAll({
+          where: {
+            id: { [Op.in]: eligibleUserIds },
+            online: true
+          }
+        });
+
+        if (onlineUsers.length > 0) {
+          // Round-robin: pick user with least open tickets
+          const userTicketCounts = await Promise.all(
+            onlineUsers.map(async (user) => ({
+              userId: user.id,
+              count: await Ticket.count({
+                where: {
+                  userId: user.id,
+                  status: "open",
+                  companyId: ticket.companyId
+                }
+              })
+            }))
+          );
+
+          // Sort by ticket count and pick the one with least tickets
+          userTicketCounts.sort((a, b) => a.count - b.count);
+          assignedUserId = userTicketCounts[0].userId;
+          ticketStatus = "open";
+        }
+      } else {
+        // Assign to any user from the list (round-robin by ticket count)
+        const eligibleUsers = await User.findAll({
+          where: { id: { [Op.in]: eligibleUserIds } }
+        });
+
+        if (eligibleUsers.length > 0) {
+          const userTicketCounts = await Promise.all(
+            eligibleUsers.map(async (user) => ({
+              userId: user.id,
+              count: await Ticket.count({
+                where: {
+                  userId: user.id,
+                  status: "open",
+                  companyId: ticket.companyId
+                }
+              })
+            }))
+          );
+
+          userTicketCounts.sort((a, b) => a.count - b.count);
+          assignedUserId = userTicketCounts[0].userId;
+          ticketStatus = "open";
+        }
+      }
+    }
+
     await UpdateTicketService({
-      ticketData: { queueId: firstQueue.id, chatbot, status: "pending" },
+      ticketData: {
+        queueId: firstQueue.id,
+        chatbot,
+        status: ticketStatus,
+        userId: assignedUserId
+      },
       ticketId: ticket.id,
       companyId: ticket.companyId,
     });
