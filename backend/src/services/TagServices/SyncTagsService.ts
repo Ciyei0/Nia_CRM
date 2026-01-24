@@ -13,10 +13,22 @@ const SyncTags = async ({
 }: Request): Promise<Ticket | null> => {
   const ticket = await Ticket.findByPk(ticketId, { include: [Tag] });
 
-  const tagList = tags.map(t => ({ tagId: t.id, ticketId }));
+  // Validar que tags sea un array
+  if (!tags || !Array.isArray(tags)) {
+    return ticket;
+  }
+
+  const tagList = tags.map(t => {
+    // Soportar tanto { id: 1 } como simplemente 1
+    const tagId = typeof t === 'number' ? t : t.id;
+    return { tagId, ticketId };
+  }).filter(t => t.tagId); // Filtrar entradas inválidas
 
   await TicketTag.destroy({ where: { ticketId } });
-  await TicketTag.bulkCreate(tagList);
+
+  if (tagList.length > 0) {
+    await TicketTag.bulkCreate(tagList);
+  }
 
   ticket?.reload();
 
