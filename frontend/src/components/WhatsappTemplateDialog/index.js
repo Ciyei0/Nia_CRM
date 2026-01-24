@@ -88,6 +88,44 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.secondary,
         marginTop: 4,
     },
+    variablesPanel: {
+        backgroundColor: theme.palette.type === "light" ? "#f5f5f5" : "#2d2d2d",
+        borderRadius: 8,
+        padding: theme.spacing(1.5),
+        marginTop: theme.spacing(1),
+        border: `1px solid ${theme.palette.type === "light" ? "#e0e0e0" : "#444"}`,
+    },
+    variablesPanelTitle: {
+        fontSize: "0.8rem",
+        fontWeight: 600,
+        color: theme.palette.text.secondary,
+        marginBottom: theme.spacing(1),
+        display: "flex",
+        alignItems: "center",
+        gap: 4,
+    },
+    variableChip: {
+        display: "inline-block",
+        backgroundColor: theme.palette.type === "light" ? "#e3f2fd" : "#1565c0",
+        color: theme.palette.type === "light" ? "#1565c0" : "#fff",
+        padding: "4px 10px",
+        borderRadius: 16,
+        fontSize: "0.75rem",
+        fontFamily: "monospace",
+        marginRight: 6,
+        marginBottom: 6,
+        cursor: "pointer",
+        transition: "all 0.2s",
+        "&:hover": {
+            backgroundColor: theme.palette.type === "light" ? "#bbdefb" : "#1976d2",
+            transform: "scale(1.05)",
+        },
+    },
+    variableDescription: {
+        fontSize: "0.7rem",
+        color: theme.palette.text.secondary,
+        marginTop: 2,
+    },
 }));
 
 const templateSchema = Yup.object().shape({
@@ -356,10 +394,74 @@ const WhatsappTemplateDialog = ({ open, onClose, templateId, whatsapps }) => {
                                                     error={touched.bodyText && !!errors.bodyText}
                                                     helperText={touched.bodyText && errors.bodyText}
                                                 />
-                                                <Typography className={classes.variableHint}>
-                                                    Usa {"{{1}}"}, {"{{2}}"}, etc. para variables
-                                                    dinámicas
-                                                </Typography>
+
+                                                {/* Variables Panel */}
+                                                {!templateId && (
+                                                    <div className={classes.variablesPanel}>
+                                                        <Typography className={classes.variablesPanelTitle}>
+                                                            📝 Variables Dinámicas (clic para insertar)
+                                                        </Typography>
+                                                        <div>
+                                                            <span
+                                                                className={classes.variableChip}
+                                                                onClick={() => {
+                                                                    const newText = values.bodyText + "{{1}}";
+                                                                    setFieldValue("bodyText", newText);
+                                                                }}
+                                                            >
+                                                                {"{{1}}"} - Nombre
+                                                            </span>
+                                                            <span
+                                                                className={classes.variableChip}
+                                                                onClick={() => {
+                                                                    const newText = values.bodyText + "{{2}}";
+                                                                    setFieldValue("bodyText", newText);
+                                                                }}
+                                                            >
+                                                                {"{{2}}"} - Apellido
+                                                            </span>
+                                                            <span
+                                                                className={classes.variableChip}
+                                                                onClick={() => {
+                                                                    const newText = values.bodyText + "{{3}}";
+                                                                    setFieldValue("bodyText", newText);
+                                                                }}
+                                                            >
+                                                                {"{{3}}"} - Empresa
+                                                            </span>
+                                                            <span
+                                                                className={classes.variableChip}
+                                                                onClick={() => {
+                                                                    const newText = values.bodyText + "{{4}}";
+                                                                    setFieldValue("bodyText", newText);
+                                                                }}
+                                                            >
+                                                                {"{{4}}"} - Fecha
+                                                            </span>
+                                                            <span
+                                                                className={classes.variableChip}
+                                                                onClick={() => {
+                                                                    const newText = values.bodyText + "{{5}}";
+                                                                    setFieldValue("bodyText", newText);
+                                                                }}
+                                                            >
+                                                                {"{{5}}"} - Hora
+                                                            </span>
+                                                            <span
+                                                                className={classes.variableChip}
+                                                                onClick={() => {
+                                                                    const newText = values.bodyText + "{{6}}";
+                                                                    setFieldValue("bodyText", newText);
+                                                                }}
+                                                            >
+                                                                {"{{6}}"} - Código
+                                                            </span>
+                                                        </div>
+                                                        <Typography className={classes.variableDescription}>
+                                                            💡 Las variables se reemplazarán con datos reales al enviar. Puedes usar hasta 10 variables.
+                                                        </Typography>
+                                                    </div>
+                                                )}
                                             </Grid>
 
                                             {/* Footer */}
