@@ -176,36 +176,44 @@ const UpdateTicketService = async ({
 
       // SYSTEM: AUTO ASSIGNMENT LOGIC (ROUND ROBIN)
       if (!userId) {
-        // 1. Find all users belonging to this queue
-        const usersInQueue = await UserQueue.findAll({
-          where: { queueId: queueId },
-          attributes: ["userId"],
-          order: [["userId", "ASC"]] // Order by ID to ensure consistent rotation
-        });
+        const queue = await Queue.findByPk(queueId);
 
-        const userIds = usersInQueue.map(u => u.userId);
-
-        if (userIds.length > 0) {
-          // 2. Find the Last Assigned Ticket for this Queue to see who got it
-          const lastTicket = await Ticket.findOne({
-            where: {
-              queueId: queueId,
-              userId: { [Op.not]: null }
-            },
-            order: [["updatedAt", "DESC"]]
+        if (queue && queue.autoAssignmentEnabled) {
+          // 1. Find all users belonging to this queue
+          const usersInQueue = await UserQueue.findAll({
+            where: { queueId: queueId },
+            attributes: ["userId"],
+            order: [["userId", "ASC"]]
           });
 
-          let nextUserIndex = 0;
+          let userIds = usersInQueue.map(u => u.userId);
 
-          if (lastTicket && lastTicket.userId) {
-            const lastUserIndex = userIds.indexOf(lastTicket.userId);
-            if (lastUserIndex !== -1) {
-              nextUserIndex = (lastUserIndex + 1) % userIds.length;
-            }
+          // FILTER: Only users who have auto-assignment enabled
+          if (queue.autoAssignUserIds && queue.autoAssignUserIds.length > 0) {
+            userIds = userIds.filter(id => queue.autoAssignUserIds.includes(id));
           }
 
-          userId = userIds[nextUserIndex];
-          // console.log(`[RoundRobin] Last User: ${lastTicket?.userId} | Next User: ${userId}`);
+          if (userIds.length > 0) {
+            // 2. Find the Last Assigned Ticket for this Queue to see who got it
+            const lastTicket = await Ticket.findOne({
+              where: {
+                queueId: queueId,
+                userId: { [Op.not]: null }
+              },
+              order: [["updatedAt", "DESC"]]
+            });
+
+            let nextUserIndex = 0;
+
+            if (lastTicket && lastTicket.userId) {
+              const lastUserIndex = userIds.indexOf(lastTicket.userId);
+              if (lastUserIndex !== -1) {
+                nextUserIndex = (lastUserIndex + 1) % userIds.length;
+              }
+            }
+
+            userId = userIds[nextUserIndex];
+          }
         }
       }
     }
