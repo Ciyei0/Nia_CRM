@@ -14,6 +14,8 @@ import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import EditIcon from "@material-ui/icons/Edit";
+import VisibilityIcon from "@material-ui/icons/Visibility";
 import SyncIcon from "@material-ui/icons/Sync";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import WarningIcon from "@material-ui/icons/Warning";
@@ -429,14 +431,35 @@ const WhatsappTemplates = () => {
                                     {template.language?.toUpperCase()}
                                 </TableCell>
                                 <TableCell align="center">
-                                    <Tooltip title={getStatusLabel(template.status)}>
-                                        {getStatusIcon(template.status)}
-                                    </Tooltip>
+                                    <Chip
+                                        size="small"
+                                        label={getStatusLabel(template.status)}
+                                        style={{
+                                            backgroundColor:
+                                                template.status?.toUpperCase() === "APPROVED"
+                                                    ? "#4caf50"
+                                                    : template.status?.toUpperCase() === "PENDING"
+                                                        ? "#ff9800"
+                                                        : template.status?.toUpperCase() === "REJECTED"
+                                                            ? "#f44336"
+                                                            : "#9e9e9e",
+                                            color: "#fff",
+                                        }}
+                                    />
                                 </TableCell>
                                 <TableCell align="center">
                                     {template.whatsapp?.name || "-"}
                                 </TableCell>
                                 <TableCell align="center">
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => {
+                                            setSelectedTemplate(template);
+                                            setTemplateModalOpen(true);
+                                        }}
+                                    >
+                                        <VisibilityIcon />
+                                    </IconButton>
                                     <IconButton
                                         size="small"
                                         onClick={() => {
