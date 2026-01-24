@@ -346,6 +346,13 @@ const MainListItems = (props) => {
         icon={<FlashOnIcon />}
       />
 
+      {/* Plantillas WhatsApp */}
+      <ListItemLink
+        to="/whatsapp-templates"
+        primary="Plantillas WhatsApp"
+        icon={<WhatsAppIcon />}
+      />
+
 
 
       {/* Soporte / Ayuda */}

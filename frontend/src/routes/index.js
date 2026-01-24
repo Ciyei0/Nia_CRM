@@ -40,6 +40,7 @@ import Prompts from "../pages/Prompts";
 import QueueIntegration from "../pages/QueueIntegration";
 import ForgetPassword from "../pages/ForgetPassWord/"; // Reset PassWd
 import FacebookCallback from "../pages/FacebookCallback/"; // FB OAuth Callback
+import WhatsappTemplates from "../pages/WhatsappTemplates/"; // WhatsApp Templates
 
 const Routes = () => {
   const [showCampaigns, setShowCampaigns] = useState(false);
@@ -81,6 +82,12 @@ const Routes = () => {
                     exact
                     path="/quick-messages"
                     component={QuickMessages}
+                    isPrivate
+                  />
+                  <Route
+                    exact
+                    path="/whatsapp-templates"
+                    component={WhatsappTemplates}
                     isPrivate
                   />
                   <Route
