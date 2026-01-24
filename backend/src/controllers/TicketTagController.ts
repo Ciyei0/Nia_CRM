@@ -31,7 +31,6 @@ export const remove = async (req: Request, res: Response): Promise<Response> => 
 export const remove = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId } = req.params;
 
-
   try {
     // Retrieve tagIds associated with the provided ticketId from TicketTags
     const ticketTags = await TicketTag.findAll({ where: { ticketId } });
@@ -48,10 +47,21 @@ export const remove = async (req: Request, res: Response): Promise<Response> => 
     // Remove the tagIds with kanban = 1 from TicketTags
     const tagIdsWithKanbanOne = tagsWithKanbanOne.map((tag) => tag.id);
     if (tagIdsWithKanbanOne)
-    await TicketTag.destroy({ where: { ticketId, tagId: tagIdsWithKanbanOne } });
+      await TicketTag.destroy({ where: { ticketId, tagId: tagIdsWithKanbanOne } });
 
     return res.status(200).json({ message: 'Ticket tags removed successfully.' });
   } catch (error) {
     return res.status(500).json({ error: 'Failed to remove ticket tags.' });
+  }
+};
+
+export const removeTag = async (req: Request, res: Response): Promise<Response> => {
+  const { ticketId, tagId } = req.params;
+
+  try {
+    await TicketTag.destroy({ where: { ticketId, tagId } });
+    return res.status(200).json({ message: 'Ticket tag removed successfully.' });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to remove ticket tag.' });
   }
 };
