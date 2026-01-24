@@ -47,43 +47,43 @@ const SyncWhatsappTemplatesService = async ({
     let created = 0;
 
     try {
-        // First, try to get the real WABA ID from the Phone Number ID
-        // The whatsappAccountId might be a Phone Number ID, not the WABA ID
-        let realWabaId = wabaId;
-
+        // First, verify the WABA and get its info
         try {
-            console.log("SyncTemplates: Checking if ID is Phone Number ID or WABA ID...");
-            const phoneInfoUrl = `https://graph.facebook.com/v20.0/${wabaId}?fields=id,display_phone_number,verified_name`;
+            console.log("SyncTemplates: Verifying WABA ID...");
+            const wabaInfoUrl = `https://graph.facebook.com/v20.0/${wabaId}?fields=id,name,currency,timezone_id,message_template_namespace`;
 
-            const phoneInfoResponse = await axios.get(phoneInfoUrl, {
+            const wabaInfoResponse = await axios.get(wabaInfoUrl, {
                 params: { access_token: accessToken }
             });
 
-            // If it has display_phone_number, it's a Phone Number ID, we need to get WABA ID
-            if (phoneInfoResponse.data.display_phone_number) {
-                console.log("SyncTemplates: Detected Phone Number ID, fetching WABA ID...");
-
-                // Get the WABA ID from phone number
-                const wabaUrl = `https://graph.facebook.com/v20.0/${wabaId}?fields=whatsapp_business_account`;
-                const wabaResponse = await axios.get(wabaUrl, {
-                    params: { access_token: accessToken }
-                });
-
-                if (wabaResponse.data.whatsapp_business_account?.id) {
-                    realWabaId = wabaResponse.data.whatsapp_business_account.id;
-                    console.log("SyncTemplates: Found WABA ID:", realWabaId);
-                }
-            }
-        } catch (phoneError: any) {
-            // If query fails, log the error and assume the ID is already a WABA ID
-            const errorMsg = phoneError.response?.data?.error?.message || phoneError.message;
-            console.log("SyncTemplates: Could not determine ID type:", errorMsg);
-            console.log("SyncTemplates: Error details:", phoneError.response?.data || phoneError.message);
+            console.log("SyncTemplates: WABA Info:", wabaInfoResponse.data);
+        } catch (wabaError: any) {
+            const errorMsg = wabaError.response?.data?.error?.message || wabaError.message;
+            console.log("SyncTemplates: Error getting WABA info:", errorMsg);
         }
 
-        const url = `https://graph.facebook.com/v20.0/${realWabaId}/message_templates`;
+        // Check token permissions
+        try {
+            console.log("SyncTemplates: Checking token permissions...");
+            const debugUrl = `https://graph.facebook.com/v20.0/debug_token?input_token=${accessToken}`;
 
-        console.log("SyncTemplates: Fetching from Meta API", { url, realWabaId });
+            const debugResponse = await axios.get(debugUrl, {
+                params: { access_token: accessToken }
+            });
+
+            const scopes = debugResponse.data?.data?.scopes || [];
+            console.log("SyncTemplates: Token scopes:", scopes);
+
+            if (!scopes.includes('whatsapp_business_management')) {
+                console.log("SyncTemplates: WARNING - Token missing 'whatsapp_business_management' permission!");
+            }
+        } catch (debugError: any) {
+            console.log("SyncTemplates: Could not debug token");
+        }
+
+        const url = `https://graph.facebook.com/v20.0/${wabaId}/message_templates`;
+
+        console.log("SyncTemplates: Fetching templates from:", url);
 
         const response = await axios.get(url, {
             params: {
