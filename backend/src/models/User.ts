@@ -35,7 +35,7 @@ class User extends Model<User> {
 
   @Column
   email: string;
-  
+
   @Column
   allTicket: string;
 
@@ -58,6 +58,9 @@ class User extends Model<User> {
 
   @Column
   online: boolean;
+
+  @Column
+  token: string;
 
   @CreatedAt
   createdAt: Date;

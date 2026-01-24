@@ -20,7 +20,7 @@ import {
 	IconButton,
 } from '@material-ui/core';
 
-import { Visibility, VisibilityOff, Person } from '@material-ui/icons';
+import { Visibility, VisibilityOff, Person, VpnKey, FileCopy, Refresh } from '@material-ui/icons';
 
 import { makeStyles } from "@material-ui/core/styles";
 import { green } from "@material-ui/core/colors";
@@ -115,7 +115,8 @@ const UserModal = ({ open, onClose, userId }) => {
 		name: "",
 		email: "",
 		password: "",
-		profile: "user"
+		profile: "user",
+		token: ""
 	};
 
 	const { user: loggedInUser } = useContext(AuthContext);
@@ -162,6 +163,21 @@ const UserModal = ({ open, onClose, userId }) => {
 			toastError(err);
 		}
 		handleClose();
+	};
+
+	const handleGenerateToken = async () => {
+		try {
+			const { data } = await api.post(`/users/${userId}/token`);
+			setUser(prevState => ({ ...prevState, token: data.token }));
+			toast.success("Token generado con éxito");
+		} catch (err) {
+			toastError(err);
+		}
+	};
+
+	const handleCopyToken = () => {
+		navigator.clipboard.writeText(user.token);
+		toast.success("Token copiado al portapapeles");
 	};
 
 	return (
@@ -295,6 +311,50 @@ const UserModal = ({ open, onClose, userId }) => {
 										/>
 									)}
 								/>
+
+								{userId && (
+									<div style={{ marginTop: 20, padding: 15, backgroundColor: "#f5f5f5", borderRadius: 10 }}>
+										<div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
+											<VpnKey style={{ marginRight: 10, color: "#555" }} />
+											<span style={{ fontWeight: "bold", color: "#555" }}>API Token (Permanente)</span>
+										</div>
+
+										<div style={{ display: "flex", gap: 10 }}>
+											<TextField
+												value={user.token || "No generado"}
+												variant="outlined"
+												margin="dense"
+												fullWidth
+												disabled
+												InputProps={{
+													style: { backgroundColor: "#fff" }
+												}}
+											/>
+											{user.token && (
+												<Button
+													variant="outlined"
+													color="primary"
+													onClick={handleCopyToken}
+													style={{ minWidth: 50 }}
+												>
+													<FileCopy />
+												</Button>
+											)}
+											<Button
+												variant="contained"
+												color="primary"
+												onClick={handleGenerateToken}
+												style={{ minWidth: 50 }}
+												title="Generar nuevo token"
+											>
+												<Refresh />
+											</Button>
+										</div>
+										<div style={{ fontSize: 12, color: "#777", marginTop: 5 }}>
+											Usa este token en n8n como: <b>Bearer {user.token ? user.token.substring(0, 10) + "..." : "TOKEN"}</b>
+										</div>
+									</div>
+								)}
 
 
 

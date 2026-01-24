@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { logger } from "../utils/logger";
 import AppError from "../errors/AppError";
 import authConfig from "../config/auth";
+import User from "../models/User";
 
 interface TokenPayload {
   id: string;
@@ -13,7 +14,7 @@ interface TokenPayload {
   exp: number;
 }
 
-const isAuth = (req: Request, res: Response, next: NextFunction): void => {
+const isAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
@@ -31,7 +32,17 @@ const isAuth = (req: Request, res: Response, next: NextFunction): void => {
       companyId
     };
   } catch (err) {
-    throw new AppError("Invalid token. We'll try to assign a new one on next request", 403 );
+    // Si falla JWT, intentar buscar usuario por token (API Token)
+    const user = await User.findOne({ where: { token } });
+    if (user) {
+      req.user = {
+        id: user.id.toString(),
+        profile: user.profile,
+        companyId: user.companyId
+      };
+      return next();
+    }
+    throw new AppError("Invalid token. We'll try to assign a new one on next request", 403);
   }
 
   return next();

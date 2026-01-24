@@ -44,7 +44,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     companyId: bodyCompanyId,
     queueIds,
     whatsappId,
-	allTicket
+    allTicket
   } = req.body;
   let userCompanyId: number | null = null;
 
@@ -56,7 +56,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     requestUser = await User.findByPk(req.user.id);
   }
 
-  const newUserCompanyId = bodyCompanyId || userCompanyId; 
+  const newUserCompanyId = bodyCompanyId || userCompanyId;
 
   if (req.url === "/signup") {
     if (await CheckSettingsHelper("userCreation") === "disabled") {
@@ -76,7 +76,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     companyId: newUserCompanyId,
     queueIds,
     whatsappId,
-	allTicket
+    allTicket
   });
 
   const io = getIO();
@@ -152,4 +152,28 @@ export const list = async (req: Request, res: Response): Promise<Response> => {
   });
 
   return res.status(200).json(users);
+};
+
+export const generateToken = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { userId } = req.params;
+  const { companyId } = req.user;
+  const user = await User.findByPk(userId);
+
+  if (!user) {
+    throw new AppError("ERR_NO_USER_FOUND", 404);
+  }
+
+  if (user.companyId !== companyId) {
+    throw new AppError("ERR_NO_PERMISSION", 403);
+  }
+
+  // Generar un token simple y seguro (UUID)
+  const token = require("crypto").randomBytes(32).toString("hex");
+
+  await user.update({ token });
+
+  return res.status(200).json({ token });
 };

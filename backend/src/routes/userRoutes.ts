@@ -17,4 +17,6 @@ userRoutes.get("/users/:userId", isAuth, UserController.show);
 
 userRoutes.delete("/users/:userId", isAuth, UserController.remove);
 
+userRoutes.post("/users/:userId/token", isAuth, UserController.generateToken);
+
 export default userRoutes;
