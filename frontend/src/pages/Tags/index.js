@@ -311,6 +311,7 @@ const Tags = () => {
         <Table size="small">
           <TableHead>
             <TableRow>
+              <TableCell align="center" className={classes.tableHeader} style={{ width: '50px' }}>ID</TableCell>
               <TableCell align="center" className={classes.tableHeader}>{i18n.t("tags.table.name")}</TableCell>
               <TableCell align="center" className={classes.tableHeader}>
                 Color <span style={{ marginLeft: 5, fontSize: 12, cursor: 'help' }} title="Color de la etiqueta">ⓘ</span>
@@ -324,6 +325,9 @@ const Tags = () => {
             <>
               {tags.map((tag, index) => (
                 <TableRow key={tag.id} style={{ backgroundColor: index % 2 === 0 ? "#fff" : "#f9f9f9" }}>
+                  <TableCell align="center" style={{ fontWeight: 'bold', color: '#666' }}>
+                    {tag.id}
+                  </TableCell>
                   <TableCell align="center">
                     <span
                       className={classes.tagChip}
