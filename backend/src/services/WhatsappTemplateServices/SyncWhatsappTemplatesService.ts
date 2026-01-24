@@ -19,20 +19,28 @@ interface MetaTemplate {
 const SyncWhatsappTemplatesService = async ({
     companyId,
     whatsappId
-}: Request): Promise<{ synced: number; created: number }> => {
+}: Request): Promise<{ synced: number; created: number; error?: string }> => {
     const whatsapp = await Whatsapp.findOne({
         where: { id: whatsappId, companyId }
     });
 
     if (!whatsapp) {
-        return { synced: 0, created: 0 };
+        console.log("SyncTemplates: WhatsApp connection not found", { whatsappId, companyId });
+        return { synced: 0, created: 0, error: "Conexión no encontrada" };
     }
 
     const accessToken = whatsapp.facebookAccessToken || whatsapp.token;
     const wabaId = whatsapp.whatsappAccountId;
 
+    console.log("SyncTemplates: Checking credentials", {
+        hasAccessToken: !!accessToken,
+        wabaId,
+        whatsappName: whatsapp.name
+    });
+
     if (!accessToken || !wabaId) {
-        return { synced: 0, created: 0 };
+        console.log("SyncTemplates: Missing credentials");
+        return { synced: 0, created: 0, error: "Faltan credenciales de Meta (Access Token o WABA ID)" };
     }
 
     let synced = 0;
@@ -41,11 +49,17 @@ const SyncWhatsappTemplatesService = async ({
     try {
         const url = `https://graph.facebook.com/v20.0/${wabaId}/message_templates`;
 
+        console.log("SyncTemplates: Fetching from Meta API", { url });
+
         const response = await axios.get(url, {
             params: {
                 access_token: accessToken,
                 limit: 100
             }
+        });
+
+        console.log("SyncTemplates: Meta API Response", {
+            templateCount: response.data?.data?.length || 0
         });
 
         const metaTemplates: MetaTemplate[] = response.data.data || [];
@@ -77,7 +91,7 @@ const SyncWhatsappTemplatesService = async ({
                 let footerText = "";
                 let buttons: any[] = [];
 
-                for (const component of metaTemplate.components) {
+                for (const component of metaTemplate.components || []) {
                     if (component.type === "BODY") {
                         bodyText = component.text || "";
                     } else if (component.type === "HEADER") {
@@ -98,7 +112,7 @@ const SyncWhatsappTemplatesService = async ({
                     status: metaTemplate.status,
                     headerType,
                     headerContent,
-                    bodyText,
+                    bodyText: bodyText || "Contenido no disponible",
                     footerText,
                     buttons: buttons.length > 0 ? JSON.stringify(buttons) : null,
                     metaTemplateId: metaTemplate.id,
@@ -106,10 +120,17 @@ const SyncWhatsappTemplatesService = async ({
                     whatsappId
                 });
                 created++;
+                console.log("SyncTemplates: Created template", { name: metaTemplate.name });
             }
         }
     } catch (error: any) {
-        console.error("Meta API Sync Error:", error.response?.data || error.message);
+        const errorMessage = error.response?.data?.error?.message || error.message;
+        console.error("SyncTemplates: Meta API Error", {
+            error: errorMessage,
+            errorCode: error.response?.data?.error?.code,
+            errorType: error.response?.data?.error?.type
+        });
+        return { synced, created, error: errorMessage };
     }
 
     return { synced, created };

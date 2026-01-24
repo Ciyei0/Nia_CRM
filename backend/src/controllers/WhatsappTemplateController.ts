@@ -116,13 +116,23 @@ export const sync = async (req: Request, res: Response): Promise<Response> => {
         whatsappId
     });
 
+    // If there was an error, return it with appropriate status
+    if (result.error) {
+        return res.status(400).json({
+            message: `Error al sincronizar: ${result.error}`,
+            error: result.error,
+            synced: result.synced,
+            created: result.created
+        });
+    }
+
     const io = getIO();
     io.to(`company-${companyId}-mainchannel`).emit(`company-${companyId}-whatsapptemplate`, {
         action: "sync"
     });
 
     return res.status(200).json({
-        message: `Synced ${result.synced} templates, created ${result.created} new`,
+        message: `Sincronizado: ${result.synced} actualizadas, ${result.created} nuevas`,
         ...result
     });
 };
