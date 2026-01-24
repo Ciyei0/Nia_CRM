@@ -88,13 +88,20 @@ const SyncWhatsappTemplatesService = async ({
         const response = await axios.get(url, {
             params: {
                 access_token: accessToken,
-                limit: 100
+                limit: 100,
+                fields: 'id,name,status,category,language,components'
             }
         });
 
         console.log("SyncTemplates: Meta API Response", {
-            templateCount: response.data?.data?.length || 0
+            templateCount: response.data?.data?.length || 0,
+            paging: response.data?.paging || null
         });
+
+        // Log raw response for debugging
+        if (response.data?.data?.length === 0) {
+            console.log("SyncTemplates: Raw API response:", JSON.stringify(response.data, null, 2));
+        }
 
         const metaTemplates: MetaTemplate[] = response.data.data || [];
 
