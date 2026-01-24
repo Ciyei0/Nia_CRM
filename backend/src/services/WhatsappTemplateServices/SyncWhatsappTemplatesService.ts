@@ -75,8 +75,10 @@ const SyncWhatsappTemplatesService = async ({
                 }
             }
         } catch (phoneError: any) {
-            // If query fails, assume the ID is already a WABA ID
-            console.log("SyncTemplates: Could not determine ID type, using as WABA ID");
+            // If query fails, log the error and assume the ID is already a WABA ID
+            const errorMsg = phoneError.response?.data?.error?.message || phoneError.message;
+            console.log("SyncTemplates: Could not determine ID type:", errorMsg);
+            console.log("SyncTemplates: Error details:", phoneError.response?.data || phoneError.message);
         }
 
         const url = `https://graph.facebook.com/v20.0/${realWabaId}/message_templates`;
