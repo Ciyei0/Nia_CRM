@@ -38,11 +38,17 @@ export const update = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
+  console.log("=== REFRESH_TOKEN ENDPOINT CALLED ===");
+  console.log("Cookies received:", req.cookies);
+
   const token: string = req.cookies.jrt;
 
   if (!token) {
+    console.log("No jrt cookie found - session expired");
     throw new AppError("ERR_SESSION_EXPIRED", 401);
   }
+
+  console.log("jrt cookie found, calling RefreshTokenService...");
 
   const { user, newToken, refreshToken } = await RefreshTokenService(
     res,
