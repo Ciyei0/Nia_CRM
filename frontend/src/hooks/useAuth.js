@@ -133,7 +133,7 @@ const useAuth = () => {
             moment.locale('pt-br');
             const dueDate = data.user.company.dueDate;
             const hoje = moment(moment()).format("DD/MM/yyyy");
-            const vencimento = moment(dueDate).format("DD/MM/yyyy");
+            const vencimiento = moment(dueDate).format("DD/MM/yyyy");
 
             var diff = moment(dueDate).diff(moment(moment()).format());
 
@@ -144,7 +144,7 @@ const useAuth = () => {
                 localStorage.setItem("token", JSON.stringify(data.token));
                 localStorage.setItem("companyId", companyId);
                 localStorage.setItem("userId", id);
-                localStorage.setItem("companyDueDate", vencimento);
+                localStorage.setItem("companyDueDate", vencimiento);
 
                 // Store refreshToken
                 if (data.refreshToken) {
