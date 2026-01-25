@@ -13,6 +13,10 @@ const SyncTags = async ({
 }: Request): Promise<Ticket | null> => {
   const ticket = await Ticket.findByPk(ticketId, { include: [Tag] });
 
+  if (!ticket) {
+    throw new Error("ERR_NO_TICKET_FOUND");
+  }
+
   // Validar que tags sea un array
   if (!tags || !Array.isArray(tags)) {
     return ticket;
