@@ -39,15 +39,21 @@ const useAuth = () => {
       if (error?.response?.status === 403 && !originalRequest._retry) {
         originalRequest._retry = true;
 
-        const { data } = await api.post("/auth/refresh_token");
+        const refreshToken = localStorage.getItem("refreshToken");
+        const { data } = await api.post("/auth/refresh_token", {
+          refreshToken
+        });
+
         if (data) {
           localStorage.setItem("token", JSON.stringify(data.token));
+          localStorage.setItem("refreshToken", data.refreshToken);
           api.defaults.headers.Authorization = `Bearer ${data.token}`;
         }
         return api(originalRequest);
       }
       if (error?.response?.status === 401) {
         localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
         localStorage.removeItem("companyId");
         api.defaults.headers.Authorization = undefined;
         setIsAuth(false);
@@ -60,24 +66,30 @@ const useAuth = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log("useAuth: Checking for token in localStorage:", token ? "FOUND" : "NOT FOUND");
-
     (async () => {
       if (token) {
         try {
-          console.log("useAuth: Calling refresh_token...");
-          const { data } = await api.post("/auth/refresh_token");
-          console.log("useAuth: refresh_token success", data);
+          const refreshToken = localStorage.getItem("refreshToken");
+          const { data } = await api.post("/auth/refresh_token", {
+            refreshToken
+          });
           api.defaults.headers.Authorization = `Bearer ${data.token}`;
-          localStorage.setItem("token", JSON.stringify(data.token));
           setIsAuth(true);
           setUser(data.user);
+          // Update tokens in storage
+          localStorage.setItem("token", JSON.stringify(data.token));
+          if (data.refreshToken) {
+            localStorage.setItem("refreshToken", data.refreshToken);
+          }
         } catch (err) {
-          console.log("useAuth: refresh_token error", err);
           toastError(err);
+          // If refresh fails, clear everything to force login
+          localStorage.removeItem("token");
+          localStorage.removeItem("refreshToken");
+          localStorage.removeItem("companyId");
+          api.defaults.headers.Authorization = undefined;
+          setIsAuth(false);
         }
-      } else {
-        console.log("useAuth: No token found, user not authenticated");
       }
       setLoading(false);
     })();
@@ -86,7 +98,6 @@ const useAuth = () => {
   useEffect(() => {
     const companyId = localStorage.getItem("companyId");
     if (companyId) {
-
       const socket = socketManager.getSocket(companyId);
 
       socket.on(`company-${companyId}-user`, (data) => {
@@ -94,7 +105,6 @@ const useAuth = () => {
           setUser(data.user);
         }
       });
-
 
       return () => {
         socket.disconnect();
@@ -116,14 +126,14 @@ const useAuth = () => {
           (s) => s.key === "campaignsEnabled"
         );
         if (setting && setting.value === "true") {
-          localStorage.setItem("cshow", null); //regla para mostrar campañas
+          localStorage.setItem("cshow", null);
         }
       }
 
       moment.locale('pt-br');
       const dueDate = data.user.company.dueDate;
       const hoje = moment(moment()).format("DD/MM/yyyy");
-      const vencimiento = moment(dueDate).format("DD/MM/yyyy");
+      const vencimento = moment(dueDate).format("DD/MM/yyyy");
 
       var diff = moment(dueDate).diff(moment(moment()).format());
 
@@ -134,7 +144,13 @@ const useAuth = () => {
         localStorage.setItem("token", JSON.stringify(data.token));
         localStorage.setItem("companyId", companyId);
         localStorage.setItem("userId", id);
-        localStorage.setItem("companyDueDate", vencimiento);
+        localStorage.setItem("companyDueDate", vencimento);
+
+        // Store refreshToken
+        if (data.refreshToken) {
+          localStorage.setItem("refreshToken", data.refreshToken);
+        }
+
         api.defaults.headers.Authorization = `Bearer ${data.token}`;
         setUser(data.user);
         setIsAuth(true);
@@ -164,6 +180,7 @@ Contacta con Soporte para más información!`);
       setIsAuth(false);
       setUser({});
       localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken"); // Clear refreshToken
       localStorage.removeItem("companyId");
       localStorage.removeItem("userId");
       localStorage.removeItem("cshow");

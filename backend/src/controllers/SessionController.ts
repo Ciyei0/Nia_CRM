@@ -30,6 +30,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
 
   return res.status(200).json({
     token,
+    refreshToken, // Send refreshToken to client so it can be stored in localStorage
     user: serializedUser
   });
 };
@@ -39,16 +40,16 @@ export const update = async (
   res: Response
 ): Promise<Response> => {
   console.log("=== REFRESH_TOKEN ENDPOINT CALLED ===");
-  console.log("Cookies received:", req.cookies);
 
-  const token: string = req.cookies.jrt;
+  // Try to get token from cookie OR body
+  const token: string = req.cookies.jrt || req.body.refreshToken;
 
   if (!token) {
-    console.log("No jrt cookie found - session expired");
+    console.log("No refresh token found in cookie or body - session expired");
     throw new AppError("ERR_SESSION_EXPIRED", 401);
   }
 
-  console.log("jrt cookie found, calling RefreshTokenService...");
+  console.log("Refresh token found, calling RefreshTokenService...");
 
   const { user, newToken, refreshToken } = await RefreshTokenService(
     res,
@@ -57,7 +58,11 @@ export const update = async (
 
   SendRefreshToken(res, refreshToken);
 
-  return res.json({ token: newToken, user });
+  return res.json({
+    token: newToken,
+    refreshToken, // Return new refresh token
+    user
+  });
 };
 
 export const me = async (req: Request, res: Response): Promise<Response> => {
