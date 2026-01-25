@@ -4,10 +4,10 @@ import { has, isArray } from "lodash";
 
 import { toast } from "react-toastify";
 
-import { i18n } from "../../translate/i18n";
-import api from "../../services/api";
-import toastError from "../../errors/toastError";
-import { SocketContext } from "../../context/Socket/SocketContext";
+import { i18n } from "../translate/i18n";
+import api from "../services/api";
+import toastError from "../errors/toastError";
+import { SocketContext } from "../context/Socket/SocketContext";
 import moment from "moment";
 
 const useAuth = () => {
