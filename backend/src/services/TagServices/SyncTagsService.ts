@@ -1,6 +1,7 @@
 import Tag from "../../models/Tag";
 import Ticket from "../../models/Ticket";
 import TicketTag from "../../models/TicketTag";
+import { getIO } from "../../libs/socket";
 
 interface Request {
   tags: Tag[];
@@ -34,7 +35,16 @@ const SyncTags = async ({
     await TicketTag.bulkCreate(tagList);
   }
 
-  ticket?.reload();
+  await ticket.reload();
+
+  const io = getIO();
+  io.to(ticket.status)
+    .to("notification")
+    .to(ticketId.toString())
+    .emit(`company-${ticket.companyId}-ticket`, {
+      action: "update",
+      ticket
+    });
 
   return ticket;
 };
