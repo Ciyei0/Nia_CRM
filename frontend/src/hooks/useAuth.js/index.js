@@ -9,6 +9,7 @@ import api from "../../services/api";
 import toastError from "../../errors/toastError";
 import { SocketContext } from "../../context/Socket/SocketContext";
 import moment from "moment";
+
 const useAuth = () => {
   const history = useHistory();
   const [isAuth, setIsAuth] = useState(false);
@@ -59,16 +60,24 @@ const useAuth = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    console.log("useAuth: Checking for token in localStorage:", token ? "FOUND" : "NOT FOUND");
+
     (async () => {
       if (token) {
         try {
+          console.log("useAuth: Calling refresh_token...");
           const { data } = await api.post("/auth/refresh_token");
+          console.log("useAuth: refresh_token success", data);
           api.defaults.headers.Authorization = `Bearer ${data.token}`;
+          localStorage.setItem("token", JSON.stringify(data.token));
           setIsAuth(true);
           setUser(data.user);
         } catch (err) {
+          console.log("useAuth: refresh_token error", err);
           toastError(err);
         }
+      } else {
+        console.log("useAuth: No token found, user not authenticated");
       }
       setLoading(false);
     })();
@@ -77,7 +86,7 @@ const useAuth = () => {
   useEffect(() => {
     const companyId = localStorage.getItem("companyId");
     if (companyId) {
-   
+
       const socket = socketManager.getSocket(companyId);
 
       socket.on(`company-${companyId}-user`, (data) => {
@@ -85,12 +94,12 @@ const useAuth = () => {
           setUser(data.user);
         }
       });
-    
-    
-    return () => {
-      socket.disconnect();
-    };
-  }
+
+
+      return () => {
+        socket.disconnect();
+      };
+    }
   }, [socketManager, user]);
 
   const handleLogin = async (userData) => {
@@ -107,14 +116,14 @@ const useAuth = () => {
           (s) => s.key === "campaignsEnabled"
         );
         if (setting && setting.value === "true") {
-          localStorage.setItem("cshow", null); //regra pra exibir campanhas
+          localStorage.setItem("cshow", null); //regla para mostrar campañas
         }
       }
 
       moment.locale('pt-br');
       const dueDate = data.user.company.dueDate;
       const hoje = moment(moment()).format("DD/MM/yyyy");
-      const vencimento = moment(dueDate).format("DD/MM/yyyy");
+      const vencimiento = moment(dueDate).format("DD/MM/yyyy");
 
       var diff = moment(dueDate).diff(moment(moment()).format());
 
@@ -125,23 +134,22 @@ const useAuth = () => {
         localStorage.setItem("token", JSON.stringify(data.token));
         localStorage.setItem("companyId", companyId);
         localStorage.setItem("userId", id);
-        localStorage.setItem("companyDueDate", vencimento);
+        localStorage.setItem("companyDueDate", vencimiento);
         api.defaults.headers.Authorization = `Bearer ${data.token}`;
         setUser(data.user);
         setIsAuth(true);
         toast.success(i18n.t("auth.toasts.success"));
         if (Math.round(dias) < 5) {
-          toast.warn(`Sua assinatura vence em ${Math.round(dias)} ${Math.round(dias) === 1 ? 'dia' : 'dias'} `);
+          toast.warn(`Tu suscripción vence en ${Math.round(dias)} ${Math.round(dias) === 1 ? 'día' : 'días'} `);
         }
         history.push("/tickets");
         setLoading(false);
       } else {
-        toastError(`Opss! Sua assinatura venceu ${vencimento}.
-Entre em contato com o Suporte para mais informações! `);
+        toastError(`¡Ups! Tu suscripción venció el ${vencimiento}.
+Contacta con Soporte para más información!`);
         setLoading(false);
       }
 
-      //quebra linha 
     } catch (err) {
       toastError(err);
       setLoading(false);
