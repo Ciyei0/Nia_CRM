@@ -3,6 +3,7 @@ import AppError from "../errors/AppError";
 import { getIO } from "../libs/socket";
 
 import AuthUserService from "../services/UserServices/AuthUserService";
+import ShowUserService from "../services/UserServices/ShowUserService";
 import { SendRefreshToken } from "../helpers/SendRefreshToken";
 import { RefreshTokenService } from "../services/AuthServices/RefreshTokenService";
 import FindUserFromToken from "../services/AuthServices/FindUserFromToken";
@@ -66,13 +67,9 @@ export const update = async (
 };
 
 export const me = async (req: Request, res: Response): Promise<Response> => {
-  const token: string = req.cookies.jrt;
-  const user = await FindUserFromToken(token);
-  const { id, profile, super: superAdmin } = user;
-
-  if (!token) {
-    throw new AppError("ERR_SESSION_EXPIRED", 401);
-  }
+  const { id } = req.user;
+  const user = await ShowUserService(id);
+  const { profile, super: superAdmin } = user;
 
   return res.json({ id, profile, super: superAdmin });
 };
