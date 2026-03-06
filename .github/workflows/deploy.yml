@@ -28,8 +28,8 @@ jobs:
             
             # 3. Reconstruir los servicios usando Docker Compose
             # (Asumiendo que así corres tu sistema en la VPS)
-            docker-compose build
-            docker-compose up -d
+            docker compose build
+            docker compose up -d
 
             # Opciones Adicionales (Descomenta según necesites):
             # Si corres sin docker y usas PM2:
