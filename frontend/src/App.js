@@ -86,6 +86,16 @@ const App = () => {
                 campaigntab: mode === "light" ? "#ededed" : "#666",
                 mediainput: mode === "light" ? "#ededed" : "#1c1c1c",
             },
+            typography: {
+                fontFamily: "'Inter', 'Roboto', 'Helvetica', 'Arial', sans-serif",
+                button: {
+                    textTransform: "none",
+                    fontWeight: 600,
+                }
+            },
+            shape: {
+                borderRadius: 12,
+            },
             mode,
         },
         locale

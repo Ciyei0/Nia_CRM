@@ -66,7 +66,17 @@ const useStyles = makeStyles(theme => ({
 		flexDirection: "column",
 		alignItems: "center",
 		justifyContent: "center",
-		height: "100vh"
+		height: "100vh",
+	},
+	formContainer: {
+		width: "100%",
+		maxWidth: "400px",
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "center",
+	},
+	rightSide: {
+		backgroundColor: theme.palette.type === "light" ? "#ffffff" : "#121212",
 	}
 }));
 
@@ -112,86 +122,91 @@ const Login = () => {
 			<Grid item xs={false} sm={4} md={7} className={classes.image} style={{ background: 'linear-gradient(to right, #0D47A1 , #1976D2 , #0D47A1)' }}>
 				<div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%", color: "white" }}>
 					<img src={logoWithRandom} alt="Logo" style={{ width: "200px", marginBottom: "20px" }} />
-					<Typography component="h1" variant="h4" style={{ fontWeight: "bold" }}>
+					<Typography component="h1" variant="h3" style={{ fontWeight: 700, letterSpacing: "-1px" }}>
 						Bienvenido a NIA CRM
 					</Typography>
-					<Typography variant="h6">
+					<Typography variant="h6" style={{ marginTop: "10px", opacity: 0.9 }}>
 						Gestiona tu negocio de forma inteligente
 					</Typography>
 				</div>
 			</Grid>
 
 			{/* Right Side - Login Form */}
-			<Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+			<Grid item xs={12} sm={8} md={5} className={classes.rightSide}>
 				<div className={classes.loginBox}>
-					<img style={{ margin: "0 auto", width: "100%", maxWidth: "150px", marginBottom: "30px" }} src={logoWithRandom} alt={`${process.env.REACT_APP_NAME_SYSTEM}`} />
-					<Typography component="h1" variant="h5">
-						Iniciar Sesión
-					</Typography>
-					<form className={classes.form} noValidate onSubmit={handlSubmit}>
-						<TextField
-							variant="outlined"
-							margin="normal"
-							required
-							fullWidth
-							id="email"
-							label={i18n.t("login.form.email")}
-							name="email"
-							value={user.email}
-							onChange={handleChangeInput}
-							autoComplete="email"
-							autoFocus
-						/>
-						<TextField
-							variant="outlined"
-							margin="normal"
-							required
-							fullWidth
-							name="password"
-							label={i18n.t("login.form.password")}
-							type="password"
-							id="password"
-							value={user.password}
-							onChange={handleChangeInput}
-							autoComplete="current-password"
-						/>
+					<div className={classes.formContainer}>
+						<img style={{ margin: "0 auto", width: "100%", maxWidth: "150px", marginBottom: "40px" }} src={logoWithRandom} alt={`${process.env.REACT_APP_NAME_SYSTEM}`} />
+						<Typography component="h1" variant="h4" style={{ fontWeight: 600, marginBottom: "30px" }}>
+							Iniciar Sesión
+						</Typography>
+						<form className={classes.form} noValidate onSubmit={handlSubmit}>
+							<TextField
+								variant="outlined"
+								margin="normal"
+								required
+								fullWidth
+								id="email"
+								label={i18n.t("login.form.email")}
+								name="email"
+								value={user.email}
+								onChange={handleChangeInput}
+								autoComplete="email"
+								autoFocus
+							/>
+							<TextField
+								variant="outlined"
+								margin="normal"
+								required
+								fullWidth
+								name="password"
+								label={i18n.t("login.form.password")}
+								type="password"
+								id="password"
+								value={user.password}
+								onChange={handleChangeInput}
+								autoComplete="current-password"
+							/>
 
-						<Grid container>
-							<Grid item xs style={{ textAlign: "right" }}>
-								<Link component={RouterLink} to="/forgetpsw" variant="body2">
-									¿Olvidaste tu contraseña?
-								</Link>
-							</Grid>
-						</Grid>
-
-						<Button
-							type="submit"
-							fullWidth
-							variant="contained"
-							color="primary"
-							className={classes.submit}
-						>
-							{i18n.t("login.buttons.submit")}
-						</Button>
-
-						{viewregister === "enabled" && (
 							<Grid container>
-								<Grid item>
-									<Link
-										href="#"
-										variant="body2"
-										component={RouterLink}
-										to="/signup"
-									>
-										{i18n.t("login.buttons.register")}
+								<Grid item xs style={{ textAlign: "right" }}>
+									<Link component={RouterLink} to="/forgetpsw" variant="body2">
+										¿Olvidaste tu contraseña?
 									</Link>
 								</Grid>
 							</Grid>
-						)}
-						<Box mt={5}>
-							<Copyright />
-						</Box>
-					</form>
+
+							<Button
+								type="submit"
+								fullWidth
+								variant="contained"
+								color="primary"
+								size="large"
+								className={classes.submit}
+								style={{ padding: "12px", fontSize: "1rem", boxShadow: "0 4px 14px rgba(21, 101, 192, 0.4)", borderRadius: "12px" }}
+							>
+								{i18n.t("login.buttons.submit")}
+							</Button>
+
+							{viewregister === "enabled" && (
+								<Grid container>
+									<Grid item xs style={{ textAlign: "center", marginTop: "15px" }}>
+										<Link
+											href="#"
+											variant="body2"
+											component={RouterLink}
+											to="/signup"
+											style={{ fontWeight: 500 }}
+										>
+											{i18n.t("login.buttons.register")}
+										</Link>
+									</Grid>
+								</Grid>
+							)}
+							<Box mt={5}>
+								<Copyright />
+							</Box>
+						</form>
+					</div>
 				</div>
 			</Grid>
 		</Grid>

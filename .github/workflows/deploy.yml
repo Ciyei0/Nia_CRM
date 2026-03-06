@@ -1,0 +1,38 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main # O la rama que uses para producción
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Deploy to VPS (SSH)
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            # 1. Navegar a la carpeta del proyecto en la VPS
+            cd /root/Nia_CRM
+            
+            # 2. Bajar los últimos cambios de GitHub
+            git pull origin main
+            
+            # 3. Reconstruir los servicios usando Docker Compose
+            # (Asumiendo que así corres tu sistema en la VPS)
+            docker-compose build
+            docker-compose up -d
+
+            # Opciones Adicionales (Descomenta según necesites):
+            # Si corres sin docker y usas PM2:
+            # cd frontend && npm install && npm run build
+            # cd ../backend && npm install && npm run build
+            # pm2 restart all

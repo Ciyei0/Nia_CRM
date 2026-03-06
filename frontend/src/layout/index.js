@@ -68,6 +68,7 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: 24, // keep right padding when drawer closed
     color: theme.palette.dark.main,
     background: theme.palette.barraSuperior,
+    boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
   },
   toolbarIcon: {
     display: "flex",
@@ -112,6 +113,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     whiteSpace: "nowrap",
     width: drawerWidth,
+    borderRight: "1px solid rgba(0,0,0,0.05)",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
@@ -369,6 +371,7 @@ const LoggedInLayout = ({ children, themeToggle }) => {
         position="absolute"
         className={clsx(classes.appBar, drawerOpen && classes.appBarShift)}
         color="primary"
+        elevation={0}
       >
         <Toolbar variant="dense" className={classes.toolbar}>
           <IconButton
