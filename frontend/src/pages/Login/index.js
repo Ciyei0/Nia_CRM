@@ -123,7 +123,7 @@ const Login = () => {
 				<div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "100%", color: "white" }}>
 					<img src={logoWithRandom} alt="Logo" style={{ width: "200px", marginBottom: "20px" }} />
 					<Typography component="h1" variant="h3" style={{ fontWeight: 700, letterSpacing: "-1px" }}>
-						Bienvenido a NIA CRM
+						Bienvenido a NIA CRM PRUEBA
 					</Typography>
 					<Typography variant="h6" style={{ marginTop: "10px", opacity: 0.9 }}>
 						Gestiona tu negocio de forma inteligente
