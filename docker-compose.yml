@@ -24,9 +24,7 @@ services:
       - nia_redis_data:/data
 
   nia-backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: ghcr.io/ciyei0/nia_crm-backend:latest
     container_name: nia_crm_backend
     restart: always
     environment:
@@ -52,9 +50,7 @@ services:
       - nia-redis
 
   nia-frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: ghcr.io/ciyei0/nia_crm-frontend:latest
     container_name: nia_crm_frontend
     restart: always
     ports:
