@@ -1,4 +1,4 @@
-FROM node:18-alpine as build
+FROM node:18-alpine AS build
 
 WORKDIR /app
 
@@ -8,6 +8,9 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
+
+# Fix for OpenSSL 3.0 error in Node 17+ (ERR_OSSL_EVP_UNSUPPORTED)
+ENV NODE_OPTIONS=--openssl-legacy-provider
 
 RUN npm run build
 
