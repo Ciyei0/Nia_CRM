@@ -72,11 +72,11 @@ jobs:
             # 2. Bajar los últimos cambios de GitHub (idealmente solo archivos como docker-compose.yml)
             git pull origin main
             
-            # 3. Loguearse en GHCR (Necesita un token en las variables de entorno o bash si el repo es privado)
-            # Como buena práctica temporal, usaremos el mismo contenedor público
+            # 3. Loguearse en GHCR para poder descargar las imagenes
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             
             # 4. Descargar las imagenes más recientes
             docker compose pull
             
-            # 5. Reiniciar los servicios usando Docker Compose con las nuevas imagenes
-            docker compose up -d
+            # 5. Reiniciar los servicios forzando la recreación de los contenedores
+            docker compose up -d --force-recreate
