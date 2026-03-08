@@ -45,13 +45,14 @@ const useStyles = makeStyles((theme) => ({
   logoutButton: {
     borderRadius: 10,
     margin: '8px 12px',
-    background: 'linear-gradient(135deg, #7c3aed, #8E2DE2)',
-    color: '#fff',
-    transition: 'all 0.3s ease',
+    border: theme.mode === 'light' ? '1px solid #e0e0e0' : '1px solid #333',
+    backgroundColor: 'transparent',
+    color: theme.mode === 'light' ? '#888' : '#999',
+    transition: 'all 0.2s ease',
     '&:hover': {
-      background: 'linear-gradient(135deg, #6d28d9, #7c3aed)',
-      boxShadow: '0 4px 12px rgba(124, 58, 237, 0.4)',
-      transform: 'translateY(-1px)',
+      backgroundColor: theme.mode === 'light' ? '#fff0f0' : 'rgba(239,68,68,0.1)',
+      borderColor: '#ef4444',
+      color: '#ef4444',
     },
   },
   menuItem: {
@@ -60,20 +61,30 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: 8,
     paddingBottom: 8,
     transition: 'all 0.2s ease',
+    borderLeft: '3px solid transparent',
     '&:hover': {
-      backgroundColor: theme.mode === 'light' ? 'rgba(124, 58, 237, 0.08)' : 'rgba(167, 139, 250, 0.08)',
+      backgroundColor: theme.mode === 'light' ? '#f5f3ff' : 'rgba(124, 58, 237, 0.08)',
+      borderLeft: '3px solid #7c3aed',
+      '& .MuiListItemIcon-root': {
+        color: '#7c3aed',
+      },
+      '& .MuiListItemText-primary': {
+        color: theme.mode === 'light' ? '#7c3aed' : '#a78bfa',
+      },
     },
   },
   menuIcon: {
     minWidth: 40,
-    color: theme.mode === 'light' ? '#7c3aed' : '#8b7faa',
+    color: theme.mode === 'light' ? '#777' : '#888',
+    transition: 'color 0.2s ease',
   },
   menuText: {
     '& .MuiListItemText-primary': {
       fontSize: '13.5px',
       fontWeight: 500,
       fontFamily: "'Poppins', sans-serif",
-      color: theme.mode === 'light' ? '#1e1b4b' : '#ccc8d8',
+      color: theme.mode === 'light' ? '#444' : '#bbb',
+      transition: 'color 0.2s ease',
     },
   },
   versionText: {
@@ -81,14 +92,14 @@ const useStyles = makeStyles((theme) => ({
     padding: '12px 24px',
     textAlign: 'center',
     fontFamily: "'Poppins', sans-serif",
-    color: theme.mode === 'light' ? '#a78bfa' : '#555',
+    color: theme.mode === 'light' ? '#bbb' : '#555',
   },
   divider: {
     margin: '8px 16px',
-    backgroundColor: theme.mode === 'light' ? '#ede9fe' : '#2c2c3a',
+    backgroundColor: theme.mode === 'light' ? '#eee' : '#2c2c3a',
   },
   connectionWarning: {
-    color: '#d32f2f',
+    color: '#ef4444',
     fontSize: '8px',
     marginLeft: 4,
   },
