@@ -66,17 +66,19 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           port: ${{ secrets.VPS_PORT }}
           script: |
-            # 1. Navegar a la carpeta del proyecto en la VPS
             cd /root/Nia_CRM
-            
-            # 2. Bajar los últimos cambios de GitHub (idealmente solo archivos como docker-compose.yml)
             git pull origin main
             
-            # 3. Loguearse en GHCR para poder descargar las imagenes
+            # Loguearse en GHCR
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             
-            # 4. Descargar las imagenes más recientes
-            docker compose pull
+            # Forzar eliminación de contenedores viejos
+            docker compose stop nia-frontend nia-backend
+            docker compose rm -f nia-frontend nia-backend
             
-            # 5. Reiniciar los servicios forzando la recreación de los contenedores
+            # Descargar nuevas imágenes y levantar
+            docker compose pull
             docker compose up -d --force-recreate
+            
+            # Limpiar imágenes sueltas para no llenar el disco de la VPS
+            docker image prune -a -f
