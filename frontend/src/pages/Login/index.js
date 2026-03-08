@@ -76,11 +76,13 @@ const useStyles = makeStyles(theme => ({
 		textAlign: "center",
 	},
 	title: {
-		fontWeight: 800,
-		fontSize: "1.6rem",
-		letterSpacing: "-0.5px",
-		fontFamily: "'Inter', 'Roboto', sans-serif",
-		color: theme.palette.type === "light" ? "#333" : "#fff",
+		fontWeight: 900,
+		fontSize: "2.2rem",
+		letterSpacing: "-1px",
+		fontFamily: "'Poppins', 'Inter', 'Roboto', sans-serif",
+		background: "linear-gradient(45deg, #4A00E0, #8E2DE2)",
+		WebkitBackgroundClip: "text",
+		WebkitTextFillColor: "transparent",
 		marginBottom: theme.spacing(1),
 		textAlign: "center",
 	},
@@ -158,10 +160,9 @@ const Login = () => {
 
 			<div className={classes.paper}>
 				<div className={classes.logoContainer}>
-					<img style={{ width: "100%", maxWidth: "160px" }} src={logoWithRandom} alt={`${process.env.REACT_APP_NAME_SYSTEM}`} />
 					<div className={classes.logoInfo}>
 						<Typography component="h1" variant="h5" className={classes.title}>
-							Bienvenido a NIA CRM PRUEBA
+							Bienvenido a Nia Crm
 						</Typography>
 						<Typography variant="body2" className={classes.subtitle}>
 							Gestiona tu negocio de forma inteligente
