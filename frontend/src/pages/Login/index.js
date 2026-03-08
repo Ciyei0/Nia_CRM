@@ -17,13 +17,8 @@ import { AuthContext } from "../../context/Auth/AuthContext";
 
 const Copyright = () => {
 	return (
-		<Typography variant="body2" color="textSecondary" align="center">
-			{"Copyright "}
-			<Link color="inherit" href="#">
-				{nomeEmpresa} - v {versionSystem}
-			</Link>{" "}
-			{new Date().getFullYear()}
-			{"."}
+		<Typography variant="body2" color="textSecondary" align="center" style={{ fontWeight: 500, letterSpacing: "0.5px" }}>
+			NiaCrm V1.0.0
 		</Typography>
 	);
 };
@@ -41,9 +36,11 @@ const useStyles = makeStyles(theme => ({
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "center",
-		backgroundColor: theme.palette.type === "light" ? "#ffffff" : "#1e1e1e",
+		backgroundColor: theme.palette.type === "light" ? "rgba(255, 255, 255, 0.85)" : "rgba(30, 30, 30, 0.85)",
+		backdropFilter: "blur(12px)",
 		borderRadius: "24px",
 		boxShadow: "0 10px 40px rgba(0, 0, 0, 0.3)",
+		border: "1px solid rgba(255, 255, 255, 0.3)",
 		width: "100%",
 		maxWidth: "420px",
 		margin: theme.spacing(2),
@@ -79,9 +76,13 @@ const useStyles = makeStyles(theme => ({
 		textAlign: "center",
 	},
 	title: {
-		fontWeight: 700,
+		fontWeight: 800,
+		fontSize: "1.6rem",
+		letterSpacing: "-0.5px",
+		fontFamily: "'Inter', 'Roboto', sans-serif",
 		color: theme.palette.type === "light" ? "#333" : "#fff",
 		marginBottom: theme.spacing(1),
+		textAlign: "center",
 	},
 	subtitle: {
 		fontWeight: 400,
