@@ -53,6 +53,8 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:latest
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            REACT_APP_BACKEND_URL=http://109.205.179.98:8001
 
   deploy:
     needs: build-and-push-image
