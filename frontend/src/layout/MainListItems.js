@@ -61,19 +61,19 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: 8,
     transition: 'all 0.2s ease',
     '&:hover': {
-      backgroundColor: theme.mode === 'light' ? 'rgba(124, 58, 237, 0.08)' : 'rgba(167, 139, 250, 0.1)',
+      backgroundColor: theme.mode === 'light' ? 'rgba(124, 58, 237, 0.08)' : 'rgba(167, 139, 250, 0.08)',
     },
   },
   menuIcon: {
     minWidth: 40,
-    color: theme.mode === 'light' ? '#7c3aed' : '#a78bfa',
+    color: theme.mode === 'light' ? '#7c3aed' : '#9b8abf',
   },
   menuText: {
     '& .MuiListItemText-primary': {
       fontSize: '13.5px',
       fontWeight: 500,
       fontFamily: "'Poppins', sans-serif",
-      color: theme.mode === 'light' ? '#1e1b4b' : '#e0d7fa',
+      color: theme.mode === 'light' ? '#1e1b4b' : '#d4cce8',
     },
   },
   versionText: {
@@ -81,11 +81,11 @@ const useStyles = makeStyles((theme) => ({
     padding: '12px 24px',
     textAlign: 'center',
     fontFamily: "'Poppins', sans-serif",
-    color: theme.mode === 'light' ? '#a78bfa' : '#4c1d95',
+    color: theme.mode === 'light' ? '#a78bfa' : '#6b5f80',
   },
   divider: {
     margin: '8px 16px',
-    backgroundColor: theme.mode === 'light' ? '#ede9fe' : '#2d2640',
+    backgroundColor: theme.mode === 'light' ? '#ede9fe' : '#2a2535',
   },
   connectionWarning: {
     color: '#d32f2f',

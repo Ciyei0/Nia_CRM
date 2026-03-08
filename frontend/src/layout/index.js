@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.fancyBackground,
     '& .MuiButton-outlinedPrimary': {
       color: theme.mode === 'light' ? '#FFF' : '#FFF',
-      backgroundColor: theme.mode === 'light' ? '#7c3aed' : '#1e1b4b',
+      backgroundColor: theme.mode === 'light' ? '#7c3aed' : '#2a2535',
       //border: theme.mode === 'light' ? '1px solid rgba(0 124 102)' : '1px solid rgba(255, 255, 255, 0.5)',
     },
     '& .MuiTab-textColorPrimary.Mui-selected': {
