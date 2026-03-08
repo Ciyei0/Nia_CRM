@@ -41,6 +41,7 @@ import { useDate } from "../hooks/useDate";
 import ColorModeContext from "../layout/themeContext";
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import Brightness7Icon from '@material-ui/icons/Brightness7';
+import niaLogo from "../assets/nia-logo.png";
 
 const drawerWidth = 240;
 
@@ -54,11 +55,11 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.fancyBackground,
     '& .MuiButton-outlinedPrimary': {
       color: theme.mode === 'light' ? '#FFF' : '#FFF',
-      backgroundColor: theme.mode === 'light' ? '#1565C0' : '#1c1c1c',
+      backgroundColor: theme.mode === 'light' ? '#7c3aed' : '#1e1b4b',
       //border: theme.mode === 'light' ? '1px solid rgba(0 124 102)' : '1px solid rgba(255, 255, 255, 0.5)',
     },
     '& .MuiTab-textColorPrimary.Mui-selected': {
-      color: theme.mode === 'light' ? '#1565C0' : '#FFF',
+      color: theme.mode === 'light' ? '#7c3aed' : '#c4b5fd',
     }
   },
   avatar: {
@@ -332,10 +333,7 @@ const LoggedInLayout = ({ children, themeToggle }) => {
     return <BackdropLoading />;
   }
 
-  const logo = `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/interno.png`;
-  const randomValue = Math.random(); // Generate a random number
-
-  const logoWithRandom = `${logo}?r=${randomValue}`;
+  const logoSidebar = niaLogo;
 
   return (
     <div className={classes.root}>
@@ -351,7 +349,7 @@ const LoggedInLayout = ({ children, themeToggle }) => {
         open={drawerOpen}
       >
         <div className={classes.toolbarIcon}>
-          <img src={logoWithRandom} style={{ margin: "0 auto", width: "50%" }} alt={`${process.env.REACT_APP_NAME_SYSTEM}`} />
+          <img src={logoSidebar} style={{ margin: "0 auto", width: "50%" }} alt="Nia CRM" />
           <IconButton onClick={() => setDrawerOpen(!drawerOpen)}>
             <ChevronLeftIcon />
           </IconButton>

@@ -43,43 +43,49 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: 8,
   },
   logoutButton: {
-    borderRadius: 8,
+    borderRadius: 10,
     margin: '8px 12px',
-    backgroundColor: '#d32f2f',
+    background: 'linear-gradient(135deg, #7c3aed, #8E2DE2)',
     color: '#fff',
+    transition: 'all 0.3s ease',
     '&:hover': {
-      backgroundColor: '#b71c1c',
+      background: 'linear-gradient(135deg, #6d28d9, #7c3aed)',
+      boxShadow: '0 4px 12px rgba(124, 58, 237, 0.4)',
+      transform: 'translateY(-1px)',
     },
   },
   menuItem: {
-    borderRadius: 8,
+    borderRadius: 10,
     margin: '2px 12px',
     paddingTop: 8,
     paddingBottom: 8,
     transition: 'all 0.2s ease',
     '&:hover': {
-      backgroundColor: theme.mode === 'light' ? 'rgba(21, 101, 192, 0.08)' : 'rgba(255, 255, 255, 0.08)',
+      backgroundColor: theme.mode === 'light' ? 'rgba(124, 58, 237, 0.08)' : 'rgba(167, 139, 250, 0.1)',
     },
   },
   menuIcon: {
     minWidth: 40,
-    color: theme.mode === 'light' ? '#555' : '#90CAF9',
+    color: theme.mode === 'light' ? '#7c3aed' : '#a78bfa',
   },
   menuText: {
     '& .MuiListItemText-primary': {
-      fontSize: '14px',
+      fontSize: '13.5px',
       fontWeight: 500,
-      color: theme.mode === 'light' ? '#333' : '#fff',
+      fontFamily: "'Poppins', sans-serif",
+      color: theme.mode === 'light' ? '#1e1b4b' : '#e0d7fa',
     },
   },
   versionText: {
     fontSize: '11px',
     padding: '12px 24px',
     textAlign: 'center',
-    color: theme.mode === 'light' ? '#999' : '#666',
+    fontFamily: "'Poppins', sans-serif",
+    color: theme.mode === 'light' ? '#a78bfa' : '#4c1d95',
   },
   divider: {
     margin: '8px 16px',
+    backgroundColor: theme.mode === 'light' ? '#ede9fe' : '#2d2640',
   },
   connectionWarning: {
     color: '#d32f2f',
