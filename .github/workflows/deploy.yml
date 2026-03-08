@@ -69,7 +69,10 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             cd /root/Nia_CRM
-            git pull origin main
+            
+            # Forzamos descargar la versión más reciente anulando cualquier cambio local
+            git fetch origin main
+            git reset --hard origin/main
             
             # Loguearse en GHCR
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
