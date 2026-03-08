@@ -29,6 +29,7 @@ jobs:
         env:
           REACT_APP_BACKEND_URL: http://109.205.179.98:8001
           NODE_OPTIONS: --openssl-legacy-provider
+          CI: false
         run: npm run build
         working-directory: ./frontend
 
