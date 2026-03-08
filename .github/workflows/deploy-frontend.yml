@@ -1,0 +1,44 @@
+name: Deploy Frontend (Lightning Fast)
+
+on:
+  push:
+    branches:
+      - main 
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/deploy-frontend.yml'
+
+jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Frontend Dependencies
+        run: npm install --legacy-peer-deps
+        working-directory: ./frontend
+
+      - name: Build Frontend React App
+        env:
+          REACT_APP_BACKEND_URL: http://109.205.179.98:8001
+          NODE_OPTIONS: --openssl-legacy-provider
+        run: npm run build
+        working-directory: ./frontend
+
+      - name: Copy Frontend Build to VPS via SCP
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT }}
+          source: "frontend/build/*"
+          target: "/root/Nia_CRM/frontend-build"
+          strip_components: 2 # Removes the 'frontend/build' folders from target path
