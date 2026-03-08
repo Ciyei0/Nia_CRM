@@ -7,6 +7,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import TicketsManager from "../../components/TicketsManagerTabs/";
 import Ticket from "../../components/Ticket/";
 import { i18n } from "../../translate/i18n";
+import niaLogo from "../../assets/nia-logo.png";
 
 const useStyles = makeStyles(theme => ({
 	chatContainer: {
@@ -44,10 +45,7 @@ const useStyles = makeStyles(theme => ({
 	},
 }));
 
-const logo = `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/login.png`;
-const randomValue = Math.random(); // Generate a random number
-  
-const logoWithRandom = `${logo}?r=${randomValue}`;
+
 
 const TicketsCustom = () => {
 	const classes = useStyles();
@@ -67,10 +65,10 @@ const TicketsCustom = () => {
 							</>
 						) : (
 							<Paper square variant="outlined" className={classes.welcomeMsg}>
-							<div>
-							<center><img style={{ margin: "0 auto", width: "80%" }} src={logoWithRandom} alt={`${process.env.REACT_APP_NAME_SYSTEM}`} /></center>
-							</div>
-							{/*<span>{i18n.t("chat.noTicketMessage")}</span>*/}
+								<div>
+									<center><img style={{ margin: "0 auto", width: "220px", opacity: 0.8 }} src={niaLogo} alt="Nia CRM" /></center>
+								</div>
+								{/*<span>{i18n.t("chat.noTicketMessage")}</span>*/}
 							</Paper>
 						)}
 					</Grid>
