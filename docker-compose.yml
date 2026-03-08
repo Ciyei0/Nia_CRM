@@ -57,6 +57,8 @@ services:
       - "3001:3001" # Or map to 80/443 directly if you expose it to internet without proxy
     depends_on:
       - nia-backend
+    volumes:
+      - ./frontend-build:/usr/share/nginx/html
 
 volumes:
   nia_db_data:

@@ -9,7 +9,7 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-  build-and-push-image:
+  build-frontend-and-backend:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -23,6 +23,7 @@ jobs:
         run: |
           echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
 
+      # --- BACKEND DOCKER BUILD ---
       - name: Log in to the Container registry
         uses: docker/login-action@v2
         with:
@@ -45,22 +46,42 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:latest
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Build and push Frontend image
-        uses: docker/build-push-action@v4
+      # --- FRONTEND LIGHTNING BUILD (NO DOCKER) ---
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          context: ./frontend
-          file: ./frontend/Dockerfile
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:latest
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            REACT_APP_BACKEND_URL=http://109.205.179.98:8001
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
 
-  deploy:
-    needs: build-and-push-image
+      - name: Install Frontend Dependencies
+        run: npm ci
+        working-directory: ./frontend
+
+      - name: Build Frontend React App
+        env:
+          REACT_APP_BACKEND_URL: http://109.205.179.98:8001
+          NODE_OPTIONS: --openssl-legacy-provider
+        run: npm run build
+        working-directory: ./frontend
+
+      # --- FAST DEPLOY (SCP FRONTEND) ---
+      - name: Copy Frontend Build to VPS via SCP
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT }}
+          source: "frontend/build/*"
+          target: "/root/Nia_CRM/frontend-build"
+          strip_components: 2 # Removes the 'frontend/build' folders from target path
+
+  deploy-backend:
+    needs: build-frontend-and-backend
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to VPS (SSH)
+      - name: Deploy Backend to VPS (SSH)
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -74,16 +95,14 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             
-            # Loguearse en GHCR
+            # Loguearse en GHCR para actualizar backend
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             
-            # Forzar eliminación de contenedores viejos
-            docker compose stop nia-frontend nia-backend
-            docker compose rm -f nia-frontend nia-backend
+            # Descargar imagen de backend actualizada (frontal ya no usa Docker build)
+            docker compose pull nia-backend
             
-            # Descargar nuevas imágenes y levantar
-            docker compose pull
-            docker compose up -d --force-recreate
+            # Levantar y recrear contenedores que hayan cambiado de configuración (como el frontend con su nuevo volumen) o de imagen (backend)
+            docker compose up -d --remove-orphans
             
-            # Limpiar imágenes sueltas para no llenar el disco de la VPS
+            # (Opcional) Limpiar imágenes viejas
             docker image prune -a -f
