@@ -55,11 +55,11 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.fancyBackground,
     '& .MuiButton-outlinedPrimary': {
       color: theme.mode === 'light' ? '#FFF' : '#FFF',
-      backgroundColor: theme.mode === 'light' ? '#7c3aed' : '#2a2535',
+      backgroundColor: theme.mode === 'light' ? '#7c3aed' : '#22222e',
       //border: theme.mode === 'light' ? '1px solid rgba(0 124 102)' : '1px solid rgba(255, 255, 255, 0.5)',
     },
     '& .MuiTab-textColorPrimary.Mui-selected': {
-      color: theme.mode === 'light' ? '#7c3aed' : '#c4b5fd',
+      color: theme.mode === 'light' ? '#7c3aed' : '#a78bfa',
     }
   },
   avatar: {

@@ -66,14 +66,14 @@ const useStyles = makeStyles((theme) => ({
   },
   menuIcon: {
     minWidth: 40,
-    color: theme.mode === 'light' ? '#7c3aed' : '#9b8abf',
+    color: theme.mode === 'light' ? '#7c3aed' : '#8b7faa',
   },
   menuText: {
     '& .MuiListItemText-primary': {
       fontSize: '13.5px',
       fontWeight: 500,
       fontFamily: "'Poppins', sans-serif",
-      color: theme.mode === 'light' ? '#1e1b4b' : '#d4cce8',
+      color: theme.mode === 'light' ? '#1e1b4b' : '#ccc8d8',
     },
   },
   versionText: {
@@ -81,11 +81,11 @@ const useStyles = makeStyles((theme) => ({
     padding: '12px 24px',
     textAlign: 'center',
     fontFamily: "'Poppins', sans-serif",
-    color: theme.mode === 'light' ? '#a78bfa' : '#6b5f80',
+    color: theme.mode === 'light' ? '#a78bfa' : '#555',
   },
   divider: {
     margin: '8px 16px',
-    backgroundColor: theme.mode === 'light' ? '#ede9fe' : '#2a2535',
+    backgroundColor: theme.mode === 'light' ? '#ede9fe' : '#2c2c3a',
   },
   connectionWarning: {
     color: '#d32f2f',

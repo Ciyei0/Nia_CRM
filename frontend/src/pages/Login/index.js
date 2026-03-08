@@ -22,32 +22,9 @@ import niaLogo from "../../assets/nia-logo.png";
 
 const Copyright = () => {
 	return (
-		<Typography variant="body2" align="center" style={{ fontWeight: 500, letterSpacing: "0.5px", color: "rgba(255,255,255,0.5)", fontSize: "0.75rem" }}>
+		<Typography variant="body2" align="center" style={{ fontWeight: 400, letterSpacing: "0.5px", color: "#999", fontSize: "0.75rem" }}>
 			NiaCrm V1.0.0
 		</Typography>
-	);
-};
-
-// Floating orbs for the animated background
-const FloatingOrbs = () => {
-	return (
-		<div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", overflow: "hidden", pointerEvents: "none", zIndex: 0 }}>
-			{[...Array(6)].map((_, i) => (
-				<div
-					key={i}
-					style={{
-						position: "absolute",
-						borderRadius: "50%",
-						background: `radial-gradient(circle, rgba(142, 45, 226, ${0.15 + i * 0.03}), transparent 70%)`,
-						width: `${80 + i * 50}px`,
-						height: `${80 + i * 50}px`,
-						top: `${10 + i * 15}%`,
-						left: `${5 + i * 16}%`,
-						animation: `floatOrb${i} ${6 + i * 2}s ease-in-out infinite`,
-					}}
-				/>
-			))}
-		</div>
 	);
 };
 
@@ -59,45 +36,12 @@ const useStyles = makeStyles(theme => ({
 			"to": { opacity: 1, transform: "translateY(0)" },
 		},
 		"@keyframes fadeInScale": {
-			"from": { opacity: 0, transform: "scale(0.8)" },
+			"from": { opacity: 0, transform: "scale(0.85)" },
 			"to": { opacity: 1, transform: "scale(1)" },
 		},
-		"@keyframes shimmer": {
-			"0%": { backgroundPosition: "-200% center" },
-			"100%": { backgroundPosition: "200% center" },
-		},
-		"@keyframes pulseGlow": {
-			"0%, 100%": { boxShadow: "0 4px 14px rgba(142, 45, 226, 0.4)" },
-			"50%": { boxShadow: "0 4px 30px rgba(142, 45, 226, 0.7)" },
-		},
-		"@keyframes gradientShift": {
-			"0%": { backgroundPosition: "0% 50%" },
-			"50%": { backgroundPosition: "100% 50%" },
-			"100%": { backgroundPosition: "0% 50%" },
-		},
-		"@keyframes floatOrb0": {
-			"0%, 100%": { transform: "translate(0px, 0px)" },
-			"50%": { transform: "translate(30px, -40px)" },
-		},
-		"@keyframes floatOrb1": {
-			"0%, 100%": { transform: "translate(0px, 0px)" },
-			"50%": { transform: "translate(-25px, 35px)" },
-		},
-		"@keyframes floatOrb2": {
-			"0%, 100%": { transform: "translate(0px, 0px)" },
-			"50%": { transform: "translate(40px, 20px)" },
-		},
-		"@keyframes floatOrb3": {
-			"0%, 100%": { transform: "translate(0px, 0px)" },
-			"50%": { transform: "translate(-35px, -30px)" },
-		},
-		"@keyframes floatOrb4": {
-			"0%, 100%": { transform: "translate(0px, 0px)" },
-			"50%": { transform: "translate(20px, 45px)" },
-		},
-		"@keyframes floatOrb5": {
-			"0%, 100%": { transform: "translate(0px, 0px)" },
-			"50%": { transform: "translate(-40px, -20px)" },
+		"@keyframes subtleFloat": {
+			"0%, 100%": { transform: "translateY(0px)" },
+			"50%": { transform: "translateY(-8px)" },
 		},
 	},
 	root: {
@@ -105,27 +49,46 @@ const useStyles = makeStyles(theme => ({
 		display: "flex",
 		alignItems: "center",
 		justifyContent: "center",
-		background: "linear-gradient(-45deg, #1a0033, #4A00E0, #8E2DE2, #3a0077)",
-		backgroundSize: "400% 400%",
-		animation: "$gradientShift 15s ease infinite",
+		background: "#0f0b1a",
 		position: "relative",
 		fontFamily: "'Poppins', sans-serif",
+		overflow: "hidden",
+		// Subtle purple glow in the background
+		"&::before": {
+			content: '""',
+			position: "absolute",
+			top: "-30%",
+			right: "-10%",
+			width: "500px",
+			height: "500px",
+			borderRadius: "50%",
+			background: "radial-gradient(circle, rgba(124, 58, 237, 0.15), transparent 70%)",
+			pointerEvents: "none",
+		},
+		"&::after": {
+			content: '""',
+			position: "absolute",
+			bottom: "-20%",
+			left: "-10%",
+			width: "400px",
+			height: "400px",
+			borderRadius: "50%",
+			background: "radial-gradient(circle, rgba(142, 45, 226, 0.1), transparent 70%)",
+			pointerEvents: "none",
+		},
 	},
 	paper: {
 		padding: theme.spacing(5),
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "center",
-		backgroundColor: "rgba(255, 255, 255, 0.08)",
-		backdropFilter: "blur(20px)",
-		WebkitBackdropFilter: "blur(20px)",
-		borderRadius: "28px",
-		boxShadow: "0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.15)",
-		border: "1px solid rgba(255, 255, 255, 0.15)",
+		backgroundColor: "#fff",
+		borderRadius: "24px",
+		boxShadow: "0 25px 60px rgba(0, 0, 0, 0.3)",
 		width: "100%",
-		maxWidth: "420px",
+		maxWidth: "400px",
 		margin: theme.spacing(2),
-		animation: "$fadeInUp 0.8s ease-out",
+		animation: "$fadeInUp 0.7s ease-out",
 		position: "relative",
 		zIndex: 1,
 	},
@@ -135,22 +98,21 @@ const useStyles = makeStyles(theme => ({
 	},
 	submit: {
 		margin: theme.spacing(3, 0, 2),
-		padding: "14px",
-		fontSize: "1rem",
-		fontWeight: 700,
+		padding: "13px",
+		fontSize: "0.95rem",
+		fontWeight: 600,
 		fontFamily: "'Poppins', sans-serif",
-		borderRadius: "14px",
-		background: "linear-gradient(135deg, #8E2DE2, #4A00E0)",
+		borderRadius: "12px",
+		background: "linear-gradient(135deg, #7c3aed, #6d28d9)",
 		color: "white",
-		boxShadow: "0 4px 14px rgba(142, 45, 226, 0.4)",
+		boxShadow: "0 4px 14px rgba(124, 58, 237, 0.35)",
 		transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
 		textTransform: "none",
-		letterSpacing: "0.5px",
-		animation: "$pulseGlow 3s ease-in-out infinite",
+		letterSpacing: "0.3px",
 		"&:hover": {
-			background: "linear-gradient(135deg, #9f44f0, #5a10f0)",
-			boxShadow: "0 8px 25px rgba(142, 45, 226, 0.6)",
-			transform: "translateY(-2px)",
+			background: "linear-gradient(135deg, #6d28d9, #5b21b6)",
+			boxShadow: "0 6px 20px rgba(124, 58, 237, 0.5)",
+			transform: "translateY(-1px)",
 		},
 		"&:active": {
 			transform: "translateY(0px)",
@@ -165,93 +127,89 @@ const useStyles = makeStyles(theme => ({
 	},
 	logoImg: {
 		width: "100%",
-		maxWidth: "150px",
-		marginBottom: "4px",
-		filter: "drop-shadow(0 4px 12px rgba(142, 45, 226, 0.3))",
-		transition: "transform 0.4s ease",
-		"&:hover": {
-			transform: "scale(1.05)",
-		},
+		maxWidth: "120px",
+		marginBottom: "8px",
+		animation: "$subtleFloat 4s ease-in-out infinite",
 	},
 	logoInfo: {
-		marginTop: theme.spacing(1),
+		marginTop: theme.spacing(0.5),
 		textAlign: "center",
 	},
 	title: {
-		fontWeight: 800,
-		fontSize: "1.8rem",
-		letterSpacing: "-0.5px",
+		fontWeight: 700,
+		fontSize: "1.6rem",
+		letterSpacing: "-0.3px",
 		fontFamily: "'Poppins', sans-serif",
-		color: "#fff",
-		marginBottom: "4px",
+		color: "#1a1a2e",
+		marginBottom: "2px",
 		textAlign: "center",
-		textShadow: "0 2px 10px rgba(142, 45, 226, 0.3)",
 	},
 	subtitle: {
-		fontWeight: 300,
+		fontWeight: 400,
 		fontFamily: "'Poppins', sans-serif",
-		color: "rgba(255, 255, 255, 0.6)",
-		fontSize: "0.9rem",
-		letterSpacing: "0.3px",
+		color: "#888",
+		fontSize: "0.85rem",
+		letterSpacing: "0.2px",
 	},
 	textFieldWrapper: {
 		"& .MuiOutlinedInput-root": {
-			borderRadius: "14px",
-			backgroundColor: "rgba(255,255,255,0.06)",
-			color: "#fff",
+			borderRadius: "12px",
+			backgroundColor: "#f8f7fc",
+			color: "#1a1a2e",
 			fontFamily: "'Poppins', sans-serif",
 			transition: "all 0.3s ease",
 			"&:hover": {
-				backgroundColor: "rgba(255,255,255,0.1)",
+				backgroundColor: "#f0eef5",
 			},
 			"& fieldset": {
-				borderColor: "rgba(255,255,255,0.15)",
+				borderColor: "#e8e5f0",
 				transition: "border-color 0.3s ease",
 			},
 			"&.Mui-focused": {
-				backgroundColor: "rgba(255,255,255,0.1)",
+				backgroundColor: "#f0eef5",
 				"& fieldset": {
-					borderColor: "#8E2DE2",
+					borderColor: "#7c3aed",
 					borderWidth: "2px",
 				},
 			},
 		},
 		"& .MuiInputLabel-outlined": {
-			color: "rgba(255,255,255,0.5)",
+			color: "#999",
 			fontFamily: "'Poppins', sans-serif",
 			fontWeight: 400,
 			"&.Mui-focused": {
-				color: "#c084fc",
+				color: "#7c3aed",
 			},
 		},
 		"& .MuiInputAdornment-root .MuiSvgIcon-root": {
-			color: "rgba(255,255,255,0.4)",
+			color: "#bbb",
+			fontSize: "1.2rem",
 			transition: "color 0.3s ease",
 		},
 		"& .Mui-focused .MuiInputAdornment-root .MuiSvgIcon-root": {
-			color: "#c084fc",
+			color: "#7c3aed",
 		},
 	},
 	forgotPasswordLink: {
-		color: "rgba(255,255,255,0.5)",
+		color: "#999",
 		textDecoration: "none",
 		fontFamily: "'Poppins', sans-serif",
 		fontSize: "0.8rem",
 		fontWeight: 400,
 		transition: "color 0.3s ease",
 		"&:hover": {
-			color: "#c084fc",
+			color: "#7c3aed",
 			textDecoration: "none",
 		}
 	},
 	registerLink: {
-		color: "#c084fc",
+		color: "#7c3aed",
 		fontWeight: 600,
 		fontFamily: "'Poppins', sans-serif",
 		textDecoration: "none",
 		transition: "color 0.3s ease",
 		"&:hover": {
-			color: "#e0b0ff",
+			color: "#5b21b6",
 			textDecoration: "none",
 		}
 	},
@@ -260,7 +218,7 @@ const useStyles = makeStyles(theme => ({
 		alignItems: "center",
 		margin: theme.spacing(2, 0, 1),
 		"& span": {
-			color: "rgba(255,255,255,0.3)",
+			color: "#ccc",
 			fontSize: "0.75rem",
 			fontFamily: "'Poppins', sans-serif",
 			padding: "0 12px",
@@ -270,14 +228,14 @@ const useStyles = makeStyles(theme => ({
 			content: '""',
 			flex: 1,
 			height: "1px",
-			background: "linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent)",
+			background: "#eee",
 		},
 	},
 	showPasswordBtn: {
-		color: "rgba(255,255,255,0.4)",
+		color: "#bbb",
 		transition: "color 0.3s ease",
 		"&:hover": {
-			color: "#c084fc",
+			color: "#7c3aed",
 			backgroundColor: "transparent",
 		},
 	},
@@ -316,7 +274,6 @@ const Login = () => {
 	return (
 		<div className={classes.root}>
 			<CssBaseline />
-			<FloatingOrbs />
 
 			<div className={classes.paper}>
 				<div className={classes.logoContainer}>
