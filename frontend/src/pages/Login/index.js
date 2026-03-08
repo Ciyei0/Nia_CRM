@@ -14,6 +14,7 @@ import { i18n } from "../../translate/i18n";
 import api from "../../services/api";
 import { nomeEmpresa } from "../../../package.json";
 import { AuthContext } from "../../context/Auth/AuthContext";
+import niaLogo from "../../assets/nia-logo.png";
 
 const Copyright = () => {
 	return (
@@ -160,9 +161,10 @@ const Login = () => {
 
 			<div className={classes.paper}>
 				<div className={classes.logoContainer}>
+					<img style={{ width: "100%", maxWidth: "160px", marginBottom: "8px" }} src={niaLogo} alt="Nia CRM Logo" />
 					<div className={classes.logoInfo}>
 						<Typography component="h1" variant="h5" className={classes.title}>
-							Bienvenido a Nia Crm
+							Bienvenido
 						</Typography>
 						<Typography variant="body2" className={classes.subtitle}>
 							Gestiona tu negocio de forma inteligente
