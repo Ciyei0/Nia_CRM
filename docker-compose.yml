@@ -44,7 +44,7 @@ services:
       - JWT_SECRET=${JWT_SECRET:-kZaOTd+YZpjRUyyuQUpigJaEMk4vcW4YOymKPZX0Ts8=}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dBSXqFg9TaNUEDXVp6fhMTRLBysP+j2DSqf7+raxD3A=}
     ports:
-      - "8001:8001"
+      - "8081:8001"
     depends_on:
       - nia-db
       - nia-redis
