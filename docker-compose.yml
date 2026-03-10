@@ -37,8 +37,8 @@ services:
       - DB_NAME=${DB_NAME:-whaticketsaas}
       - DB_PORT=5432 # This is the internal port of nia-db
       - REDIS_URI=redis://nia-redis:6379 # Internal port of nia-redis
-      - BACKEND_URL=${BACKEND_URL:-http://109.205.179.98:8001}
-      - FRONTEND_URL=${FRONTEND_URL:-http://109.205.179.98:3001}
+      - BACKEND_URL=${BACKEND_URL:-https://niacrmbot.com:8001}
+      - FRONTEND_URL=${FRONTEND_URL:-https://niacrmbot.com}
       - PROXY_PORT=8001
       # ... you will need to map other variables from .env here
       - JWT_SECRET=${JWT_SECRET:-kZaOTd+YZpjRUyyuQUpigJaEMk4vcW4YOymKPZX0Ts8=}
