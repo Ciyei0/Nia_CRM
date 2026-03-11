@@ -54,7 +54,7 @@ services:
     container_name: nia_crm_frontend
     restart: always
     ports:
-      - "3001:3001" # Or map to 80/443 directly if you expose it to internet without proxy
+      - "127.0.0.1:3010:3001" # Internal mapping for Nginx proxy
     depends_on:
       - nia-backend
     volumes:
