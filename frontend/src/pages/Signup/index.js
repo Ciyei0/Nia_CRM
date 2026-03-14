@@ -491,7 +491,7 @@ const SignUp = () => {
 										className={`${classes.textFieldWrapper} ${classes.selectFieldWrapper}`}
 									>
 										<MenuItem value="disabled" disabled>
-											<em>Selecione seu plano de assinatura</em>
+											Selecciona tu plan de suscripción
 										</MenuItem>
 										{plans.map((plan, key) => (
 											<MenuItem key={key} value={plan.id}>
