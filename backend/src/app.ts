@@ -31,6 +31,8 @@ app.use(
   cors({
     credentials: true,
     origin: process.env.FRONTEND_URL
+      ? [process.env.FRONTEND_URL, "https://niacrmbot.com", "https://www.niacrmbot.com"]
+      : ["https://niacrmbot.com", "https://www.niacrmbot.com"]
   })
 );
 app.use(cookieParser());

@@ -15,6 +15,8 @@ export const initIO = (httpServer: Server): SocketIO => {
   io = new SocketIO(httpServer, {
     cors: {
       origin: process.env.FRONTEND_URL
+        ? [process.env.FRONTEND_URL, "https://niacrmbot.com", "https://www.niacrmbot.com"]
+        : ["https://niacrmbot.com", "https://www.niacrmbot.com"]
     }
   });
 
@@ -36,7 +38,7 @@ export const initIO = (httpServer: Server): SocketIO => {
     let userId = tokenData.id;
 
     if (userId && userId !== "undefined" && userId !== "null") {
-      user = await User.findByPk(userId, { include: [ Queue ] });
+      user = await User.findByPk(userId, { include: [Queue] });
       if (user) {
         user.online = true;
         await user.save();
@@ -76,7 +78,7 @@ export const initIO = (httpServer: Server): SocketIO => {
         }
       );
     });
-    
+
     socket.on("leaveChatBox", async (ticketId: string) => {
       if (!ticketId || ticketId === "undefined") {
         return;
@@ -109,7 +111,7 @@ export const initIO = (httpServer: Server): SocketIO => {
       }
       logger.debug(`joinNotification[${c}]: User: ${user.id}`);
     });
-    
+
     socket.on("leaveNotification", async () => {
       let c: number;
       if ((c = counters.decrementCounter("notification")) === 0) {
@@ -127,7 +129,7 @@ export const initIO = (httpServer: Server): SocketIO => {
       }
       logger.debug(`leaveNotification[${c}]: User: ${user.id}`);
     });
- 
+
     socket.on("joinTickets", (status: string) => {
       if (counters.incrementCounter(`status-${status}`) === 1) {
         if (user.profile === "admin") {
@@ -146,7 +148,7 @@ export const initIO = (httpServer: Server): SocketIO => {
         }
       }
     });
-    
+
     socket.on("leaveTickets", (status: string) => {
       if (counters.decrementCounter(`status-${status}`) === 0) {
         if (user.profile === "admin") {
@@ -163,7 +165,7 @@ export const initIO = (httpServer: Server): SocketIO => {
         }
       }
     });
-    
+
     socket.emit("ready");
   });
   return io;
