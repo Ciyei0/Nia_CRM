@@ -379,14 +379,7 @@ const MainListItems = (props) => {
         icon={<HelpOutlineIcon />}
       />
 
-      {/* OpenAI / IA */}
-      {showOpenAi && (
-        <ListItemLink
-          to="/prompts"
-          primary="NIA IA (BETA)"
-          icon={<AllInclusive />}
-        />
-      )}
+
 
       <Can
         role={user.profile}
@@ -417,21 +410,9 @@ const MainListItems = (props) => {
               />
             )}
 
-            {/* Campañas */}
-            {showCampaigns && (
-              <ListItemLink
-                to="/campaigns"
-                primary="Campañas"
-                icon={<EventAvailableIcon />}
-              />
-            )}
 
-            {/* Suscripción / Financiero */}
-            <ListItemLink
-              to="/financeiro"
-              primary="Suscripción"
-              icon={<LocalAtmIcon />}
-            />
+
+
 
             {/* Informes / Dashboard */}
             <ListItemLink
