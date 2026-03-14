@@ -303,7 +303,7 @@ const SignUp = () => {
 		companyId = params.companyId
 	}
 
-	const initialState = { name: "", email: "", phone: "", password: "", planId: "disabled", };
+	const initialState = { name: "", email: "", phone: "", password: "", planId: "" };
 
 	const [user] = useState(initialState);
 	const dueDate = moment().add(trial, "day").format();
@@ -375,7 +375,7 @@ const SignUp = () => {
 										variant="outlined"
 										fullWidth
 										id="name"
-										label="Nome da Empresa"
+										label="Nombre de la Empresa"
 										className={classes.textFieldWrapper}
 										InputProps={{
 											startAdornment: (
@@ -490,12 +490,9 @@ const SignUp = () => {
 										required
 										className={`${classes.textFieldWrapper} ${classes.selectFieldWrapper}`}
 									>
-										<MenuItem value="disabled" disabled>
-											Selecciona tu plan de suscripción
-										</MenuItem>
 										{plans.map((plan, key) => (
 											<MenuItem key={key} value={plan.id}>
-												{plan.name} - {plan.connections} WhatsApps - {plan.users} Usuários - R$ {plan.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+												{plan.name} - {plan.connections} WhatsApps - {plan.users} Usuarios - R$ {plan.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
 											</MenuItem>
 										))}
 									</Field>
