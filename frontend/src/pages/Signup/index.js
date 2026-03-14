@@ -305,7 +305,7 @@ const SignUp = () => {
 
 	const initialState = { name: "", email: "", phone: "", password: "", planId: "" };
 
-	const [user] = useState(initialState);
+	const [user, setUser] = useState(initialState);
 	const dueDate = moment().add(trial, "day").format();
 
 	const handleSignUp = async values => {
@@ -330,6 +330,9 @@ const SignUp = () => {
 		async function fetchData() {
 			const list = await listPlans();
 			setPlans(list);
+			if (list.length > 0) {
+				setUser(prev => ({ ...prev, planId: list[0].id }));
+			}
 		}
 		fetchData();
 	}, []);
