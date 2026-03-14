@@ -54,6 +54,9 @@ services:
       - "traefik.http.routers.nia-backend.tls.certresolver=letsencrypt"
       - "traefik.http.services.nia-backend.loadbalancer.server.port=8001"
       - "traefik.docker.network=easypanel"
+    networks:
+      - default
+      - easypanel
     depends_on:
       - nia-db
       - nia-redis
@@ -71,6 +74,9 @@ services:
       - "traefik.http.routers.nia-front.tls.certresolver=letsencrypt"
       - "traefik.http.services.nia-front.loadbalancer.server.port=3001"
       - "traefik.docker.network=easypanel"
+    networks:
+      - default
+      - easypanel
     depends_on:
       - nia-backend
     volumes:
@@ -80,3 +86,8 @@ services:
 volumes:
   nia_db_data:
   nia_redis_data:
+
+networks:
+  default:
+  easypanel:
+    external: true
