@@ -33,11 +33,8 @@ const testimonials = [
     { initials: "JM", text: "Antes perdíamos clientes por falta de seguimiento. Ahora el Kanban nos dice exactamente en qué etapa está cada uno.", name: "Juan Martínez", role: "Director, Delivery+" },
 ];
 
-const plans = [
-    { name: "Starter", price: "29", period: "/ mes · hasta 3 agentes", feats: ["1 número de WhatsApp", "Hasta 3 agentes", "Respuestas rápidas", "Etiquetas y filtros", "Soporte por chat"], featured: false },
-    { name: "Pro", price: "79", period: "/ mes · hasta 10 agentes", feats: ["3 números de WhatsApp", "Hasta 10 agentes", "Bot inteligente", "Plantillas ilimitadas", "Dashboard avanzado", "Integraciones API"], featured: true },
-    { name: "Enterprise", price: "A medida", period: "· agentes ilimitados", feats: ["Números ilimitados", "Agentes ilimitados", "Onboarding dedicado", "SLA garantizado", "Soporte 24/7 prioritario"], featured: false },
-];
+// Single plan - free trial only
+const trialFeats = ["Conexión con WhatsApp", "Multi-agente", "Bot inteligente", "Etiquetas y filtros", "Plantillas de mensajes", "Dashboard y reportes", "Soporte en español"];
 
 const logos = ["FashionDom", "TechStore RD", "Bella Piel", "MotoPartes", "GymPro", "Delivery+", "AgroFresh", "MediaFlow"];
 
@@ -96,7 +93,7 @@ const LandingPage = () => {
 
             {/* NAV */}
             <nav className="lp-nav">
-                <div className="logo-wrap"><img src={niaLogo} alt="Nia CRM" style={{ height: 48 }} /><span className="logo-name">Nia CRM</span></div>
+                <div className="logo-wrap"><span className="logo-name">Nia CRM</span></div>
                 <ul className="nav-links">
                     <li><a href="#features">Funciones</a></li>
                     <li><a href="#how">Cómo funciona</a></li>
@@ -159,13 +156,7 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* LOGOS */}
-            <div className="logos rev">
-                <p className="logos-lbl">Negocios que confían en Nia CRM</p>
-                <div className="logos-track"><div className="logos-scroll">
-                    {[...logos, ...logos].map((l, i) => <span className="li" key={i}>{l}</span>)}
-                </div></div>
-            </div>
+            {/* LOGOS - comentado */}
 
             {/* FEATURES */}
             <section id="features" className="sec">
@@ -219,20 +210,17 @@ const LandingPage = () => {
 
             {/* PRICING */}
             <section id="pricing" className="sec" style={{ paddingTop: 0 }}>
-                <div className="eyebrow"><div className="eyebrow-line" />Precios</div>
-                <h2 className="sec-title">Simple,<br /><em>sin sorpresas</em></h2>
-                <div className="price-grid">
-                    {plans.map((p, i) => (
-                        <div className={`pc rev ${p.featured ? "feat" : ""}`} key={i}>
-                            {p.featured && <span className="popular-badge">Más popular</span>}
-                            <div className="plan-name">{p.name}</div>
-                            <div className="plan-price">{p.price !== "A medida" ? <><sup>$</sup>{p.price}</> : <span style={{ fontSize: 34, paddingTop: 8 }}>A medida</span>}</div>
-                            <div className="plan-period">{p.period}</div>
-                            <div className="plan-div" />
-                            <ul className="plan-feats">{p.feats.map((f, j) => <li className="pf" key={j}><span className="pf-chk">✓</span>{f}</li>)}</ul>
-                            <button className={`btn-plan ${p.featured ? "btn-solid" : "btn-outline"}`} onClick={() => history.push("/signup")}>{p.featured ? "Empezar gratis →" : p.price === "A medida" ? "Hablar con ventas" : "Empezar gratis"}</button>
-                        </div>
-                    ))}
+                <div className="eyebrow"><div className="eyebrow-line" />Empieza ahora</div>
+                <h2 className="sec-title">Prueba todo<br /><em>15 días gratis</em></h2>
+                <div style={{ maxWidth: 480, margin: '0 auto' }}>
+                    <div className="pc feat rev" style={{ textAlign: 'center' }}>
+                        <div className="plan-name">Acceso completo</div>
+                        <div className="plan-price" style={{ fontSize: 42 }}>15 días gratis</div>
+                        <div className="plan-period">Sin tarjeta de crédito · Sin compromiso</div>
+                        <div className="plan-div" />
+                        <ul className="plan-feats">{trialFeats.map((f, j) => <li className="pf" key={j}><span className="pf-chk">✓</span>{f}</li>)}</ul>
+                        <button className="btn-plan btn-solid" onClick={() => history.push("/signup")}>Comenzar mi prueba gratis →</button>
+                    </div>
                 </div>
             </section>
 
