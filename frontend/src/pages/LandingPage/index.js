@@ -76,9 +76,9 @@ const LandingPage = () => {
 
     // Google Fonts
     useEffect(() => {
-        if (!document.querySelector('link[href*="Syne"]')) {
+        if (!document.querySelector('link[href*="Plus+Jakarta"]')) {
             const l = document.createElement("link"); l.rel = "stylesheet";
-            l.href = "https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap";
+            l.href = "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap";
             document.head.appendChild(l);
         }
     }, []);
