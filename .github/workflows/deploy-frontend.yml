@@ -27,10 +27,10 @@ jobs:
 
       - name: Build Frontend React App
         env:
-          REACT_APP_BACKEND_URL: http://backend.niacrmbot.com:8001
-          REACT_APP_FRONTEND_URL: http://niacrmbot.com:3001
+          REACT_APP_BACKEND_URL: https://backend.niacrmbot.com
+          REACT_APP_FRONTEND_URL: https://niacrmbot.com
           REACT_APP_FACEBOOK_APP_ID: "1502878444119560"
-          REACT_APP_SOCKET_URL: http://socket.niacrmbot.com:3040
+          REACT_APP_SOCKET_URL: https://backend.niacrmbot.com
           REACT_APP_HOURS_CLOSE_TICKETS_AUTO: "24"
           NODE_OPTIONS: --openssl-legacy-provider
           CI: false
