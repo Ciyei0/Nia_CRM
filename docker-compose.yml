@@ -41,7 +41,7 @@ services:
       - FRONTEND_URL=${FRONTEND_URL:-https://niacrmbot.com}
       - PROXY_PORT=8001
       - FACEBOOK_APP_ID=1502878444119560
-      - FACEBOOK_APP_SECRET=${FACEBOOK_APP_SECRET:-}
+      - FACEBOOK_APP_SECRET=a779858498ded3069dd08271f7d90f12
       # ... you will need to map other variables from .env here
       - JWT_SECRET=${JWT_SECRET:-kZaOTd+YZpjRUyyuQUpigJaEMk4vcW4YOymKPZX0Ts8=}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dBSXqFg9TaNUEDXVp6fhMTRLBysP+j2DSqf7+raxD3A=}
