@@ -12,12 +12,19 @@ const chatMessages = [
     { type: "out", text: "Te mando el link de pago por aquí. ¡Gracias por elegirnos! 🙌", time: "10:05 ✓✓" },
 ];
 
+// SVG Icon components
+const IconUsers = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--purple-bright)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>;
+const IconBot = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--purple-bright)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2" /><circle cx="9.5" cy="16" r="1" /><circle cx="14.5" cy="16" r="1" /><path d="M12 11V4" /><path d="M8 4h8" /></svg>;
+const IconTags = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--purple-bright)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" /></svg>;
+const IconTemplate = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--purple-bright)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>;
+const IconDashboard = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--purple-bright)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="4" /><rect x="14" y="10" width="7" height="11" /><rect x="3" y="13" width="7" height="8" /></svg>;
+
 const features = [
-    { cls: "b1", icon: "👥", title: "Multi-agente en tiempo real", desc: "Conecta un solo número de WhatsApp y permite que todo tu equipo atienda clientes simultáneamente. Asigna chats, mantén el control y nunca pierdas una oportunidad.", pill: "Trabajo en equipo →" },
-    { cls: "b2", icon: "🤖", title: "Automatización", desc: "Configura respuestas rápidas, flujos de integración y chatbots para atender a tus clientes 24/7 sin intervención manual.", pill: "Siempre activo →" },
-    { cls: "b3", icon: "📊", title: "Kanban y Embudos", desc: "Visualiza tus ventas. Organiza clientes por etapas, añade etiquetas y no pierdas ninguna oportunidad de cierre.", pill: null },
-    { cls: "b4", icon: "📣", title: "Campañas masivas", desc: "Envía mensajes personalizados a cientos de clientes. Promociones, recordatorios y seguimientos automáticos.", pill: "Más alcance →" },
-    { cls: "b5", icon: "📈", title: "Analytics", desc: "Tiempos de respuesta, conversiones por agente y rendimiento de campañas. Decisiones basadas en datos reales.", pill: "Ver datos →" },
+    { cls: "b1", icon: <IconUsers />, title: "Multi-agente en tiempo real", desc: "Conecta un solo número de WhatsApp y permite que todo tu equipo atienda clientes simultáneamente. Asigna chats, transfiere conversaciones y mantén el control total.", pill: "Trabajo en equipo →" },
+    { cls: "b2", icon: <IconBot />, title: "Bot inteligente integrado", desc: "Un chatbot que responde de acorde a tus necesidades. Configúralo con menús, respuestas automáticas y flujos personalizados para atender 24/7.", pill: "Siempre activo →" },
+    { cls: "b3", icon: <IconTags />, title: "Etiquetas y Organización", desc: "Pon etiquetas a tus clientes para una mejor organización. Filtra por estado, prioridad o categoría y nunca pierdas el seguimiento de una oportunidad.", pill: "Más orden →" },
+    { cls: "b4", icon: <IconTemplate />, title: "Plantillas de mensajes", desc: "Crea plantillas de mensajes predefinidas para responder más rápido. Mensajes de bienvenida, confirmaciones, seguimientos y más con un solo clic.", pill: "Más rápido →" },
+    { cls: "b5", icon: <IconDashboard />, title: "Dashboard y Reportes", desc: "Visualiza en tiempo real el rendimiento de tu equipo. Chats atendidos, tiempos de respuesta y métricas clave para tomar mejores decisiones.", pill: "Ver datos →" },
 ];
 
 const testimonials = [
@@ -27,8 +34,8 @@ const testimonials = [
 ];
 
 const plans = [
-    { name: "Starter", price: "29", period: "/ mes · hasta 3 agentes", feats: ["1 número de WhatsApp", "Hasta 3 agentes", "Respuestas rápidas", "Kanban básico", "Soporte por chat"], featured: false },
-    { name: "Pro", price: "79", period: "/ mes · hasta 10 agentes", feats: ["3 números de WhatsApp", "Hasta 10 agentes", "Chatbot con IA", "Campañas masivas", "Analytics avanzados", "Integraciones API"], featured: true },
+    { name: "Starter", price: "29", period: "/ mes · hasta 3 agentes", feats: ["1 número de WhatsApp", "Hasta 3 agentes", "Respuestas rápidas", "Etiquetas y filtros", "Soporte por chat"], featured: false },
+    { name: "Pro", price: "79", period: "/ mes · hasta 10 agentes", feats: ["3 números de WhatsApp", "Hasta 10 agentes", "Bot inteligente", "Plantillas ilimitadas", "Dashboard avanzado", "Integraciones API"], featured: true },
     { name: "Enterprise", price: "A medida", period: "· agentes ilimitados", feats: ["Números ilimitados", "Agentes ilimitados", "Onboarding dedicado", "SLA garantizado", "Soporte 24/7 prioritario"], featured: false },
 ];
 
@@ -89,7 +96,7 @@ const LandingPage = () => {
 
             {/* NAV */}
             <nav className="lp-nav">
-                <div className="logo-wrap"><img src={niaLogo} alt="Nia CRM" /><span className="logo-name">Nia CRM</span></div>
+                <div className="logo-wrap"><img src={niaLogo} alt="Nia CRM" style={{ height: 48 }} /><span className="logo-name">Nia CRM</span></div>
                 <ul className="nav-links">
                     <li><a href="#features">Funciones</a></li>
                     <li><a href="#how">Cómo funciona</a></li>
@@ -245,7 +252,7 @@ const LandingPage = () => {
 
             {/* FOOTER */}
             <footer className="lp-footer">
-                <div className="logo-wrap"><img src={niaLogo} alt="Nia CRM" /><span className="logo-name">Nia CRM</span></div>
+                <div className="logo-wrap"><img src={niaLogo} alt="Nia CRM" style={{ height: 48 }} /><span className="logo-name">Nia CRM</span></div>
                 <p className="foot-copy">© {new Date().getFullYear()} Nia CRM. Todos los derechos reservados.</p>
                 <div className="foot-links"><a href="#">Privacidad</a><a href="#">Términos</a><a href="#">Soporte</a></div>
             </footer>
