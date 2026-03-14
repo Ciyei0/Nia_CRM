@@ -421,12 +421,7 @@ const MainListItems = (props) => {
               icon={<AssessmentIcon />}
             />
 
-            {/* Configuración */}
-            <ListItemLink
-              to="/settings"
-              primary="Configuración"
-              icon={<SettingsOutlinedIcon />}
-            />
+
           </>
         )}
       />
