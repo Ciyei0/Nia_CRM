@@ -416,7 +416,7 @@ const MainListItems = (props) => {
 
             {/* Informes / Dashboard */}
             <ListItemLink
-              to="/"
+              to="/dashboard"
               primary="Informes"
               icon={<AssessmentIcon />}
             />

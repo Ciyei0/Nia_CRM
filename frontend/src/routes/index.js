@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 
 import LoggedInLayout from "../layout";
 import Dashboard from "../pages/Dashboard/";
+import LandingPage from "../pages/LandingPage/";
 import TicketResponsiveContainer from "../pages/TicketResponsiveContainer";
 import Signup from "../pages/Signup/";
 import Login from "../pages/Login/";
@@ -58,6 +59,7 @@ const Routes = () => {
         <ForwardMessageProvider>
           <TicketsContextProvider>
             <Switch>
+              <Route exact path="/" component={LandingPage} />
               <Route exact path="/login" component={Login} />
               <Route exact path="/signup" component={Signup} />
               <Route exact path="/forgetpsw" component={ForgetPassword} />
@@ -65,7 +67,7 @@ const Routes = () => {
               {/* <Route exact path="/create-company" component={Companies} /> */}
               <WhatsAppsProvider>
                 <LoggedInLayout>
-                  <Route exact path="/" component={Dashboard} isPrivate />
+                  <Route exact path="/dashboard" component={Dashboard} isPrivate />
                   <Route
                     exact
                     path="/tickets/:ticketId?"
