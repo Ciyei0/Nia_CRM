@@ -482,24 +482,7 @@ const SignUp = () => {
 									/>
 								</Grid>
 
-								<Grid item xs={12}>
-									<Field
-										as={Select}
-										variant="outlined"
-										fullWidth
-										id="plan-selection"
-										displayEmpty
-										name="planId"
-										required
-										className={`${classes.textFieldWrapper} ${classes.selectFieldWrapper}`}
-									>
-										{plans.map((plan, key) => (
-											<MenuItem key={key} value={plan.id}>
-												{plan.name} - {plan.connections} WhatsApps - {plan.users} Usuarios - R$ {plan.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-											</MenuItem>
-										))}
-									</Field>
-								</Grid>
+
 							</Grid>
 
 							<Button
