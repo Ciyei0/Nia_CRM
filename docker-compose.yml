@@ -40,11 +40,20 @@ services:
       - BACKEND_URL=${BACKEND_URL:-https://backend.niacrmbot.com}
       - FRONTEND_URL=${FRONTEND_URL:-https://niacrmbot.com}
       - PROXY_PORT=8001
+      - FACEBOOK_APP_ID=1502878444119560
+      - FACEBOOK_APP_SECRET=${FACEBOOK_APP_SECRET:-}
       # ... you will need to map other variables from .env here
       - JWT_SECRET=${JWT_SECRET:-kZaOTd+YZpjRUyyuQUpigJaEMk4vcW4YOymKPZX0Ts8=}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dBSXqFg9TaNUEDXVp6fhMTRLBysP+j2DSqf7+raxD3A=}
     ports:
       - "8081:8001"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nia-backend.rule=Host(`backend.niacrmbot.com`)"
+      - "traefik.http.routers.nia-backend.entrypoints=https"
+      - "traefik.http.routers.nia-backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.nia-backend.loadbalancer.server.port=8001"
+      - "traefik.docker.network=easypanel"
     depends_on:
       - nia-db
       - nia-redis
@@ -55,6 +64,13 @@ services:
     restart: always
     ports:
       - "127.0.0.1:3010:3001" # Internal mapping for Nginx proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nia-front.rule=Host(`niacrmbot.com`)"
+      - "traefik.http.routers.nia-front.entrypoints=https"
+      - "traefik.http.routers.nia-front.tls.certresolver=letsencrypt"
+      - "traefik.http.services.nia-front.loadbalancer.server.port=3001"
+      - "traefik.docker.network=easypanel"
     depends_on:
       - nia-backend
     volumes:
