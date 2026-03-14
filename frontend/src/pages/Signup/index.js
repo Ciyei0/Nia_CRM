@@ -265,24 +265,13 @@ const SignUp = () => {
 	const classes = useStyles();
 	const history = useHistory();
 	const [allowregister, setallowregister] = useState('enabled');
-	const [trial, settrial] = useState('3');
+	const [trial, settrial] = useState('15');
 	const [showPassword, setShowPassword] = useState(false);
 	let companyId = null;
 
 	useEffect(() => {
 		fetchallowregister();
-		fetchtrial();
 	}, []);
-
-	const fetchtrial = async () => {
-		try {
-			const responsevvv = await api.get("/settings/trial");
-			const allowtrialX = responsevvv.data.value;
-			settrial(allowtrialX);
-		} catch (error) {
-			console.error('Error retrieving trial', error);
-		}
-	};
 
 	const fetchallowregister = async () => {
 		try {
