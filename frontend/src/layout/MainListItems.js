@@ -427,6 +427,16 @@ const MainListItems = (props) => {
       />
 
       {/* Divider y Logout */}
+      {user.super && (
+        <>
+          <Divider className={classes.divider} />
+          <ListItemLink
+            to="/settings"
+            primary="Administración SaaS"
+            icon={<SettingsOutlinedIcon />}
+          />
+        </>
+      )}
       <Divider className={classes.divider} />
 
       {!collapsed && (
