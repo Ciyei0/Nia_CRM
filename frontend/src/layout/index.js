@@ -42,6 +42,7 @@ import ColorModeContext from "../layout/themeContext";
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import Brightness7Icon from '@material-ui/icons/Brightness7';
 import niaLogo from "../assets/nia-logo.png";
+import ExpiredSubscription from "../components/ExpiredSubscription";
 
 const drawerWidth = 240;
 
@@ -333,6 +334,18 @@ const LoggedInLayout = ({ children, themeToggle }) => {
 
   if (loading) {
     return <BackdropLoading />;
+  }
+
+  const isExpired = () => {
+    if (!user || user.super) return false;
+    const dueDate = user?.company?.dueDate;
+    if (!dueDate) return false;
+    const before = moment(moment().format()).isBefore(dueDate);
+    return !before;
+  };
+
+  if (isExpired()) {
+    return <ExpiredSubscription />;
   }
 
   const logoSidebar = niaLogo;

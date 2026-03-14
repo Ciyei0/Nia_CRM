@@ -140,7 +140,7 @@ const useAuth = () => {
             var before = moment(moment().format()).isBefore(dueDate);
             var dias = moment.duration(diff).asDays();
 
-            if (before === true) {
+            if (true) {
                 localStorage.setItem("token", JSON.stringify(data.token));
                 localStorage.setItem("companyId", companyId);
                 localStorage.setItem("userId", id);
@@ -155,14 +155,10 @@ const useAuth = () => {
                 setUser(data.user);
                 setIsAuth(true);
                 toast.success(i18n.t("auth.toasts.success"));
-                if (Math.round(dias) < 5) {
+                if (Math.round(dias) < 5 && before === true) {
                     toast.warn(`Tu suscripción vence en ${Math.round(dias)} ${Math.round(dias) === 1 ? 'día' : 'días'} `);
                 }
                 history.push("/tickets");
-                setLoading(false);
-            } else {
-                toastError(`¡Ups! Tu suscripción venció el ${vencimiento}.
-Contacta con Soporte para más información!`);
                 setLoading(false);
             }
 
