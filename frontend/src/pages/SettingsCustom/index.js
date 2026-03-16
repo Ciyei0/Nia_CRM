@@ -7,12 +7,7 @@ import { makeStyles, Paper, Tabs, Tab } from "@material-ui/core";
 import TabPanel from "../../components/TabPanel";
 
 import SchedulesForm from "../../components/SchedulesForm";
-import CompaniesManager from "../../components/CompaniesManager";
-import PlansManager from "../../components/PlansManager";
-import HelpsManager from "../../components/HelpsManager";
 import Options from "../../components/Settings/Options";
-import Uploader from "../../components/Settings/Uploader";
-import NewCompaniesManager from "../../pages/Companies";
 
 import { i18n } from "../../translate/i18n.js";
 import { toast } from "react-toastify";
@@ -147,10 +142,6 @@ const SettingsCustom = () => {
     setLoading(false);
   };
 
-  const isSuper = () => {
-    return currentUser.super;
-  };
-
   return (
     <MainContainer className={classes.root}>
       <MainHeader>
@@ -168,11 +159,6 @@ const SettingsCustom = () => {
         >
           <Tab label="Opções" value={"options"} />
           {schedulesEnabled && <Tab label="Horários" value={"schedules"} />}
-		  {isSuper() ? <Tab label="Logo" value={"uploader"} /> : null}
-          {isSuper() ? <Tab label="Empresas" value={"companies"} /> : null}
-		  {isSuper() ? <Tab label="Cadastrar Empresa" value={"newcompanie"} /> : null}
-          {isSuper() ? <Tab label="Planos" value={"plans"} /> : null}
-          {isSuper() ? <Tab label="Ajuda" value={"helps"} /> : null}
         </Tabs>
         <Paper className={classes.paper} elevation={0}>
           <TabPanel
@@ -186,66 +172,6 @@ const SettingsCustom = () => {
               initialValues={schedules}
             />
           </TabPanel>
-          <OnlyForSuperUser
-            user={currentUser}
-            yes={() => (
-              <TabPanel
-                className={classes.container}
-                value={tab}
-                name={"companies"}
-              >
-                <CompaniesManager />
-              </TabPanel>
-            )}
-          />
-          <OnlyForSuperUser
-            user={currentUser}
-            yes={() => (
-              <TabPanel
-                className={classes.container}
-                value={tab}
-                name={"newcompanie"}
-              >
-                <NewCompaniesManager />
-              </TabPanel>
-            )}
-          />
-          <OnlyForSuperUser
-            user={currentUser}
-            yes={() => (
-              <TabPanel
-                className={classes.container}
-                value={tab}
-                name={"plans"}
-              >
-                <PlansManager />
-              </TabPanel>
-            )}
-          />
-          <OnlyForSuperUser
-            user={currentUser}
-            yes={() => (
-              <TabPanel
-                className={classes.container}
-                value={tab}
-                name={"helps"}
-              >
-                <HelpsManager />
-              </TabPanel>
-            )}
-          />
-		 <OnlyForSuperUser
-            user={currentUser}
-            yes={() => (
-              <TabPanel
-                className={classes.container}
-                value={tab}
-                name={"uploader"}
-              >
-                <Uploader />
-              </TabPanel>
-            )}
-          />
           <TabPanel className={classes.container} value={tab} name={"options"}>
             <Options
               settings={settings}

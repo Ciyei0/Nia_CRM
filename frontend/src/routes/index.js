@@ -10,6 +10,7 @@ import Signup from "../pages/Signup/";
 import Login from "../pages/Login/";
 import Connections from "../pages/Connections/";
 import SettingsCustom from "../pages/SettingsCustom/";
+import SaasAdmin from "../pages/SaasAdmin/";
 import Financeiro from "../pages/Financeiro/";
 import Users from "../pages/Users";
 import Contacts from "../pages/Contacts/";
@@ -122,6 +123,12 @@ const Routes = () => {
                     exact
                     path="/settings"
                     component={SettingsCustom}
+                    isPrivate
+                  />
+                  <Route
+                    exact
+                    path="/saas-admin"
+                    component={SaasAdmin}
                     isPrivate
                   />
                   <Route
