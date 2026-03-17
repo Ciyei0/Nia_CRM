@@ -128,7 +128,7 @@ function SchedulesForm(props) {
               color="primary"
               variant="contained"
             >
-              {labelSaveButton ?? "Salvar"}
+              {labelSaveButton ?? "Guardar"}
             </ButtonWithSpinner>
           </div>
         </Form>
