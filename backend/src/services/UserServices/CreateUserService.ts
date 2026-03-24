@@ -5,16 +5,17 @@ import { SerializeUser } from "../../helpers/SerializeUser";
 import User from "../../models/User";
 import Plan from "../../models/Plan";
 import Company from "../../models/Company";
+import { supabaseAdmin } from "../../libs/supabase";
 
 interface Request {
   email: string;
-  password: string;
+  password?: string;
   name: string;
   queueIds?: number[];
   companyId?: number;
   profile?: string;
   whatsappId?: number;
-  allTicket?:string;
+  allTicket?: string;
 }
 
 interface Response {
@@ -64,7 +65,7 @@ const CreateUserService = async ({
       .required()
       .test(
         "Check-email",
-        "An user with this email already exists.",
+        "An user with this email already exists locally.",
         async value => {
           if (!value) return false;
           const emailExists = await User.findOne({
@@ -73,13 +74,29 @@ const CreateUserService = async ({
           return !emailExists;
         }
       ),
-    password: Yup.string().required().min(5)
+    password: Yup.string().min(5)
   });
 
   try {
     await schema.validate({ email, password, name });
-  } catch (err) {
+  } catch (err: any) {
     throw new AppError(err.message);
+  }
+
+  // Attempt to create the user in the central Supabase Auth instance
+  if (password) {
+    const { data: authData, error } = await supabaseAdmin.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { name, phone: whatsappId ? whatsappId.toString() : '' }
+    });
+
+    if (error) {
+       // If the user already exists in Supabase but not locally, we can decide what to do. 
+       // For now, we'll alert the admin.
+       throw new AppError(`Supabase Auth Error: ${error.message}`);
+    }
   }
 
   const user = await User.create(
@@ -90,7 +107,7 @@ const CreateUserService = async ({
       companyId,
       profile,
       whatsappId: whatsappId || null,
-	  allTicket
+      allTicket
     },
     { include: ["queues", "company"] }
   );

@@ -44,29 +44,31 @@ const UpdateUserService = async ({
     throw new AppError("O usuário não pertence à esta empresa");
   }
 
+  if (userData.password) {
+    throw new AppError("Las contraseñas de los usuarios deben restablecerse usando la opción de recuperación de contraseña de Supabase desde el inicio de sesión");
+  }
+
   const schema = Yup.object().shape({
     name: Yup.string().min(2),
     email: Yup.string().email(),
     profile: Yup.string(),
-    password: Yup.string(),
-	allTicket: Yup.string()
+    allTicket: Yup.string()
   });
 
-  const { email, password, profile, name, queueIds = [], whatsappId, allTicket } = userData;
+  const { email, profile, name, queueIds = [], whatsappId, allTicket } = userData;
 
   try {
-    await schema.validate({ email, password, profile, name, allTicket });
+    await schema.validate({ email, profile, name, allTicket });
   } catch (err: any) {
     throw new AppError(err.message);
   }
 
   await user.update({
     email,
-    password,
     profile,
     name,
     whatsappId: whatsappId || null,
-	allTicket
+    allTicket
   });
 
   await user.$set("queues", queueIds);

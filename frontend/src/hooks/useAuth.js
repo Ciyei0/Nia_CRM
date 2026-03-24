@@ -1,7 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { has, isArray } from "lodash";
-
 import { toast } from "react-toastify";
 
 import { i18n } from "../translate/i18n";
@@ -9,6 +8,7 @@ import api from "../services/api";
 import toastError from "../errors/toastError";
 import { SocketContext } from "../context/Socket/SocketContext";
 import moment from "moment";
+import { supabase } from "../services/supabase";
 
 const useAuth = () => {
     const history = useHistory();
@@ -17,10 +17,10 @@ const useAuth = () => {
     const [user, setUser] = useState({});
 
     api.interceptors.request.use(
-        (config) => {
-            const token = localStorage.getItem("token");
-            if (token) {
-                config.headers["Authorization"] = `Bearer ${JSON.parse(token)}`;
+        async (config) => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.access_token) {
+                config.headers["Authorization"] = `Bearer ${session.access_token}`;
                 setIsAuth(true);
             }
             return config;
@@ -35,28 +35,15 @@ const useAuth = () => {
             return response;
         },
         async (error) => {
-            const originalRequest = error.config;
-            if (error?.response?.status === 403 && !originalRequest._retry) {
-                originalRequest._retry = true;
-
-                const refreshToken = localStorage.getItem("refreshToken");
-                const { data } = await api.post("/auth/refresh_token", {
-                    refreshToken
-                });
-
-                if (data) {
-                    localStorage.setItem("token", JSON.stringify(data.token));
-                    localStorage.setItem("refreshToken", data.refreshToken);
-                    api.defaults.headers.Authorization = `Bearer ${data.token}`;
+            if (error?.response?.status === 403 || error?.response?.status === 401) {
+                // If the backend returns 403, it means the token is invalid, or the user is not approved, or subscription expired
+                if (error.response.data?.error === "Account pending approval" || error.response.data?.error === "Subscription expired") {
+                    // Do not logout immediately, just let the UI handle it or force logout depending on preference.
+                    // For now, we leave the session active so they can see the "Pending Approval" or "Expired" screen.
+                } else if (error?.response?.status === 401) {
+                    await supabase.auth.signOut();
+                    setIsAuth(false);
                 }
-                return api(originalRequest);
-            }
-            if (error?.response?.status === 401) {
-                localStorage.removeItem("token");
-                localStorage.removeItem("refreshToken");
-                localStorage.removeItem("companyId");
-                api.defaults.headers.Authorization = undefined;
-                setIsAuth(false);
             }
             return Promise.reject(error);
         }
@@ -64,40 +51,66 @@ const useAuth = () => {
 
     const socketManager = useContext(SocketContext);
 
+    // Initialize session and listen for auth state changes
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        (async () => {
-            if (token) {
+        let mounted = true;
+
+        const loadSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                api.defaults.headers.Authorization = `Bearer ${session.access_token}`;
                 try {
-                    const refreshToken = localStorage.getItem("refreshToken");
-                    const { data } = await api.post("/auth/refresh_token", {
-                        refreshToken
-                    });
-                    api.defaults.headers.Authorization = `Bearer ${data.token}`;
-                    setIsAuth(true);
-                    setUser(data.user);
-                    // Update tokens in storage
-                    localStorage.setItem("token", JSON.stringify(data.token));
-                    if (data.refreshToken) {
-                        localStorage.setItem("refreshToken", data.refreshToken);
+                    const { data } = await api.get("/auth/me");
+                    if (mounted) {
+                        setUser({ ...data, app_metadata: session.user.app_metadata });
+                        setIsAuth(true);
+                        localStorage.setItem("companyId", data.companyId);
+                        localStorage.setItem("userId", data.id);
                     }
                 } catch (err) {
-                    toastError(err);
-                    // If refresh fails, clear everything to force login
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("refreshToken");
-                    localStorage.removeItem("companyId");
-                    api.defaults.headers.Authorization = undefined;
-                    setIsAuth(false);
+                    if (err.response?.status === 403) {
+                       if (mounted) {
+                           setUser({ app_metadata: session.user.app_metadata });
+                           setIsAuth(true); 
+                       }
+                    } else {
+                       await supabase.auth.signOut();
+                       if (mounted) {
+                           setIsAuth(false);
+                           setUser({});
+                       }
+                       localStorage.removeItem("companyId");
+                       localStorage.removeItem("userId");
+                    }
                 }
             }
-            setLoading(false);
-        })();
+            if (mounted) setLoading(false);
+        };
+
+        loadSession();
+
+        const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+               loadSession();
+            } else if (event === 'SIGNED_OUT') {
+               setIsAuth(false);
+               setUser({});
+               localStorage.removeItem("companyId");
+               localStorage.removeItem("userId");
+               localStorage.removeItem("cshow");
+               api.defaults.headers.Authorization = undefined;
+            }
+        });
+
+        return () => {
+            mounted = false;
+            authListener?.subscription.unsubscribe();
+        };
     }, []);
 
     useEffect(() => {
         const companyId = localStorage.getItem("companyId");
-        if (companyId) {
+        if (companyId && isAuth && user.id) {
             const socket = socketManager.getSocket(companyId);
 
             socket.on(`company-${companyId}-user`, (data) => {
@@ -110,57 +123,71 @@ const useAuth = () => {
                 socket.disconnect();
             };
         }
-    }, [socketManager, user]);
+    }, [socketManager, user, isAuth]);
 
     const handleLogin = async (userData) => {
         setLoading(true);
 
         try {
-            const { data } = await api.post("/auth/login", userData);
-            const {
-                user: { companyId, id, company },
-            } = data;
+            const { data: supaData, error } = await supabase.auth.signInWithPassword({
+                email: userData.email,
+                password: userData.password
+            });
 
-            if (has(company, "settings") && isArray(company.settings)) {
-                const setting = company.settings.find(
-                    (s) => s.key === "campaignsEnabled"
-                );
-                if (setting && setting.value === "true") {
-                    localStorage.setItem("cshow", null);
-                }
+            if (error) {
+                toastError(error);
+                setLoading(false);
+                return;
             }
 
-            moment.locale('pt-br');
-            const dueDate = data.user.company.dueDate;
-            const hoje = moment(moment()).format("DD/MM/yyyy");
-            const vencimiento = moment(dueDate).format("DD/MM/yyyy");
+            // Successfully logged in via Supabase, now fetch local profile
+            api.defaults.headers.Authorization = `Bearer ${supaData.session.access_token}`;
+            
+            try {
+                const { data } = await api.get("/auth/me");
+                
+                const { companyId, id, company } = data;
 
-            var diff = moment(dueDate).diff(moment(moment()).format());
+                if (has(company, "settings") && isArray(company.settings)) {
+                    const setting = company.settings.find(
+                        (s) => s.key === "campaignsEnabled"
+                    );
+                    if (setting && setting.value === "true") {
+                        localStorage.setItem("cshow", null);
+                    }
+                }
 
-            var before = moment(moment().format()).isBefore(dueDate);
-            var dias = moment.duration(diff).asDays();
+                moment.locale('pt-br');
+                const dueDate = company.dueDate;
+                const vencimiento = moment(dueDate).format("DD/MM/yyyy");
 
-            if (true) {
-                localStorage.setItem("token", JSON.stringify(data.token));
+                var diff = moment(dueDate).diff(moment().format());
+                var before = moment().isBefore(dueDate);
+                var dias = moment.duration(diff).asDays();
+
                 localStorage.setItem("companyId", companyId);
                 localStorage.setItem("userId", id);
                 localStorage.setItem("companyDueDate", vencimiento);
 
-                // Store refreshToken
-                if (data.refreshToken) {
-                    localStorage.setItem("refreshToken", data.refreshToken);
-                }
-
-                api.defaults.headers.Authorization = `Bearer ${data.token}`;
-                setUser(data.user);
+                setUser({ ...data, app_metadata: supaData.session.user.app_metadata });
                 setIsAuth(true);
                 toast.success(i18n.t("auth.toasts.success"));
+                
                 if (Math.round(dias) < 5 && before === true) {
                     toast.warn(`Tu suscripción vence en ${Math.round(dias)} ${Math.round(dias) === 1 ? 'día' : 'días'} `);
                 }
+                
                 history.push("/tickets");
-                setLoading(false);
+            } catch (err) {
+                 if (err.response?.status === 403) {
+                     setUser({ app_metadata: supaData.session.user.app_metadata });
+                     setIsAuth(true); 
+                     history.push("/tickets");
+                 } else {
+                     toastError(err);
+                 }
             }
+            setLoading(false);
 
         } catch (err) {
             toastError(err);
@@ -170,13 +197,14 @@ const useAuth = () => {
 
     const handleLogout = async () => {
         setLoading(true);
-
         try {
             await api.delete("/auth/logout");
+        } catch(e) {}
+        
+        try {
+            await supabase.auth.signOut();
             setIsAuth(false);
             setUser({});
-            localStorage.removeItem("token");
-            localStorage.removeItem("refreshToken"); // Clear refreshToken
             localStorage.removeItem("companyId");
             localStorage.removeItem("userId");
             localStorage.removeItem("cshow");

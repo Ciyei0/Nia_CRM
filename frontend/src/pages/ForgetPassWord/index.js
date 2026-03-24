@@ -23,6 +23,7 @@ import moment from "moment";
 import { toast } from 'react-toastify';
 import toastError from '../../errors/toastError';
 import 'react-toastify/dist/ReactToastify.css';
+import { supabase } from "../../services/supabase";
 
 import EmailOutlinedIcon from "@material-ui/icons/EmailOutlined";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
@@ -255,11 +256,9 @@ const ForgetPassword = () => {
   const handleSendEmail = async (values) => {
     const email = values.email;
     try {
-      const response = await api.post(
-        `${process.env.REACT_APP_BACKEND_URL}/forgetpassword/${email}`
-      );
-      if (response.data.status === 404) {
-        toast.error("Correo no encontrado");
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+      if (error) {
+        toastError(error);
       } else {
         toast.success(i18n.t("¡Correo enviado con éxito!"));
       }
@@ -276,9 +275,26 @@ const ForgetPassword = () => {
 
     if (newPassword === confirmPassword) {
       try {
-        await api.post(
-          `${process.env.REACT_APP_BACKEND_URL}/resetpasswords/${email}/${token}/${newPassword}`
-        );
+        const { data, error } = await supabase.auth.verifyOtp({
+          email,
+          token,
+          type: 'recovery'
+        });
+
+        if (error) {
+          toastError(error);
+          return;
+        }
+
+        const { error: updateError } = await supabase.auth.updateUser({
+          password: newPassword
+        });
+
+        if (updateError) {
+          toastError(updateError);
+          return;
+        }
+
         setError("");
         toast.success(i18n.t("Contraseña restablecida con éxito."));
         history.push("/login");

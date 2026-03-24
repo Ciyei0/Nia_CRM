@@ -336,6 +336,34 @@ const LoggedInLayout = ({ children, themeToggle }) => {
     return <BackdropLoading />;
   }
 
+  const isPendingApproval = () => {
+    if (!user) return false;
+    if (user.super) return false;
+    if (user.app_metadata && user.app_metadata.is_approved === false) {
+      return true;
+    }
+    return false;
+  };
+
+  if (isPendingApproval()) {
+    return (
+      <div className={classes.root} style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <div className={classes.paper} style={{ textAlign: 'center' }}>
+          <img src={niaLogo} alt="Nia CRM" style={{ width: '150px', marginBottom: '20px' }} />
+          <Typography variant="h5" color="primary" gutterBottom>
+            Cuenta Pendiente de Aprobación
+          </Typography>
+          <Typography variant="body1" color="textSecondary" paragraph>
+            Tu cuenta ha sido registrada de forma segura, pero está pendiente de aprobación por un administrador.
+          </Typography>
+          <Button variant="contained" color="primary" onClick={handleClickLogout}>
+            Cerrar Sesión
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   const isExpired = () => {
     if (!user || user.super) return false;
     const dueDate = user?.company?.dueDate;

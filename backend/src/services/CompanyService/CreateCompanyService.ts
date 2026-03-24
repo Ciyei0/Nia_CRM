@@ -3,6 +3,7 @@ import AppError from "../../errors/AppError";
 import Company from "../../models/Company";
 import Setting from "../../models/Setting";
 import User from "../../models/User";
+import { supabaseAdmin } from "../../libs/supabase";
 
 interface CompanyData {
   name: string;
@@ -53,6 +54,20 @@ const CreateCompanyService = async (
 
   try {
     await companySchema.validate({ name });
+
+    // Crate user in Supabase before creating the local Company
+    if (email && password) {
+      const { data: authData, error } = await supabaseAdmin.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+        user_metadata: { name, phone: phone || '' }
+      });
+
+      if (error) {
+        throw new AppError(`Supabase Auth Error: ${error.message}`);
+      }
+    }
   } catch (err: any) {
     throw new AppError(err.message);
   }

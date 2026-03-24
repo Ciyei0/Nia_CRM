@@ -1,17 +1,19 @@
 import { verify } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import { logger } from "../utils/logger";
 import AppError from "../errors/AppError";
 import authConfig from "../config/auth";
 import User from "../models/User";
+import Company from "../models/Company";
+import moment from "moment";
 
 interface TokenPayload {
-  id: string;
-  username: string;
-  profile: string;
-  companyId: number;
-  iat: number;
-  exp: number;
+  sub?: string;
+  email?: string;
+  app_metadata?: {
+    is_approved?: boolean;
+    due_date?: string;
+    plan?: string;
+  };
 }
 
 const isAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -24,15 +26,86 @@ const isAuth = async (req: Request, res: Response, next: NextFunction): Promise<
   const [, token] = authHeader.split(" ");
 
   try {
-    const decoded = verify(token, authConfig.secret);
-    const { id, profile, companyId } = decoded as TokenPayload;
-    req.user = {
-      id,
-      profile,
-      companyId
-    };
+    // We use the same JWT Secret provided by the .env (which should now be the Supabase JWT Secret)
+    const decoded = verify(token, authConfig.secret) as TokenPayload;
+    
+    // Check if it's a Supabase JWT and enforce the central business rules
+    if (decoded.app_metadata) {
+      if (decoded.app_metadata.is_approved === false) {
+         throw new AppError("Account pending approval", 403);
+      }
+
+      const dueDate = decoded.app_metadata.due_date;
+      if (dueDate && moment().isAfter(moment(dueDate).endOf('day'))) {
+         throw new AppError("Subscription expired", 403);
+      }
+    }
+
+    // It is a valid Supabase token. Now map it to our local Users table by email.
+    if (decoded.email) {
+      const user = await User.findOne({ where: { email: decoded.email } });
+      if (!user) {
+         throw new AppError("User not found in local database", 403);
+      }
+
+      // Sincronizar metadatos de Supabase hacia la tabla Company local.
+      // Como el panel externo NIA Admin actualiza el app_metadata en Supabase,
+      // usamos el JWT de Supabase como 'fuente de la verdad' para actualizar la empresa local.
+      if (decoded.app_metadata) {
+        const { is_approved, due_date } = decoded.app_metadata;
+        
+        // Bloquear acceso inmediato al dueño si no está aprobado
+        if (is_approved === false && user.profile === "admin") {
+          throw new AppError("Account pending approval", 403);
+        }
+
+        if (user.companyId && (due_date !== undefined || is_approved !== undefined)) {
+          const company = await Company.findByPk(user.companyId);
+          if (company) {
+            let needsUpdate = false;
+            
+            // Convertir fechas a un formato comparable o simplemente guardar el ISO
+            if (due_date && company.dueDate !== due_date) {
+              company.dueDate = due_date;
+              needsUpdate = true;
+            }
+            if (is_approved !== undefined && company.status !== is_approved) {
+              company.status = is_approved;
+              needsUpdate = true;
+            }
+
+            if (needsUpdate) {
+              await company.save();
+            }
+
+            // Bloqueo duro si expiró (común para toda la empresa)
+            if (moment().isAfter(moment(company.dueDate).endOf('day'))) {
+               throw new AppError("Subscription expired", 403);
+            }
+          }
+        }
+      }
+
+      req.user = {
+        id: user.id.toString(),
+        profile: user.profile,
+        companyId: user.companyId
+      };
+      return next();
+    } else {
+      // Legacy TokenPayload handling just in case (e.g. internal backend tokens)
+      const { id, profile, companyId } = decoded as any;
+      if (id && companyId) {
+        req.user = { id: id.toString(), profile, companyId };
+        return next();
+      }
+    }
   } catch (err) {
-    // Si falla JWT, intentar buscar usuario por token (API Token)
+    if (err instanceof AppError) {
+      throw err;
+    }
+    // Si falla la verificación JWT o no es un JWT válido,
+    // intentar buscar usuario por token (API Token permanente en la base de datos)
     const user = await User.findOne({ where: { token } });
     if (user) {
       req.user = {
@@ -42,7 +115,8 @@ const isAuth = async (req: Request, res: Response, next: NextFunction): Promise<
       };
       return next();
     }
-    throw new AppError("Invalid token. We'll try to assign a new one on next request", 403);
+    
+    throw new AppError("Invalid token or session expired", 403);
   }
 
   return next();
