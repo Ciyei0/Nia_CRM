@@ -11,7 +11,7 @@ import {
 import { Bar } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import brLocale from 'date-fns/locale/pt-BR';
+import esLocale from 'date-fns/locale/es';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { Button, Stack, TextField } from '@mui/material';
 import Typography from "@material-ui/core/Typography";
@@ -113,7 +113,7 @@ export const ChatsUser = () => {
 
             <Stack direction={'row'} spacing={2} alignItems={'center'} sx={{ my: 2, }} >
 
-                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={brLocale}>
+                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={esLocale}>
                     <DatePicker
                         value={initialDate}
                         onChange={(newValue) => { setInitialDate(newValue) }}
@@ -123,7 +123,7 @@ export const ChatsUser = () => {
                     />
                 </LocalizationProvider>
 
-                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={brLocale}>
+                <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={esLocale}>
                     <DatePicker
                         value={finalDate}
                         onChange={(newValue) => { setFinalDate(newValue) }}

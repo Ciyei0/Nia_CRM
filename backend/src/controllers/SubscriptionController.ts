@@ -55,7 +55,7 @@ export const createSubscription = async (
       expiracao: 3600
     },
     valor: {
-      original: price.toLocaleString("pt-br", { minimumFractionDigits: 2 }).replace(",", ".")
+      original: price.toLocaleString("en-US", { minimumFractionDigits: 2 }).replace(",", "."),
     },
     chave: process.env.GERENCIANET_PIX_KEY,
     solicitacaoPagador: `#Fatura:${invoiceId}`

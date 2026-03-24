@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { QueryClient, QueryClientProvider } from "react-query";
 import lightBackground from '../src/assets/wa-background-light.png';
 import darkBackground from '../src/assets/wa-background-dark.jpg';
-import { ptBR } from "@material-ui/core/locale";
+import { esES } from "@material-ui/core/locale";
 import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { useMediaQuery } from "@material-ui/core";
 import ColorModeContext from "./layout/themeContext";
@@ -109,8 +109,10 @@ const App = () => {
         const browserLocale =
             i18nlocale.substring(0, 2) + i18nlocale.substring(3, 5);
 
-        if (browserLocale === "ptBR") {
-            setLocale(ptBR);
+        if (browserLocale === "esES") {
+            setLocale(esES);
+        } else {
+            setLocale(esES); // Force Spanish
         }
     }, []);
 

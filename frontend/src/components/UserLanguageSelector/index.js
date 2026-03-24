@@ -51,11 +51,14 @@ const UserLanguageSelector = () => {
                 open={Boolean(langueMenuAnchorEl)}
                 onClose={handleCloseLanguageMenu}
             >
-                <MenuItem onClick={() => handleChangeLanguage("pt-BR")}>
-                    {i18n.t("languages.pt-BR")}
+                <MenuItem value="es" onClick={() => handleChangeLanguage("es")}>
+                    Español
                 </MenuItem>
-                <MenuItem onClick={() => handleChangeLanguage("en")}>
-                    {i18n.t("languages.en")}
+                <MenuItem value="en" onClick={() => handleChangeLanguage("en")}>
+                    Spanish (English)
+                </MenuItem>
+                <MenuItem value="pt-BR" onClick={() => handleChangeLanguage("pt-BR")}>
+                    Spanish (Portugués)
                 </MenuItem>
                 <MenuItem onClick={() => handleChangeLanguage("es")}>
                     {i18n.t("languages.es")}
