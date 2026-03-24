@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+const { createClient } = window.supabase;
 
 // Por favor, define estas variables de entorno en tu .env del frontend
 // Ej: REACT_APP_SUPABASE_URL=https://...

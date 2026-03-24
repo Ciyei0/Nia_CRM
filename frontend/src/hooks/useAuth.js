@@ -104,7 +104,9 @@ const useAuth = () => {
 
         return () => {
             mounted = false;
-            authListener?.subscription.unsubscribe();
+            if (authListener && authListener.subscription) {
+                authListener.subscription.unsubscribe();
+            }
         };
     }, []);
 
