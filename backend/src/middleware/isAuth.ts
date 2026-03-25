@@ -27,7 +27,8 @@ const isAuth = async (req: Request, res: Response, next: NextFunction): Promise<
 
   try {
     // We use the same JWT Secret provided by the .env (which should now be the Supabase JWT Secret)
-    const decoded = verify(token, authConfig.secret) as TokenPayload;
+    const secretBuffer = Buffer.from(authConfig.secret, 'base64');
+    const decoded = verify(token, secretBuffer) as TokenPayload;
     
     // Check if it's a Supabase JWT and enforce the central business rules
     if (decoded.app_metadata) {
