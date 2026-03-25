@@ -1,0 +1,20 @@
+name: Debug VPS Logs
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  debug-logs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Logs from VPS
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            docker logs nia-backend --tail 500 > /root/Nia_CRM/backend_logs.txt
+            cat /root/Nia_CRM/backend_logs.txt
