@@ -35,16 +35,13 @@ const useAuth = () => {
             return response;
         },
         async (error) => {
-            if (error?.response?.status === 403 || error?.response?.status === 401) {
-                // If the backend returns 403, it means the token is invalid, or the user is not approved, or subscription expired
-                if (error.response.data?.error === "Account pending approval" || error.response.data?.error === "Subscription expired") {
-                    // Do not logout immediately, just let the UI handle it or force logout depending on preference.
-                    // For now, we leave the session active so they can see the "Pending Approval" or "Expired" screen.
-                } else if (error?.response?.status === 401) {
-                    await supabase.auth.signOut();
-                    setIsAuth(false);
-                }
+            if (error?.response?.status === 401) {
+                // 401 = truly invalid/expired token, force logout
+                await supabase.auth.signOut();
+                setIsAuth(false);
             }
+            // ALL 403 errors (pending approval, subscription expired, etc.)
+            // are silently absorbed. The UI layout will handle the blocking screen.
             return Promise.reject(error);
         }
     );

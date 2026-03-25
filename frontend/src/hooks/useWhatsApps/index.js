@@ -60,6 +60,11 @@ const useWhatsApps = () => {
   const socketManager = useContext(SocketContext);
 
   useEffect(() => {
+    const companyId = localStorage.getItem("companyId");
+    if (!companyId) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     const fetchSession = async () => {
       try {
@@ -68,7 +73,10 @@ const useWhatsApps = () => {
         setLoading(false);
       } catch (err) {
         setLoading(false);
-        toastError(err);
+        // Silently ignore 403 errors for unapproved users
+        if (err?.response?.status !== 403) {
+          toastError(err);
+        }
       }
     };
     fetchSession();
@@ -76,6 +84,8 @@ const useWhatsApps = () => {
 
   useEffect(() => {
     const companyId = localStorage.getItem("companyId");
+    if (!companyId) return;
+
     const socket = socketManager.getSocket(companyId);
 
     socket.on(`company-${companyId}-whatsapp`, (data) => {

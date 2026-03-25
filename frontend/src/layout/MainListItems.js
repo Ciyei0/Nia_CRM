@@ -229,13 +229,17 @@ const MainListItems = (props) => {
   useEffect(() => {
     async function fetchData() {
       const companyId = user.companyId;
-      const planConfigs = await getPlanCompany(undefined, companyId);
-
-      setShowCampaigns(planConfigs.plan.useCampaigns);
-      setShowOpenAi(planConfigs.plan.useOpenAi);
-      setShowIntegrations(planConfigs.plan.useIntegrations);
-      setShowSchedules(planConfigs.plan.useSchedules);
-      setShowExternalApi(planConfigs.plan.useExternalApi);
+      if (!companyId) return;
+      try {
+        const planConfigs = await getPlanCompany(undefined, companyId);
+        setShowCampaigns(planConfigs.plan.useCampaigns);
+        setShowOpenAi(planConfigs.plan.useOpenAi);
+        setShowIntegrations(planConfigs.plan.useIntegrations);
+        setShowSchedules(planConfigs.plan.useSchedules);
+        setShowExternalApi(planConfigs.plan.useExternalApi);
+      } catch (err) {
+        // Silently ignore errors for unapproved users
+      }
     }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -243,6 +247,7 @@ const MainListItems = (props) => {
 
   useEffect(() => {
     const companyId = localStorage.getItem("companyId");
+    if (!companyId) return;
     const socket = socketManager.getSocket(companyId);
 
     socket.on(`company-${companyId}-chat`, (data) => {
@@ -308,12 +313,16 @@ const MainListItems = (props) => {
 
   const fetchChats = async () => {
     try {
+      const companyId = localStorage.getItem("companyId");
+      if (!companyId) return;
       const { data } = await api.get("/chats/", {
         params: { searchParam, pageNumber },
       });
       dispatch({ type: "LOAD_CHATS", payload: data.records });
     } catch (err) {
-      toastError(err);
+      if (err?.response?.status !== 403) {
+        toastError(err);
+      }
     }
   };
 

@@ -149,6 +149,8 @@ export default function AnnouncementsPopover() {
 
   useEffect(() => {
     setLoading(true);
+    const companyId = localStorage.getItem("companyId");
+    if (!companyId) { setLoading(false); return; }
     const delayDebounceFn = setTimeout(() => {
       fetchAnnouncements();
     }, 500);
@@ -158,6 +160,7 @@ export default function AnnouncementsPopover() {
 
   useEffect(() => {
     const companyId = localStorage.getItem("companyId");
+    if (!companyId) return;
     const socket = socketManager.getSocket(companyId);
     
     if (!socket) {
@@ -180,6 +183,8 @@ export default function AnnouncementsPopover() {
 
   const fetchAnnouncements = async () => {
     try {
+      const companyId = localStorage.getItem("companyId");
+      if (!companyId) return;
       const { data } = await api.get("/announcements/", {
         params: { searchParam, pageNumber },
       });
@@ -187,7 +192,9 @@ export default function AnnouncementsPopover() {
       setHasMore(data.hasMore);
       setLoading(false);
     } catch (err) {
-      toastError(err);
+      if (err?.response?.status !== 403) {
+        toastError(err);
+      }
     }
   };
 
