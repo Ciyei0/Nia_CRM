@@ -45,6 +45,8 @@ services:
       # ... you will need to map other variables from .env here
       - JWT_SECRET=${JWT_SECRET:-kZaOTd+YZpjRUyyuQUpigJaEMk4vcW4YOymKPZX0Ts8=}
       - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dBSXqFg9TaNUEDXVp6fhMTRLBysP+j2DSqf7+raxD3A=}
+      - SUPABASE_URL=${SUPABASE_URL:-https://sucaqyptfxcykheekhqg.supabase.co}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1Y2FxeXB0ZnhjeWtoZWVraHFnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDMxNjc2OCwiZXhwIjoyMDg5ODkyNzY4fQ.Ng9PIxrXzKwMUJu7MnpCz6qc9VA3pIlmrHALIcSl708}
     ports:
       - "8081:8001"
     labels:
