@@ -61,7 +61,11 @@ const CreateCompanyService = async (
         email,
         password,
         email_confirm: true,
-        user_metadata: { name, phone: phone || '' }
+        user_metadata: { name, phone: phone || '' },
+        app_metadata: { 
+          due_date: dueDate,
+          is_approved: true 
+        }
       });
 
       if (error) {
