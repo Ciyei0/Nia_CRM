@@ -1,11 +1,7 @@
 import { Request, Response } from "express";
 import * as Yup from "yup";
-// import { getIO } from "../libs/socket";
-import authConfig from "../config/auth";
 import AppError from "../errors/AppError";
 import Company from "../models/Company";
-
-import { verify } from "jsonwebtoken";
 import User from "../models/User";
 import CreateCompanyService from "../services/CompanyService/CreateCompanyService";
 import DeleteCompanyService from "../services/CompanyService/DeleteCompanyService";
@@ -141,11 +137,7 @@ export const remove = async (
 
 export const listPlan = async (req: Request, res: Response): Promise<Response> => {
   const { id } = req.params;
-
-  const authHeader = req.headers.authorization;
-  const [, token] = authHeader.split(" ");
-  const decoded = verify(token, authConfig.secret);
-  const { id: requestUserId, profile, companyId } = decoded as TokenPayload;
+  const { id: requestUserId, profile, companyId } = req.user;
   const requestUser = await User.findByPk(requestUserId);
 
   if (requestUser.super === true) {
@@ -162,11 +154,7 @@ export const listPlan = async (req: Request, res: Response): Promise<Response> =
 
 export const indexPlan = async (req: Request, res: Response): Promise<Response> => {
   const { searchParam, pageNumber } = req.query as IndexQuery;
-
-  const authHeader = req.headers.authorization;
-  const [, token] = authHeader.split(" ");
-  const decoded = verify(token, authConfig.secret);
-  const { id, profile, companyId } = decoded as TokenPayload;
+  const { id, profile, companyId } = req.user;
   // const company = await Company.findByPk(companyId);
   const requestUser = await User.findByPk(id);
 

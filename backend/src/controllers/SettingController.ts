@@ -64,9 +64,15 @@ export const show = async (
   const { settingKey } = req.params;
   
 
-  const retornoData = await ShowSettingsService({ settingKey, companyId });
-
-  return res.status(200).json(retornoData);
+  try {
+    const retornoData = await ShowSettingsService({ settingKey, companyId });
+    return res.status(200).json(retornoData);
+  } catch (err) {
+    if (settingKey === "viewregister" || settingKey === "allowregister") {
+       return res.status(200).json({ key: settingKey, value: "disabled" });
+    }
+    throw err;
+  }
 };
 
 
