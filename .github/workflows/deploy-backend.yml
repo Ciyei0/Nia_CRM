@@ -76,6 +76,9 @@ jobs:
             # Levantar y recrear contenedores que hayan cambiado de configuración o de imagen (backend)
             docker compose up -d --remove-orphans
             
+            # Ejecutar migraciones de base de datos
+            docker exec nia_crm_backend npm run db:migrate
+
             # Limpiar imágenes viejas
             docker image prune -a -f
 
