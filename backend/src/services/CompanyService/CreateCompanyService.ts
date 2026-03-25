@@ -52,6 +52,7 @@ const CreateCompanyService = async (
       )
   });
 
+  let authUserId: string | null = null;
   try {
     await companySchema.validate({ name });
 
@@ -71,28 +72,41 @@ const CreateCompanyService = async (
       if (error) {
         throw new AppError(`Supabase Auth Error: ${error.message}`);
       }
+      if (authData?.user) {
+        authUserId = authData.user.id;
+      }
     }
   } catch (err: any) {
     throw new AppError(err.message);
   }
 
-  const company = await Company.create({
-    name,
-    phone,
-    email,
-    status,
-    planId,
-    dueDate,
-    recurrence
-  });
+  let company: Company;
+  try {
+    company = await Company.create({
+      name,
+      phone,
+      email,
+      status,
+      planId,
+      dueDate,
+      recurrence
+    });
 
-  const user = await User.create({
-    name: company.name,
-    email: company.email,
-    password: password || "mudar123",
-    profile: "admin",
-    companyId: company.id
-  });
+    const user = await User.create({
+      name: company.name,
+      email: company.email,
+      password: password || "mudar123",
+      profile: "admin",
+      companyId: company.id
+    });
+  } catch (err: any) {
+    // SECURITY ROLLBACK: If Local PostgreSQL fails (e.g. Email/Name already exists),
+    // we must permanently delete the half-created Supabase Auth user to prevent 403 Zombie accounts.
+    if (authUserId) {
+      await supabaseAdmin.auth.admin.deleteUser(authUserId).catch(() => {});
+    }
+    throw new AppError(err.message);
+  }
 
   await Setting.findOrCreate({
     where: {
