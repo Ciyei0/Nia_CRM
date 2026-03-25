@@ -9,7 +9,7 @@ export const me = async (req: Request, res: Response): Promise<Response> => {
   const { id } = req.user;
   const user = await ShowUserService(id);
 
-  return res.json(SerializeUser(user));
+  return res.json(await SerializeUser(user));
 };
 
 export const remove = async (
