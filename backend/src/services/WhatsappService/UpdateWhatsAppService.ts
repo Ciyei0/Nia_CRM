@@ -46,7 +46,23 @@ const UpdateWhatsAppService = async ({
   companyId
 }: Request): Promise<Response> => {
   const schema = Yup.object().shape({
-    name: Yup.string().min(2),
+    name: Yup.string()
+      .min(2)
+      .test(
+        "Check-name",
+        "Esse nome já está sendo utilizado por outra conexión",
+        async value => {
+          if (!value) return true;
+          const nameExists = await Whatsapp.findOne({
+            where: {
+              name: value,
+              id: { [Op.not]: whatsappId },
+              companyId
+            }
+          });
+          return !nameExists;
+        }
+      ),
     status: Yup.string(),
     isDefault: Yup.boolean()
   });

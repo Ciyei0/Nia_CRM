@@ -30,7 +30,6 @@ class Whatsapp extends Model<Whatsapp> {
   id: number;
 
   @AllowNull
-  @Unique
   @Column(DataType.TEXT)
   name: string;
 
