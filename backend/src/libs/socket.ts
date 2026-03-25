@@ -6,8 +6,17 @@ import User from "../models/User";
 import Queue from "../models/Queue";
 import Ticket from "../models/Ticket";
 import { verify } from "jsonwebtoken";
-import authConfig from "../config/auth";
+import crypto from "crypto";
 import { CounterManager } from "./counter";
+
+// Supabase JWKS public key for ES256 JWT verification
+const supabaseJwk = {
+  alg: "ES256", crv: "P-256", kty: "EC",
+  x: "0M7-DAkDn6jZhUEy97JMNbvHRKwdqryvNn-llHfEdlQ",
+  y: "3ATQIXByx9I2AK5FCvNtfWpoQBxPZfndPUVs24hJxPk"
+};
+const supabasePublicKey = crypto.createPublicKey({ key: supabaseJwk, format: "jwk" })
+  .export({ type: "spki", format: "pem" }) as string;
 
 let io: SocketIO;
 
@@ -25,8 +34,7 @@ export const initIO = (httpServer: Server): SocketIO => {
     const { token } = socket.handshake.query;
     let tokenData = null;
     try {
-      const secretBuffer = Buffer.from(authConfig.secret, 'base64');
-      tokenData = verify(token as string, secretBuffer);
+      tokenData = verify(token as string, supabasePublicKey, { algorithms: ["ES256"] });
       logger.debug(tokenData, "io-onConnection: tokenData");
     } catch (error) {
       logger.warn(`[libs/socket.ts] Error decoding token: ${error?.message}`);

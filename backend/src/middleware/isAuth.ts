@@ -1,10 +1,22 @@
 import { verify } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import AppError from "../errors/AppError";
-import authConfig from "../config/auth";
 import User from "../models/User";
 import Company from "../models/Company";
 import moment from "moment";
+import crypto from "crypto";
+
+// Supabase JWKS public key for ES256 JWT verification
+// Source: https://sucaqyptfxcykheekhqg.supabase.co/auth/v1/.well-known/jwks.json
+const supabaseJwk = {
+  alg: "ES256",
+  crv: "P-256",
+  kty: "EC",
+  x: "0M7-DAkDn6jZhUEy97JMNbvHRKwdqryvNn-llHfEdlQ",
+  y: "3ATQIXByx9I2AK5FCvNtfWpoQBxPZfndPUVs24hJxPk"
+};
+const supabasePublicKey = crypto.createPublicKey({ key: supabaseJwk, format: "jwk" })
+  .export({ type: "spki", format: "pem" }) as string;
 
 interface TokenPayload {
   sub?: string;
@@ -26,9 +38,8 @@ const isAuth = async (req: Request, res: Response, next: NextFunction): Promise<
   const [, token] = authHeader.split(" ");
 
   try {
-    // We use the same JWT Secret provided by the .env (which should now be the Supabase JWT Secret)
-    const secretBuffer = Buffer.from(authConfig.secret, 'base64');
-    const decoded = verify(token, secretBuffer) as TokenPayload;
+    // Verify Supabase ES256 JWT using the JWKS public key
+    const decoded = verify(token, supabasePublicKey, { algorithms: ["ES256"] }) as TokenPayload;
     
     // Check if it's a Supabase JWT and enforce the central business rules
     if (decoded.app_metadata) {

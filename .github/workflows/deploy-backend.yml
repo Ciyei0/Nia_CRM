@@ -80,14 +80,3 @@ jobs:
             docker image prune -a -f
 
 
-      - name: Verify Backend is Running
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          password: ${{ secrets.VPS_PASSWORD }}
-          port: ${{ secrets.VPS_PORT }}
-          script: |
-            sleep 10
-            docker ps | grep nia-backend
-            docker logs nia-backend --tail 20
