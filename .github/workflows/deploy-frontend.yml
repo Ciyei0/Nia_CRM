@@ -32,6 +32,8 @@ jobs:
           REACT_APP_FACEBOOK_APP_ID: "1502878444119560"
           REACT_APP_SOCKET_URL: https://backend.niacrmbot.com
           REACT_APP_HOURS_CLOSE_TICKETS_AUTO: "24"
+          REACT_APP_SUPABASE_URL: https://sucaqyptfxcykheekhqg.supabase.co
+          REACT_APP_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1Y2FxeXB0ZnhjeWtoZWVraHFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzMTY3NjgsImV4cCI6MjA4OTg5Mjc2OH0.7EalZ3zu8aNZm1wqI5G9YOwqfaViETiBQ33tUUX2J04
           NODE_OPTIONS: --openssl-legacy-provider
           CI: false
         run: npm run build
