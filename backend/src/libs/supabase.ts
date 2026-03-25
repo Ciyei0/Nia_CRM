@@ -1,4 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
+import dns from "dns";
+
+// Forzamos a Node a resolver primero IPv4 para evitar el error "fetch failed" en VPS con IPv6 roto
+dns.setDefaultResultOrder("ipv4first");
 
 const supabaseUrl = process.env.SUPABASE_URL || "https://your-project-ref.supabase.co";
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "eyJhbG...";
