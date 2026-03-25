@@ -78,3 +78,24 @@ jobs:
             
             # Limpiar imágenes viejas
             docker image prune -a -f
+
+      - name: Clean zombie test companies from local DB
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            # Wait for backend to be ready
+            sleep 10
+            
+            # Clean up test/zombie companies from the local PostgreSQL  
+            # Only delete companies that are NOT the original admin company (id=1)
+            docker exec nia-db psql -U whaticket_user -d whaticketsaas -c "
+              DELETE FROM \"Settings\" WHERE \"companyId\" > 1;
+              DELETE FROM \"Users\" WHERE \"companyId\" > 1;
+              DELETE FROM \"Companies\" WHERE id > 1;
+            "
+            echo "=== Cleaned up test companies ==="
+            docker exec nia-db psql -U whaticket_user -d whaticketsaas -c "SELECT id, name, email, status FROM \"Companies\";"
