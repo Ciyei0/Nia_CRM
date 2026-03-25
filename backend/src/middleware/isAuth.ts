@@ -55,8 +55,9 @@ const isAuth = async (req: Request, res: Response, next: NextFunction): Promise<
         const { is_approved, due_date } = decoded.app_metadata;
         
         // Bloquear acceso inmediato al dueño si no está aprobado
-        // Allow undefined or true, ONLY block if explicitly false.
-        if (is_approved === false && user.profile === "admin") {
+        // Only allow if explicitly true
+        const isApproved = is_approved === true;
+        if (!isApproved && user.profile === "admin") {
           throw new AppError("Account pending approval", 403);
         }
 

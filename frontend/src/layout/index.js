@@ -340,8 +340,12 @@ const LoggedInLayout = ({ children, themeToggle }) => {
   const isPendingApproval = () => {
     if (!user) return false;
     if (user.super) return false;
-    if (user.app_metadata && user.app_metadata.is_approved === false) {
-      return true;
+    // Strict block: if `is_approved` is false or undefined (not true), it's pending.
+    if (user.app_metadata) {
+      const isApproved = user.app_metadata.is_approved === true || user.app_metadata.is_approved === "true";
+      if (!isApproved) {
+        return true;
+      }
     }
     return false;
   };

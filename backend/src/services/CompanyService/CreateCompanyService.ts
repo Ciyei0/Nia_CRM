@@ -64,7 +64,7 @@ const CreateCompanyService = async (
         user_metadata: { name, phone: phone || '' },
         app_metadata: { 
           due_date: dueDate,
-          is_approved: true 
+          is_approved: false
         }
       });
 
