@@ -1,0 +1,61 @@
+name: Clean Zombie Companies
+
+on:
+  workflow_dispatch:
+
+jobs:
+  clean-db:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clean zombie test companies from local DB
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            cat << 'EOF' > /tmp/cleanup_companies.sql
+            BEGIN;
+
+            -- 1. Eliminar relaciones dependientes en Tickets y Mensajes
+            DELETE FROM "MessageTags" WHERE "messageId" IN (SELECT id FROM "Messages" WHERE "companyId" > 1);
+            DELETE FROM "Messages" WHERE "companyId" > 1;
+
+            DELETE FROM "TicketTags" WHERE "ticketId" IN (SELECT id FROM "Tickets" WHERE "companyId" > 1);
+            DELETE FROM "TicketTraking" WHERE "companyId" > 1;
+            DELETE FROM "Tickets" WHERE "companyId" > 1;
+
+            -- 2. Eliminar contactos y etiquetas
+            DELETE FROM "ContactCustomFields" WHERE "contactId" IN (SELECT id FROM "Contacts" WHERE "companyId" > 1);
+            DELETE FROM "ContactTags" WHERE "contactId" IN (SELECT id FROM "Contacts" WHERE "companyId" > 1);
+            DELETE FROM "Contacts" WHERE "companyId" > 1;
+            DELETE FROM "Tags" WHERE "companyId" > 1;
+
+            -- 3. Eliminar configuraciones, colas, whatsapp
+            DELETE FROM "Settings" WHERE "companyId" > 1;
+            DELETE FROM "QueueOptions" WHERE "queueId" IN (SELECT id FROM "Queues" WHERE "companyId" > 1);
+            DELETE FROM "Queues" WHERE "companyId" > 1;
+            DELETE FROM "WhatsappQueues" WHERE "whatsappId" IN (SELECT id FROM "Whatsapps" WHERE "companyId" > 1);
+            DELETE FROM "Whatsapps" WHERE "companyId" > 1;
+
+            -- 4. Eliminar Usuarios (y sus relaciones)
+            DELETE FROM "UserQueues" WHERE "userId" IN (SELECT id FROM "Users" WHERE "companyId" > 1);
+            DELETE FROM "UserRatings" WHERE "userId" IN (SELECT id FROM "Users" WHERE "companyId" > 1);
+            DELETE FROM "Users" WHERE "companyId" > 1;
+
+            -- 5. Otros datos de la empresa
+            DELETE FROM "Schedules" WHERE "companyId" > 1;
+            DELETE FROM "Campaigns" WHERE "companyId" > 1;
+            DELETE FROM "Chatbot" WHERE "queueId" IN (SELECT id FROM "Queues" WHERE "companyId" > 1);
+            DELETE FROM "Plans" WHERE id > 1; 
+            DELETE FROM "Subscriptions" WHERE "companyId" > 1;
+
+            -- 6. Finalmente eliminar la propia empresa (Company)
+            DELETE FROM "Companies" WHERE id > 1;
+
+            COMMIT;
+            EOF
+            docker exec -i nia-db psql -U whaticket_user -d whaticketsaas -f /tmp/cleanup_companies.sql
+            echo "=== CLANUP COMPLETE ==="
+            docker exec -i nia-db psql -U whaticket_user -d whaticketsaas -c "SELECT id, name, status FROM \"Companies\";"
