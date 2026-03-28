@@ -19,25 +19,34 @@ Sentry.init({ dsn: process.env.SENTRY_DSN });
 
 const app = express();
 
+app.use(Sentry.Handlers.requestHandler());
+
+const allowedOrigins = [
+  "https://niacrmbot.com",
+  "https://www.niacrmbot.com",
+  "http://localhost:3000",
+  "http://localhost:3001"
+];
+
+if (process.env.FRONTEND_URL && !allowedOrigins.includes(process.env.FRONTEND_URL)) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
+app.use(
+  cors({
+    credentials: true,
+    origin: allowedOrigins
+  })
+);
+
 app.set("queues", {
   messageQueue,
   sendScheduledMessages
 });
 
-const bodyparser = require('body-parser');
 app.use(bodyParser.json({ limit: '10mb' }));
-
-app.use(
-  cors({
-    credentials: true,
-    origin: process.env.FRONTEND_URL
-      ? [process.env.FRONTEND_URL, "https://niacrmbot.com", "https://www.niacrmbot.com"]
-      : ["https://niacrmbot.com", "https://www.niacrmbot.com"]
-  })
-);
 app.use(cookieParser());
 app.use(express.json());
-app.use(Sentry.Handlers.requestHandler());
 app.use("/public", express.static(uploadConfig.directory));
 app.use(routes);
 
