@@ -463,8 +463,8 @@ const TicketListItemCustom = ({ ticket }) => {
 
       <TicketMessagesDialog
         open={openTicketMessageDialog}
-
         handleClose={() => setOpenTicketMessageDialog(false)}
+        ticketId={ticket.id}
       ></TicketMessagesDialog>
       <ListItem dense button
         onClick={(e) => {

@@ -67,16 +67,13 @@ const useStyles = makeStyles(theme => ({
         alignItems: "center",
     },
     logoIconLarge: {
-        width: "120px",
-        height: "120px",
-        background: "linear-gradient(135deg, #70008b, #8E24AA)",
-        borderRadius: "40px",
+        width: "220px",
+        height: "auto",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         color: "white",
         marginBottom: theme.spacing(3),
-        boxShadow: "0 20px 40px rgba(112, 0, 139, 0.2)",
     },
     welcomeTitle: {
         fontSize: "2.5rem",
