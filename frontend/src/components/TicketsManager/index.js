@@ -37,11 +37,14 @@ const useStyles = makeStyles((theme) => ({
     overflow: "hidden",
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
+    border: "none",
+    backgroundColor: theme.palette.fancyBackground,
   },
 
   tabsHeader: {
     flex: "none",
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: theme.palette.fancyBackground,
+    borderBottom: `1px solid ${theme.palette.bordabox}`,
   },
 
   settingsIcon: {
@@ -51,32 +54,47 @@ const useStyles = makeStyles((theme) => ({
   },
 
   tab: {
-    minWidth: 120,
-    width: 120,
+    minWidth: "33.33%",
+    fontSize: "13px",
+    fontWeight: 600,
+    textTransform: "none",
+    color: theme.palette.secondary.main,
+    '&.Mui-selected': {
+        color: theme.palette.primary.main,
+    }
   },
 
   ticketOptionsBox: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(1),
+    backgroundColor: theme.palette.fancyBackground,
+    padding: theme.spacing(1.5),
+    borderBottom: `1px solid ${theme.palette.bordabox}`,
   },
 
   serachInputWrapper: {
     flex: 1,
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: theme.mode === 'light' ? '#ffffff' : '#1a1a24',
     display: "flex",
-    borderRadius: 40,
-    padding: 4,
-    marginRight: theme.spacing(1),
+    borderRadius: "12px",
+    padding: "4px 12px",
+    margin: "12px",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+    border: `1px solid ${theme.palette.bordabox}`,
   },
 
   searchIcon: {
     color: theme.palette.primary.main,
-    marginLeft: 6,
-    marginRight: 6,
     alignSelf: "center",
+    fontSize: "20px",
+  },
+
+  searchIconWrapper: {
+    padding: "8px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   searchInput: {
@@ -85,10 +103,20 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 25,
     padding: "10px",
     outline: "none",
+    fontSize: "14px",
+    fontFamily: "'Inter', sans-serif",
+    backgroundColor: "transparent",
+    color: theme.palette.dark.main,
   },
 
   badge: {
-    right: 0,
+    '& .MuiBadge-badge': {
+        right: -3,
+        top: 3,
+        fontSize: "10px",
+        fontWeight: 700,
+        backgroundColor: theme.palette.primary.main,
+    }
   },
   show: {
     display: "block",
@@ -98,9 +126,37 @@ const useStyles = makeStyles((theme) => ({
   },
   searchContainer: {
     display: "flex",
-    padding: "10px",
-    borderBottom: "2px solid rgba(0, 0, 0, .12)",
+    padding: "8px 16px",
+    backgroundColor: theme.palette.fancyBackground,
+    borderBottom: `1px solid ${theme.palette.bordabox}`,
   },
+  fab: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    width: "56px",
+    height: "56px",
+    background: "linear-gradient(135deg, #70008b, #8E24AA)",
+    color: "white",
+    borderRadius: "16px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    boxShadow: "0 8px 16px rgba(112, 0, 139, 0.3)",
+    transition: "all 0.3s ease",
+    zIndex: 100,
+    '&:hover': {
+        transform: "scale(1.05)",
+        boxShadow: "0 12px 24px rgba(112, 0, 139, 0.4)",
+    },
+    '&:active': {
+        transform: "scale(0.95)",
+    }
+  },
+  fabIcon: {
+      fontSize: "28px",
+  }
 }));
 
 const TicketsManager = () => {
@@ -161,16 +217,20 @@ const TicketsManager = () => {
         modalOpen={newTicketModalOpen}
         onClose={(e) => setNewTicketModalOpen(false)}
       />
-      <Paper elevation={0} square className={classes.searchContainer}>
-        <Search className={classes.searchIcon} />
-        <input
-          type="text"
-          placeholder={i18n.t("tickets.search.placeholder")}
-          className={classes.searchInput}
-          value={searchParam}
-          onChange={handleSearch}
-        />
-      </Paper>
+      <div className={classes.searchContainer}>
+        <div className={classes.serachInputWrapper}>
+            <div className={classes.searchIconWrapper}>
+                <Search className={classes.searchIcon} />
+            </div>
+            <input
+            type="text"
+            placeholder={i18n.t("tickets.search.placeholder")}
+            className={classes.searchInput}
+            value={searchParam}
+            onChange={handleSearch}
+            />
+        </div>
+      </div>
       <Paper elevation={0} square className={classes.tabsHeader}>
         <Tabs
           value={tab}
@@ -182,7 +242,6 @@ const TicketsManager = () => {
         >
           <Tab
             value={"open"}
-            icon={<MoveToInbox />}
             label={
               <Badge
                 className={classes.badge}
@@ -190,14 +249,13 @@ const TicketsManager = () => {
                 overlap="rectangular"
                 color="secondary"
               >
-                {i18n.t("tickets.tabs.open.title")}
+                Abiertos
               </Badge>
             }
             classes={{ root: classes.tab }}
           />
           <Tab
             value={"pending"}
-            icon={<HourglassEmptyRounded />}
             label={
               <Badge
                 className={classes.badge}
@@ -205,27 +263,19 @@ const TicketsManager = () => {
                 overlap="rectangular"
                 color="secondary"
               >
-                {i18n.t("ticketsList.pendingHeader")}
+                Pendiente
               </Badge>
             }
             classes={{ root: classes.tab }}
           />
           <Tab
             value={"closed"}
-            icon={<AllInboxRounded />}
-            label={i18n.t("tickets.tabs.closed.title")}
+            label="Resueltos"
             classes={{ root: classes.tab }}
           />
         </Tabs>
       </Paper>
       <Paper square elevation={0} className={classes.ticketOptionsBox}>
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={() => setNewTicketModalOpen(true)}
-        >
-          {i18n.t("ticketsManager.buttons.newTicket")}
-        </Button>
         <Can
           role={user.profile}
           perform="tickets-manager:showall"
@@ -302,6 +352,9 @@ const TicketsManager = () => {
           selectedQueueIds={selectedQueueIds}
         />
       </TabPanel>
+      <div className={classes.fab} onClick={() => setNewTicketModalOpen(true)}>
+          <span className="material-symbols-outlined" style={{ fontSize: "32px" }}>add</span>
+      </div>
     </Paper>
   );
 };

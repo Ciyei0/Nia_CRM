@@ -14,14 +14,13 @@ import { i18n } from "../../translate/i18n";
 const useStyles = makeStyles(theme => ({
 	chatContainer: {
 		flex: 1,
-		// backgroundColor: "#eee",
 		padding: theme.spacing(0),
-		height: `calc(100% - 48px)`,
+		height: `calc(100% - 64px)`, // Adjusted for taller topbar
 		overflowY: "hidden",
+        backgroundColor: theme.palette.fancyBackground,
 	},
 
 	chatPapper: {
-		// backgroundColor: "red",
 		display: "flex",
 		height: "100%",
 	},
@@ -31,20 +30,65 @@ const useStyles = makeStyles(theme => ({
 		height: "100%",
 		flexDirection: "column",
 		overflowY: "hidden",
+        borderRight: `1px solid ${theme.palette.bordabox}`,
 	},
 	messagessWrapper: {
 		display: "flex",
 		height: "100%",
 		flexDirection: "column",
+        backgroundColor: theme.palette.fancyBackground,
 	},
 	welcomeMsg: {
-		backgroundColor: theme.palette.boxticket, 
 		display: "flex",
-		justifyContent: "space-evenly",
+		justifyContent: "center",
 		alignItems: "center",
 		height: "100%",
 		textAlign: "center",
+        backgroundColor: theme.palette.fancyBackground,
+        border: "none",
+        position: "relative",
+        overflow: "hidden",
+        '&::before': {
+            content: '""',
+            position: "absolute",
+            width: "300px",
+            height: "300px",
+            background: "linear-gradient(135deg, #70008b, #8E24AA)",
+            borderRadius: "50%",
+            filter: "blur(80px)",
+            opacity: 0.1,
+            zIndex: 0,
+        }
 	},
+    welcomeContent: {
+        zIndex: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+    },
+    logoIconLarge: {
+        width: "120px",
+        height: "120px",
+        background: "linear-gradient(135deg, #70008b, #8E24AA)",
+        borderRadius: "40px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "white",
+        marginBottom: theme.spacing(3),
+        boxShadow: "0 20px 40px rgba(112, 0, 139, 0.2)",
+    },
+    welcomeTitle: {
+        fontSize: "2.5rem",
+        fontWeight: 800,
+        color: theme.palette.primary.main,
+        marginBottom: theme.spacing(1),
+    },
+    welcomeSubtitle: {
+        fontSize: "1.2rem",
+        color: theme.palette.secondary.main,
+        fontWeight: 500,
+    }
 }));
 
 const Chat = () => {
@@ -65,12 +109,13 @@ const Chat = () => {
 							</>
 						) : (
 							<Paper square variant="outlined" className={classes.welcomeMsg}>
-							
-							<div>
-							<center><img style={{ margin: "0 auto", width: "70%" }} src={logo} alt="logologin" /></center>
-							</div>
-							
-							{/*<span>{i18n.t("chat.noTicketMessage")}</span>*/}
+                                <div className={classes.welcomeContent}>
+                                    <div className={classes.logoIconLarge}>
+                                        <img src={logo} style={{ width: "60%" }} alt="Nia CRM" />
+                                    </div>
+                                    <Typography className={classes.welcomeTitle}>Nia CRM</Typography>
+                                    <Typography className={classes.welcomeSubtitle}>Digital Curator & Support Center</Typography>
+                                </div>
 							</Paper>
 						)}
 					</Grid>

@@ -26,6 +26,19 @@ import toastError from "../../errors/toastError";
 const useStyles = makeStyles((theme) => ({
   ticket: {
     position: "relative",
+    padding: "16px",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    borderBottom: `1px solid ${theme.palette.bordabox}`,
+    '&:hover': {
+        backgroundColor: "rgba(112, 0, 139, 0.03)",
+    },
+    '&.Mui-selected': {
+        backgroundColor: "rgba(112, 0, 139, 0.05)",
+        borderLeft: `4px solid ${theme.palette.primary.main}`,
+        '&:hover': {
+            backgroundColor: "rgba(112, 0, 139, 0.08)",
+        }
+    }
   },
 
   pendingTicket: {
@@ -43,62 +56,109 @@ const useStyles = makeStyles((theme) => ({
 
   noTicketsText: {
     textAlign: "center",
-    color: "rgb(104, 121, 146)",
+    color: theme.palette.secondary.main,
     fontSize: "14px",
     lineHeight: "1.4",
+    fontFamily: "'Inter', sans-serif",
   },
 
   noTicketsTitle: {
     textAlign: "center",
     fontSize: "16px",
-    fontWeight: "600",
+    fontWeight: "700",
     margin: "0px",
+    color: theme.palette.primary.main,
+    fontFamily: "'Inter', sans-serif",
   },
 
   contactNameWrapper: {
     display: "flex",
     justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "4px",
   },
 
   lastMessageTime: {
-    justifySelf: "flex-end",
+    fontSize: "10px",
+    fontWeight: 700,
+    textTransform: "uppercase",
+    color: theme.palette.secondary.main,
   },
 
   closedBadge: {
-    alignSelf: "center",
-    justifySelf: "flex-end",
-    marginRight: 32,
-    marginLeft: "auto",
+    marginLeft: "8px",
+    '& .MuiBadge-badge': {
+        fontSize: "10px",
+        fontWeight: 700,
+        textTransform: "uppercase",
+        height: "18px",
+        minWidth: "60px",
+        borderRadius: "9999px",
+    }
   },
 
   contactLastMessage: {
     paddingRight: 20,
+    fontSize: "13px",
+    color: theme.palette.secondary.main,
+    lineHeight: 1.4,
+    display: "-webkit-box",
+    "-webkit-line-clamp": 2,
+    "-webkit-box-orient": "vertical",
+    overflow: "hidden",
   },
 
   newMessagesCount: {
     alignSelf: "center",
     marginRight: 8,
     marginLeft: "auto",
+    '& .MuiBadge-badge': {
+        backgroundColor: theme.palette.primary.main,
+        color: "white",
+        fontWeight: 700,
+    }
   },
 
   badgeStyle: {
     color: "white",
-    backgroundColor: green[500],
+    backgroundColor: theme.palette.primary.main,
   },
 
   acceptButton: {
-    position: "absolute",
-    left: "50%",
+    borderRadius: "12px",
+    textTransform: "none",
+    fontWeight: 700,
+    fontSize: "12px",
+    padding: "6px 16px",
   },
 
   ticketQueueColor: {
     flex: "none",
-    width: "8px",
+    width: "4px",
     height: "100%",
     position: "absolute",
     top: "0%",
     left: "0%",
+    zIndex: 1,
   },
+
+  avatar: {
+    width: "48px",
+    height: "48px",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+  },
+  
+  nameText: {
+    fontWeight: 700,
+    fontSize: "14px",
+    color: theme.palette.dark.main,
+  },
+  
+  ticketId: {
+    fontSize: "11px",
+    color: theme.palette.secondary.main,
+    fontWeight: 500,
+  }
 }));
 
 const TicketListItem = ({ ticket }) => {
@@ -162,56 +222,45 @@ const TicketListItem = ({ ticket }) => {
           ></span>
         </Tooltip>
         <ListItemAvatar>
-          <Avatar src={ticket?.contact?.profilePicUrl} />
+          <Avatar src={ticket?.contact?.profilePicUrl} className={classes.avatar} />
         </ListItemAvatar>
         <ListItemText
           disableTypography
           primary={
-            <span className={classes.contactNameWrapper}>
-              <Typography
-                noWrap
-                component="span"
-                variant="body2"
-                color="textPrimary"
-              >
-                {ticket.contact.name}
-              </Typography>
-              {ticket.status === "closed" && (
-                <Badge
-                  className={classes.closedBadge}
-                  badgeContent={"closed"}
-                  color="primary"
-                />
-              )}
-{/*               {ticket.lastMessage && (
-                <Typography
-                  className={classes.lastMessageTime}
-                  component="span"
-                  variant="body2"
-                  color="textSecondary"
-                >
-                  {isSameDay(parseISO(ticket.updatedAt), new Date()) ? (
-                    <>{format(parseISO(ticket.updatedAt), "HH:mm")}</>
-                  ) : (
-                    <>{format(parseISO(ticket.updatedAt), "dd/MM/yyyy")}</>
-                  )}
+            <>
+              <div className={classes.contactNameWrapper}>
+                <div>
+                    <Typography
+                        noWrap
+                        variant="body2"
+                        className={classes.nameText}
+                    >
+                        {ticket.contact.name}
+                    </Typography>
+                    <Typography className={classes.ticketId}>#T-{ticket.id}</Typography>
+                </div>
+
+                <Typography className={classes.lastMessageTime}>
+                    {isSameDay(parseISO(ticket.updatedAt), new Date()) ? (
+                        <>{format(parseISO(ticket.updatedAt), "HH:mm")}</>
+                    ) : (
+                        <>{format(parseISO(ticket.updatedAt), "dd/MM")}</>
+                    )}
                 </Typography>
-              )} */}
-            </span>
+              </div>
+            </>
           }
-/*           secondary={
-            <span className={classes.contactNameWrapper}>
+           secondary={
+            <div className={classes.contactNameWrapper}>
               <Typography
                 className={classes.contactLastMessage}
                 noWrap
-                component="span"
                 variant="body2"
-                color="textSecondary"
               >
                 {ticket.lastMessage ? (
                   <MarkdownWrapper>{ticket.lastMessage}</MarkdownWrapper>
                 ) : (
-                  <MarkdownWrapper></MarkdownWrapper>
+                  <br />
                 )}
               </Typography>
 
@@ -222,18 +271,9 @@ const TicketListItem = ({ ticket }) => {
                   badge: classes.badgeStyle,
                 }}
               />
-            </span>
-          } */
+            </div>
+          } 
         />
-        {ticket.lastMessage ? (
-  ticket.lastMessage.includes("VCARD") ? (
-    <Typography>Novo contato recebido...</Typography>
-  ) : (
-    <MarkdownWrapper>{ticket.lastMessage}</MarkdownWrapper>
-  )
-) : (
-  <br />
-)}
         {ticket.status === "pending" && (
           <ButtonWithSpinner
             color="primary"
@@ -247,7 +287,7 @@ const TicketListItem = ({ ticket }) => {
           </ButtonWithSpinner>
         )}
       </ListItem>
-      <Divider variant="inset" component="li" />
+      <Divider style={{ display: "none" }} />
     </React.Fragment>
   );
 };

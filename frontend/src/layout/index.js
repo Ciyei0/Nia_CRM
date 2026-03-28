@@ -56,34 +56,68 @@ const useStyles = makeStyles((theme) => ({
     },
     backgroundColor: theme.palette.fancyBackground,
     '& .MuiButton-outlinedPrimary': {
-      color: '#FFF',
-      backgroundColor: theme.mode === 'light' ? '#7c3aed' : '#333',
+      color: theme.palette.primary.main,
+      border: `1px solid ${theme.palette.primary.main}`,
+      backgroundColor: 'transparent',
       '&:hover': {
-        backgroundColor: theme.mode === 'light' ? '#6d28d9' : '#444',
+        backgroundColor: theme.palette.primary.main,
+        color: '#FFF',
       },
     },
-    '& .MuiTab-textColorPrimary.Mui-selected': {
-      color: theme.mode === 'light' ? '#7c3aed' : '#a78bfa',
-    }
   },
   avatar: {
     width: "100%",
   },
   toolbar: {
-    paddingRight: 24, // keep right padding when drawer closed
+    paddingRight: 24,
     color: theme.palette.dark.main,
     background: theme.palette.barraSuperior,
-    boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+    boxShadow: "none",
+    borderBottom: `1px solid ${theme.palette.bordabox}`,
+    minHeight: "64px",
   },
   toolbarIcon: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: "0 8px",
-    minHeight: "48px",
+    padding: "0 16px",
+    minHeight: "80px",
+    background: theme.mode === 'light' ? '#fff7fb' : '#1a1a24',
     [theme.breakpoints.down("sm")]: {
-      height: "48px"
+      height: "70px"
     }
+  },
+  logoContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    padding: "16px",
+    textDecoration: "none",
+    color: "inherit",
+  },
+  logoIconBox: {
+    width: "40px",
+    height: "40px",
+    background: "linear-gradient(135deg, #70008b, #8E24AA)",
+    borderRadius: "12px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "white",
+    boxShadow: "0 4px 12px rgba(112, 0, 139, 0.3)",
+  },
+  logoTitle: {
+    fontSize: "18px",
+    fontWeight: 800,
+    color: theme.palette.primary.main,
+    lineHeight: 1.1,
+  },
+  logoSubtitle: {
+    fontSize: "10px",
+    textTransform: "uppercase",
+    letterSpacing: "1px",
+    color: theme.palette.secondary.main,
+    fontWeight: 700,
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -91,6 +125,7 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
+    backgroundColor: "transparent",
   },
   appBarShift: {
     marginLeft: drawerWidth,
@@ -104,7 +139,8 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   menuButton: {
-    marginRight: 36,
+    marginRight: 24,
+    color: "white",
   },
   menuButtonHidden: {
     display: "none",
@@ -112,13 +148,15 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
     fontSize: 14,
+    fontWeight: 600,
     color: "white",
   },
   drawerPaper: {
     position: "relative",
     whiteSpace: "nowrap",
     width: drawerWidth,
-    borderRight: "1px solid rgba(0,0,0,0.05)",
+    borderRight: `1px solid ${theme.palette.bordabox}`,
+    backgroundColor: theme.palette.fancyBackground,
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
@@ -143,12 +181,11 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   appBarSpacer: {
-    minHeight: "48px",
+    minHeight: "64px",
   },
   content: {
     flex: 1,
     overflow: "auto",
-
   },
   container: {
     paddingTop: theme.spacing(4),
@@ -158,7 +195,9 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     display: "flex",
     overflow: "auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    borderRadius: "16px",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
   },
   containerWithScroll: {
     flex: 1,
@@ -166,19 +205,9 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "scroll",
     ...theme.scrollbarStyles,
   },
-  NotificationsPopOver: {
-    // color: theme.barraSuperior.secondary.main,
-  },
   logo: {
-    width: "80%",
+    width: "40px",
     height: "auto",
-    maxWidth: 180,
-    [theme.breakpoints.down("sm")]: {
-      width: "auto",
-      height: "80%",
-      maxWidth: 180,
-    },
-    logo: theme.logo
   },
 }));
 
@@ -397,7 +426,17 @@ const LoggedInLayout = ({ children, themeToggle }) => {
         open={drawerOpen}
       >
         <div className={classes.toolbarIcon}>
-          <img src={logoSidebar} style={{ margin: "0 auto", width: "50%" }} alt="Nia CRM" />
+          <div className={classes.logoContainer}>
+            <div className={classes.logoIconBox}>
+               <img src={niaLogo} className={classes.logo} alt="Nia CRM" />
+            </div>
+            {drawerOpen && (
+              <div>
+                <Typography className={classes.logoTitle}>Nia CRM</Typography>
+                <Typography className={classes.logoSubtitle}>Digital Curator</Typography>
+              </div>
+            )}
+          </div>
           <IconButton onClick={() => setDrawerOpen(!drawerOpen)}>
             <ChevronLeftIcon />
           </IconButton>
