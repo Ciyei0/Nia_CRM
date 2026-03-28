@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: "hidden",
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
+    backgroundColor: theme.palette.fancyBackground,
   },
 
   ticketsList: {
@@ -28,38 +29,43 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "100%",
     overflowY: "scroll",
     ...theme.scrollbarStyles,
-    borderTop: "2px solid rgba(0, 0, 0, 0.12)",
+    borderTop: `1px solid ${theme.palette.bordabox}`,
+    backgroundColor: "transparent",
   },
 
   ticketsListHeader: {
-    color: "rgb(67, 83, 105)",
+    color: theme.palette.primary.main,
     zIndex: 2,
-    backgroundColor: "white",
-    borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
+    backgroundColor: theme.palette.fancyBackground,
+    borderBottom: `1px solid ${theme.palette.bordabox}`,
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
   },
 
   ticketsCount: {
-    fontWeight: "normal",
-    color: "rgb(104, 121, 146)",
+    fontWeight: "700",
+    color: theme.palette.secondary.main,
     marginLeft: "8px",
     fontSize: "14px",
+    fontFamily: "'Inter', sans-serif",
   },
 
   noTicketsText: {
     textAlign: "center",
-    color: "rgb(104, 121, 146)",
+    color: theme.palette.secondary.main,
     fontSize: "14px",
     lineHeight: "1.4",
+    fontFamily: "'Inter', sans-serif",
   },
 
   noTicketsTitle: {
     textAlign: "center",
     fontSize: "16px",
-    fontWeight: "600",
+    fontWeight: "700",
     margin: "0px",
+    color: theme.palette.primary.main,
+    fontFamily: "'Inter', sans-serif",
   },
 
   noTicketsDiv: {
@@ -237,11 +243,15 @@ const TicketsListCustom = (props) => {
         });
       }
 
-      if (data.action === "update" && shouldUpdateTicket(data.ticket) && data.ticket.status === status) {
-        dispatch({
-          type: "UPDATE_TICKET",
-          payload: data.ticket,
-        });
+      if (data.action === "update" && shouldUpdateTicket(data.ticket)) {
+        if (data.ticket.status === status) {
+            dispatch({
+              type: "UPDATE_TICKET",
+              payload: data.ticket,
+            });
+        } else {
+            dispatch({ type: "DELETE_TICKET", payload: data.ticket.id });
+        }
       }
 
       if (data.action === "update" && notBelongsToUserQueues(data.ticket)) {

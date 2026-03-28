@@ -279,10 +279,14 @@ const TicketsList = (props) => {
 			}
 
 			if (data.action === "update" && shouldUpdateTicket(data.ticket)) {
-				dispatch({
-					type: "UPDATE_TICKET",
-					payload: data.ticket,
-				});
+                if (data.ticket.status === status) {
+                    dispatch({
+                        type: "UPDATE_TICKET",
+                        payload: data.ticket,
+                    });
+                } else {
+                    dispatch({ type: "DELETE_TICKET", payload: data.ticket.id });
+                }
 			}
 
 			if (data.action === "update" && notBelongsToUserQueues(data.ticket)) {

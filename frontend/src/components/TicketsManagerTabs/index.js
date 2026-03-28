@@ -42,18 +42,20 @@ const useStyles = makeStyles(theme => ({
 		overflow: "hidden",
 		borderTopRightRadius: 0,
 		borderBottomRightRadius: 0,
-		borderRadius:0,
+        border: "none",
+        backgroundColor: theme.palette.fancyBackground,
 	},
 
 
 	tabsHeader: {
 		flex: "none",
-		backgroundColor: theme.palette.tabHeaderBackground,
+		backgroundColor: theme.palette.fancyBackground,
+        borderBottom: `1px solid ${theme.palette.bordabox}`,
 	},
 
 	tabsInternal: {
 		flex: "none",
-		backgroundColor: theme.palette.tabHeaderBackground
+		backgroundColor: theme.palette.fancyBackground
 	},
 
 	settingsIcon: {
@@ -61,131 +63,140 @@ const useStyles = makeStyles(theme => ({
 		marginLeft: "auto",
 		padding: 8,
 	},
-  snackbar: {
-    display: "flex",
-    justifyContent: "space-between",
-    backgroundColor: theme.palette.primary.main,
-    color: "white",
-    borderRadius: 30,
-    [theme.breakpoints.down("sm")]: {
-      fontSize: "0.8em",
+    snackbar: {
+        display: "flex",
+        justifyContent: "space-between",
+        backgroundColor: theme.palette.primary.main,
+        color: "white",
+        borderRadius: "12px",
     },
-    [theme.breakpoints.up("md")]: {
-      fontSize: "1em",
-    },
-  },
 
-  yesButton: {
-    backgroundColor: "#FFF",
-    color: "rgba(0, 100, 0, 1)",
-    padding: "4px 4px",
-    fontSize: "1em",
-    fontWeight: "bold",
-    textTransform: "uppercase",
-    marginRight: theme.spacing(1),
-    "&:hover": {
-      backgroundColor: "darkGreen",
-      color: "#FFF",
+    yesButton: {
+        backgroundColor: "#FFF",
+        color: "rgba(0, 100, 0, 1)",
+        padding: "4px 12px",
+        fontSize: "0.8rem",
+        fontWeight: "bold",
+        textTransform: "uppercase",
+        marginRight: theme.spacing(1),
+        borderRadius: "8px",
     },
-    borderRadius: 30,
-  },
-  noButton: {
-    backgroundColor: "#FFF",
-    color: "rgba(139, 0, 0, 1)",
-    padding: "4px 4px",
-    fontSize: "1em",
-    fontWeight: "bold",
-    textTransform: "uppercase",
-    "&:hover": {
-      backgroundColor: "darkRed",
-      color: "#FFF",
+    noButton: {
+        backgroundColor: "#FFF",
+        color: "rgba(139, 0, 0, 1)",
+        padding: "4px 12px",
+        fontSize: "0.8rem",
+        fontWeight: "bold",
+        textTransform: "uppercase",
+        borderRadius: "8px",
     },
-    borderRadius: 30,
-  },
 
 	tab: {
-		minWidth: 120,
-		width: 120,
+		minWidth: "33.33%",
+        fontSize: "13px",
+        fontWeight: 600,
+        textTransform: "none",
+        color: theme.palette.secondary.main,
+        '&.Mui-selected': {
+            color: theme.palette.primary.main,
+        }
 	},
 
 	internalTab: {
-		minWidth: 120,
-		width: 120,
-		padding: 5
+		minWidth: "50%",
+        fontSize: "12px",
+        fontWeight: 600,
+        textTransform: "none",
+        color: theme.palette.secondary.main,
+        '&.Mui-selected': {
+            color: theme.palette.primary.main,
+        }
 	},
 
 	ticketOptionsBox: {
 		display: "flex",
 		justifyContent: "space-between",
 		alignItems: "center",
-		background: theme.palette.optionsBackground,
-		padding: theme.spacing(1),
-	},
-
-	ticketSearchLine: {
-		padding: theme.spacing(1),
+		backgroundColor: theme.palette.fancyBackground,
+		padding: theme.spacing(1.5),
+        borderBottom: `1px solid ${theme.palette.bordabox}`,
 	},
 
 	serachInputWrapper: {
 		flex: 1,
-		background: theme.palette.total,
+		backgroundColor: theme.mode === 'light' ? '#ffffff' : '#1a1a24',
 		display: "flex",
-		borderRadius: 40,
-		padding: 4,
-		marginRight: theme.spacing(1),
+		borderRadius: "12px",
+		padding: "4px 12px",
+		margin: "12px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+        border: `1px solid ${theme.palette.bordabox}`,
 	},
 
 	searchIcon: {
-		color: "grey",
-		marginLeft: 6,
-		marginRight: 6,
-		alignSelf: "center",
+		color: theme.palette.primary.main,
+        alignSelf: "center",
+        fontSize: "20px",
 	},
+
+    searchIconWrapper: {
+        padding: "8px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+    },
 
 	searchInput: {
 		flex: 1,
 		border: "none",
-		borderRadius: 30,
+		borderRadius: 25,
+        padding: "10px",
+        outline: "none",
+        fontSize: "14px",
+        fontFamily: "'Inter', sans-serif",
+        backgroundColor: "transparent",
+        color: theme.palette.dark.main,
 	},
 
-	insiderTabPanel: {
-		height: '100%',
-		marginTop: "-72px",
-		paddingTop: "72px"
-	},
-
-	insiderDoubleTabPanel: {
-		display:"flex",
-		flexDirection: "column",
-		marginTop: "-72px",
-		paddingTop: "72px",
-		height: "100%"
-	},
-
-	labelContainer: {
-		width: "auto",
-		padding: 0
-	},
-	iconLabelWrapper: {
-		flexDirection: "row",
-		'& > *:first-child': {
-			marginBottom: '3px !important',
-			marginRight: 16
-		}
-	},
-	insiderTabLabel: {
-		[theme.breakpoints.down(1600)]: {
-			display:'none'
-		}
-	},
-	smallFormControl: {
-		'& .MuiOutlinedInput-input': {
-			padding: "12px 10px",
-		},
-		'& .MuiInputLabel-outlined': {
-			marginTop: "-6px"
-		}
-	}
+    badge: {
+        '& .MuiBadge-badge': {
+            right: -3,
+            top: 3,
+            fontSize: "10px",
+            fontWeight: 700,
+            backgroundColor: theme.palette.primary.main,
+        }
+    },
+    searchContainer: {
+        display: "flex",
+        padding: "0px",
+        backgroundColor: theme.palette.fancyBackground,
+        borderBottom: `1px solid ${theme.palette.bordabox}`,
+    },
+    fab: {
+        position: "absolute",
+        bottom: 20,
+        right: 20,
+        width: "56px",
+        height: "56px",
+        background: "linear-gradient(135deg, #70008b, #8E24AA)",
+        color: "white",
+        borderRadius: "16px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        boxShadow: "0 8px 16px rgba(112, 0, 139, 0.3)",
+        transition: "all 0.3s ease",
+        zIndex: 100,
+        '&:hover': {
+            transform: "scale(1.05)",
+            boxShadow: "0 12px 24px rgba(112, 0, 139, 0.4)",
+        },
+        '&:active': {
+            transform: "scale(0.95)",
+        }
+    }
 }));
 
 const TicketsManagerTabs = () => {
@@ -305,10 +316,25 @@ const TicketsManagerTabs = () => {
       <NewTicketModal
         modalOpen={newTicketModalOpen}
         onClose={(ticket) => {
-          
           handleCloseOrOpenTicket(ticket);
         }}
       />
+
+      <div className={classes.searchContainer}>
+        <div className={classes.serachInputWrapper}>
+            <div className={classes.searchIconWrapper}>
+                <SearchIcon className={classes.searchIcon} />
+            </div>
+            <input
+              type="text"
+              placeholder={i18n.t("tickets.search.placeholder")}
+              className={classes.searchInput}
+              value={searchParam}
+              onChange={handleSearch}
+            />
+        </div>
+      </div>
+
       <Paper elevation={0} square className={classes.tabsHeader}>
         <Tabs
           value={tab}
@@ -320,133 +346,52 @@ const TicketsManagerTabs = () => {
         >
           <Tab
             value={"open"}
-            icon={<MoveToInboxIcon />}
-            label={i18n.t("tickets.tabs.open.title")}
+            label={
+              <Badge
+                className={classes.badge}
+                badgeContent={openCount}
+                overlap="rectangular"
+                color="secondary"
+              >
+                Abiertos
+              </Badge>
+            }
             classes={{ root: classes.tab }}
           />
           <Tab
             value={"closed"}
-            icon={<CheckBoxIcon />}
-            label={i18n.t("tickets.tabs.closed.title")}
+            label="Resueltos"
             classes={{ root: classes.tab }}
           />
           <Tab
             value={"search"}
-            icon={<SearchIcon />}
-            label={i18n.t("tickets.tabs.search.title")}
+            label="Búsqueda"
             classes={{ root: classes.tab }}
           />
         </Tabs>
       </Paper>
       <Paper square elevation={0} className={classes.ticketOptionsBox}>
-        {tab === "search" ? (
-          <div className={classes.serachInputWrapper}>
-            <SearchIcon className={classes.searchIcon} />
-            <InputBase
-              className={classes.searchInput}
-              inputRef={searchInputRef}
-              placeholder={i18n.t("tickets.search.placeholder")}
-              type="search"
-              onChange={handleSearch}
-            />
-          </div>
-        ) : (
-          <>
-            <Snackbar
-              open={snackbarOpen}
-              onClose={handleSnackbarClose}
-              message={i18n.t("tickets.inbox.closedAllTickets")}
-              ContentProps={{
-                className: classes.snackbar,
-              }}
-              action={
-                <>
-                  <Button
-                    className={classes.yesButton}
-                    size="small"
-                    onClick={CloseAllTicket}
-                  >
-                    {i18n.t("tickets.inbox.yes")}
-                  </Button>
-                  <Button
-                    className={classes.noButton}
-                    size="small"
-                    onClick={handleSnackbarClose}
-                  >
-                    {i18n.t("tickets.inbox.no")}
-                  </Button>
-                </>
-              }
-            />
-            <Badge
-              color="primary"
-              invisible={
-                isHoveredAll ||
-                !isHoveredNew ||
-                isHoveredResolve ||
-                isHoveredOpen ||
-                isHoveredClosed
-              }
-              badgeContent={i18n.t("Novo")}
-              classes={{ badge: classes.tabsBadge }}
-            >
-              <IconButton
-                onMouseEnter={() => setIsHoveredNew(true)}
-                onMouseLeave={() => setIsHoveredNew(false)}
-                className={classes.button}
-                onClick={() => {
-                  setNewTicketModalOpen(true);
-                }}
-              >
-                <AddIcon className={classes.icon} />
-              </IconButton>
-            </Badge>
-			{user.profile === "admin" && (
-              <Badge
-                color="primary"
-                invisible={
-                  isHoveredAll ||
-                  isHoveredNew ||
-                  !isHoveredResolve ||
-                  isHoveredOpen ||
-                  isHoveredClosed
-                }
-                badgeContent={i18n.t("tickets.inbox.closedAll")}
-                classes={{ badge: classes.tabsBadge }}
-              >
-                <IconButton
-                  onMouseEnter={() => setIsHoveredResolve(true)}
-                  onMouseLeave={() => setIsHoveredResolve(false)}
-                  className={classes.button}
-                  onClick={handleSnackbarOpen}
-                >
-                  <PlaylistAddCheckOutlinedIcon style={{ color: "green" }} />
-                </IconButton>
-              </Badge>
-			   )}
-            <Can
-              role={user.profile}
-              perform="tickets-manager:showall"
-              yes={() => (
-                <FormControlLabel
-                  label={i18n.t("tickets.buttons.showAll")}
-                  labelPlacement="start"
-                  control={
-                    <Switch
-                      size="small"
-                      checked={showAllTickets}
-                      onChange={() =>
-                        setShowAllTickets((prevState) => !prevState)
-                      }
-                      name="showAllTickets"
-                      color="primary"
-                    />
+        <Can
+          role={user.profile}
+          perform="tickets-manager:showall"
+          yes={() => (
+            <FormControlLabel
+              label={i18n.t("tickets.buttons.showAll")}
+              labelPlacement="start"
+              control={
+                <Switch
+                  size="small"
+                  checked={showAllTickets}
+                  onChange={() =>
+                    setShowAllTickets((prevState) => !prevState)
                   }
+                  name="showAllTickets"
+                  color="primary"
                 />
-              )}
+              }
             />
-          </>
-        )}
+          )}
+        />
         <TicketsQueueSelect
           style={{ marginLeft: 6 }}
           selectedQueueIds={selectedQueueIds}
@@ -461,6 +406,7 @@ const TicketsManagerTabs = () => {
           indicatorColor="primary"
           textColor="primary"
           variant="fullWidth"
+          className={classes.tabsInternal}
         >
           <Tab
             label={
@@ -469,10 +415,11 @@ const TicketsManagerTabs = () => {
                 badgeContent={openCount}
                 color="primary"
               >
-                {i18n.t("ticketsList.assignedHeader")}
+                Abiertos
               </Badge>
             }
             value={"open"}
+            classes={{ root: classes.internalTab }}
           />
           <Tab
             label={
@@ -481,10 +428,11 @@ const TicketsManagerTabs = () => {
                 badgeContent={pendingCount}
                 color="secondary"
               >
-                {i18n.t("ticketsList.pendingHeader")}
+                Pendiente
               </Badge>
             }
             value={"pending"}
+            classes={{ root: classes.internalTab }}
           />
         </Tabs>
         <Paper className={classes.ticketsWrapper}>
@@ -523,6 +471,10 @@ const TicketsManagerTabs = () => {
           selectedQueueIds={selectedQueueIds}
         />
       </TabPanel>
+
+      <div className={classes.fab} onClick={() => setNewTicketModalOpen(true)}>
+          <span className="material-symbols-outlined" style={{ fontSize: "32px" }}>add</span>
+      </div>
     </Paper>
   );
 };
