@@ -456,11 +456,7 @@ const MainListItems = (props) => {
 
       {/* Divider y Logout */}
       <Divider className={classes.divider} />
-      <ListItemLink
-        to="/settings"
-        primary="Configuraciones"
-        icon={<SettingsOutlinedIcon />}
-      />
+
       {user.super && (
         <ListItemLink
           to="/saas-admin"

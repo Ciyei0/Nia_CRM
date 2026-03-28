@@ -41,13 +41,18 @@ const CreateOrUpdateContactService = async ({
   });
 
   if (contact) {
-    contact.update({ profilePicUrl });
-    console.log(contact.whatsappId)
-    if (isNil(contact.whatsappId === null)) {
-      contact.update({
-        whatsappId
-      });
+    const updateData: any = { profilePicUrl };
+
+    if (contact.name === contact.number && name !== contact.number) {
+      updateData.name = name;
     }
+
+    if (isNil(contact.whatsappId)) {
+      updateData.whatsappId = whatsappId;
+    }
+
+    await contact.update(updateData);
+
     io.to(`company-${companyId}-mainchannel`).emit(`company-${companyId}-contact`, {
       action: "update",
       contact

@@ -97,14 +97,11 @@ const useStyles = makeStyles((theme) => ({
   },
   logoIconBox: {
     width: "40px",
-    height: "40px",
-    background: "linear-gradient(135deg, #70008b, #8E24AA)",
-    borderRadius: "12px",
+    height: "auto",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     color: "white",
-    boxShadow: "0 4px 12px rgba(112, 0, 139, 0.3)",
   },
   logoTitle: {
     fontSize: "18px",
@@ -433,7 +430,6 @@ const LoggedInLayout = ({ children, themeToggle }) => {
             {drawerOpen && (
               <div>
                 <Typography className={classes.logoTitle}>Nia CRM</Typography>
-                <Typography className={classes.logoSubtitle}>Digital Curator</Typography>
               </div>
             )}
           </div>
@@ -479,10 +475,9 @@ const LoggedInLayout = ({ children, themeToggle }) => {
             noWrap
             className={classes.title}
           >
-            {/* {greaterThenSm && user?.profile === "admin" && getDateAndDifDays(user?.company?.dueDate).difData < 7 ? ( */}
-            {greaterThenSm && user?.profile === "admin" && user?.company?.dueDate ? (
+            {greaterThenSm && user?.company?.dueDate ? (
               <>
-                Hola <b>{user.name}</b>, Bienvenido a <b>{user?.company?.name}</b>! (Activo hasta {dateToClient(user?.company?.dueDate)})
+                Hola <b>{user.name}</b>, Bienvenido a <b>{user?.company?.name}</b>! (Activo hasta {dateToClient(user?.company?.dueDate)} - <b>{moment(user?.company?.dueDate).diff(moment(), 'days')} días restantes</b>)
               </>
             ) : (
               <>
@@ -491,9 +486,7 @@ const LoggedInLayout = ({ children, themeToggle }) => {
             )}
           </Typography>
 
-          <IconButton edge="start" onClick={toggleColorMode}>
-            {theme.mode === 'dark' ? <Brightness7Icon style={{ color: "white" }} /> : <Brightness4Icon style={{ color: "white" }} />}
-          </IconButton>
+
 
           <NotificationsVolume
             setVolume={setVolume}

@@ -66,7 +66,7 @@ const useStyles = makeStyles(theme => ({
         alignItems: "center",
     },
     logoIconLarge: {
-        width: "220px",
+        width: "350px",
         height: "auto",
         display: "flex",
         alignItems: "center",
@@ -111,9 +111,8 @@ const TicketsCustom = () => {
 							<Paper disableGutters square variant="outlined" className={classes.welcomeMsg}>
                                 <div className={classes.welcomeContent}>
                                     <div className={classes.logoIconLarge}>
-                                        <img src={niaLogo} style={{ width: "60%" }} alt="Nia CRM" />
+                                        <img src={niaLogo} style={{ width: "100%" }} alt="Nia CRM" />
                                     </div>
-                                    <Typography className={classes.welcomeTitle}>Nia CRM</Typography>
                                 </div>
 							</Paper>
 						)}
