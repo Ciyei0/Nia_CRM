@@ -114,7 +114,6 @@ const Chat = () => {
                                         <img src={logo} style={{ width: "60%" }} alt="Nia CRM" />
                                     </div>
                                     <Typography className={classes.welcomeTitle}>Nia CRM</Typography>
-                                    <Typography className={classes.welcomeSubtitle}>Digital Curator & Support Center</Typography>
                                 </div>
 							</Paper>
 						)}

@@ -117,7 +117,6 @@ const TicketsCustom = () => {
                                         <img src={niaLogo} style={{ width: "60%" }} alt="Nia CRM" />
                                     </div>
                                     <Typography className={classes.welcomeTitle}>Nia CRM</Typography>
-                                    <Typography className={classes.welcomeSubtitle}>Digital Curator & Support Center</Typography>
                                 </div>
 							</Paper>
 						)}

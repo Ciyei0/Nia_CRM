@@ -554,16 +554,49 @@ const TicketListItemCustom = ({ ticket }) => {
         />
         
         {ticket.status === "pending" && (
-            <ButtonWithSpinner
-                color="primary"
-                variant="contained"
-                className={classes.acceptButton}
-                size="small"
-                loading={loading}
-                onClick={e => handleAcepptTicket(ticket.id)}
-            >
-                {i18n.t("ticketsList.buttons.accept")}
-            </ButtonWithSpinner>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                {profile === "admin" && (
+                    <Tooltip title="Espiar Conversa">
+                        <VisibilityIcon
+                            onClick={() => setOpenTicketMessageDialog(true)}
+                            fontSize="small"
+                            style={{
+                                color: "rgba(112, 0, 139, 0.5)",
+                                cursor: "pointer",
+                                marginRight: 4,
+                            }}
+                        />
+                    </Tooltip>
+                )}
+                <ButtonWithSpinner
+                    color="primary"
+                    variant="contained"
+                    className={classes.acceptButton}
+                    size="small"
+                    loading={loading}
+                    onClick={e => handleAcepptTicket(ticket.id)}
+                >
+                    {i18n.t("ticketsList.buttons.accept")}
+                </ButtonWithSpinner>
+                <ButtonWithSpinner
+                    variant="contained"
+                    size="small"
+                    loading={loading}
+                    onClick={e => handleCloseTicket(ticket.id)}
+                    style={{
+                        backgroundColor: '#ea4335',
+                        color: 'white',
+                        borderRadius: "12px",
+                        textTransform: "none",
+                        fontWeight: 700,
+                        fontSize: "12px",
+                        padding: "6px 16px",
+                        boxShadow: "none",
+                    }}
+                >
+                    {i18n.t("ticketsList.buttons.closed")}
+                </ButtonWithSpinner>
+            </div>
         )}
       </ListItem>
 
