@@ -110,7 +110,11 @@ const SendWhatsAppMessage = async ({
               interactiveMessage: proto.Message.InteractiveMessage.create({
                 body: proto.Message.InteractiveMessage.Body.create({ text: formatBody(body, ticket.contact) }),
                 footer: proto.Message.InteractiveMessage.Footer.create({ text: "NiaCRM" }),
-                header: proto.Message.InteractiveMessage.Header.create({ title: "", subtitle: "", hasMediaAttachment: false }),
+                header: proto.Message.InteractiveMessage.Header.create({
+                  title: options.menuTitle ? options.menuTitle : "Opciones",
+                  subtitle: "",
+                  hasMediaAttachment: false
+                }),
                 nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
                   buttons: buttons
                 })
