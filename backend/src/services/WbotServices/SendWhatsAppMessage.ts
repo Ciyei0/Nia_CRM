@@ -74,13 +74,31 @@ const SendWhatsAppMessage = async ({
     if (options) {
       if (options.items) {
         // Chatwoot style interactive buttons
-        const buttons = options.items.map((item: any, index: number) => ({
-          name: "quick_reply",
-          buttonParamsJson: JSON.stringify({
-            display_text: item.title,
-            id: item.value || `btn_${index}`
-          })
-        }));
+        let buttons = [];
+        
+        if (options.items.length <= 3) {
+          buttons = options.items.map((item: any, index: number) => ({
+            name: "quick_reply",
+            buttonParamsJson: JSON.stringify({
+              display_text: item.title,
+              id: String(item.value || `btn_${index}`)
+            })
+          }));
+        } else {
+          buttons = [{
+            name: "single_select",
+            buttonParamsJson: JSON.stringify({
+              title: options.menuTitle || "Seleccionar opción",
+              sections: [{
+                title: "Opciones disponibles",
+                rows: options.items.map((item: any, index: number) => ({
+                  title: item.title,
+                  id: String(item.value || `btn_${index}`)
+                }))
+              }]
+            })
+          }];
+        }
 
         content = {
           viewOnceMessage: {
