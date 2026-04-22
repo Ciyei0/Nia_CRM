@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/node";
-import { WAMessage } from "@whiskeysockets/baileys";
+import { WAMessage, proto } from "@whiskeysockets/baileys";
 import AppError from "../../errors/AppError";
 import GetTicketWbot from "../../helpers/GetTicketWbot";
 import Message from "../../models/Message";
@@ -15,15 +15,17 @@ interface Request {
   ticket: Ticket;
   quotedMsg?: Message;
   isForwarded?: boolean;
+  options?: any;
 }
 
 const SendWhatsAppMessage = async ({
   body,
   ticket,
   quotedMsg,
-  isForwarded = false
+  isForwarded = false,
+  options
 }: Request): Promise<WAMessage> => {
-  let options = {};
+  let wbotOptions = {};
 
   if ((!ticket.whatsapp || !ticket.whatsapp.channel) && ticket.whatsappId) {
     ticket.whatsapp = await Whatsapp.findByPk(ticket.whatsappId);
@@ -51,7 +53,7 @@ const SendWhatsAppMessage = async ({
     if (chatMessages) {
       const msgFound = JSON.parse(chatMessages.dataJson);
 
-      options = {
+      wbotOptions = {
         quoted: {
           key: msgFound.key,
           message: {
@@ -64,15 +66,47 @@ const SendWhatsAppMessage = async ({
   }
 
   try {
-    const sentMessage = await wbot.sendMessage(number, {
+    let content: any = {
       text: formatBody(body, ticket.contact),
-      // text: body, //formatBody(body, ticket.contact),
       contextInfo: { forwardingScore: isForwarded ? 2 : 0, isForwarded: isForwarded ? true : false }
-    },
-      {
-        ...options
+    };
+
+    if (options) {
+      if (options.items) {
+        // Chatwoot style interactive buttons
+        const buttons = options.items.map((item: any, index: number) => ({
+          name: "quick_reply",
+          buttonParamsJson: JSON.stringify({
+            display_text: item.title,
+            id: item.value || `btn_${index}`
+          })
+        }));
+
+        content = {
+          viewOnceMessage: {
+            message: {
+              messageContextInfo: {
+                deviceListMetadata: {},
+                deviceListMetadataVersion: 2
+              },
+              interactiveMessage: proto.Message.InteractiveMessage.create({
+                body: proto.Message.InteractiveMessage.Body.create({ text: formatBody(body, ticket.contact) }),
+                footer: proto.Message.InteractiveMessage.Footer.create({ text: "NiaCRM" }),
+                header: proto.Message.InteractiveMessage.Header.create({ title: "", subtitle: "", hasMediaAttachment: false }),
+                nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
+                  buttons: buttons
+                })
+              })
+            }
+          }
+        };
+      } else {
+        // Merge any other options (like standard listMessage, etc) directly into content or wbotOptions
+        Object.assign(content, options);
       }
-    );
+    }
+
+    const sentMessage = await wbot.sendMessage(number, content, wbotOptions);
 
     await ticket.update({ lastMessage: formatBody(body, ticket.contact) });
     return sentMessage;

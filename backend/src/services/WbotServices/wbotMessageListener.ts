@@ -396,6 +396,14 @@ export const getBodyMessage = (msg: proto.IWebMessageInfo): string | null => {
       audioMessage: "Áudio",
       listMessage: getBodyButton(msg) || msg.message?.listResponseMessage?.title,
       listResponseMessage: msg.message?.listResponseMessage?.singleSelectReply?.selectedRowId,
+      interactiveResponseMessage: (() => {
+        try {
+          const params = JSON.parse(msg.message?.interactiveResponseMessage?.nativeFlowResponseMessage?.paramsJson || "{}");
+          return params.id;
+        } catch (e) {
+          return msg.message?.interactiveResponseMessage?.nativeFlowResponseMessage?.name;
+        }
+      })(),
     };
 
     const objKey = Object.keys(types).find(key => key === type);
@@ -430,7 +438,8 @@ export const getQuotedMessage = (msg: proto.IWebMessageInfo): any => {
     msg?.message?.buttonsResponseMessage?.selectedButtonId ||
     msg.message.listResponseMessage?.singleSelectReply?.selectedRowId ||
     msg?.message?.listResponseMessage?.singleSelectReply.selectedRowId ||
-    msg.message.listResponseMessage?.contextInfo;
+    msg.message.listResponseMessage?.contextInfo ||
+    msg.message.interactiveResponseMessage?.contextInfo;
   msg.message.senderKeyDistributionMessage;
 
   // testar isso
