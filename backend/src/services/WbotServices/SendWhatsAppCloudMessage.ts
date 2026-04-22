@@ -9,12 +9,14 @@ interface Request {
     body: string;
     ticket: Ticket;
     quotedMsg?: Message;
+    options?: any;
 }
 
 const SendWhatsAppCloudMessage = async ({
     body,
     ticket,
-    quotedMsg
+    quotedMsg,
+    options
 }: Request): Promise<any> => {
     const whatsapp = ticket.whatsapp;
 
@@ -74,16 +76,62 @@ const SendWhatsAppCloudMessage = async ({
 
     const textBody = formatBody(body, ticket.contact);
 
-    const payload = {
+    let payload: any = {
         messaging_product: "whatsapp",
         recipient_type: "individual",
         to: recipientNumber,
-        type: "text",
-        text: {
-            body: textBody
-        },
         ...(Object.keys(context).length > 0 && { context })
     };
+
+    if (options && options.items && options.items.length > 0) {
+        payload.type = "interactive";
+        
+        if (options.items.length <= 3) {
+            // Interactive Buttons (Max 3)
+            payload.interactive = {
+                type: "button",
+                body: { text: textBody },
+                action: {
+                    buttons: options.items.map((item: any, index: number) => ({
+                        type: "reply",
+                        reply: {
+                            id: String(item.value || `btn_${index}`),
+                            title: item.title
+                        }
+                    }))
+                }
+            };
+        } else {
+            // Interactive List (More than 3 options)
+            payload.interactive = {
+                type: "list",
+                header: { 
+                    type: "text", 
+                    text: options.menuTitle || "Opciones" 
+                },
+                body: { text: textBody },
+                footer: { text: "NiaCRM" },
+                action: {
+                    button: "Ver opciones",
+                    sections: [
+                        {
+                            title: "Opciones disponibles",
+                            rows: options.items.map((item: any, index: number) => ({
+                                id: String(item.value || `btn_${index}`),
+                                title: item.title
+                            }))
+                        }
+                    ]
+                }
+            };
+        }
+    } else {
+        // Plain text message
+        payload.type = "text";
+        payload.text = {
+            body: textBody
+        };
+    }
 
     try {
         const response = await axios.post(url, payload, { headers });

@@ -33,7 +33,7 @@ const SendWhatsAppMessage = async ({
 
   if (ticket.whatsapp && ticket.whatsapp.channel === "whatsapp_cloud") {
     // @ts-ignore
-    return SendWhatsAppCloudMessage({ body, ticket, quotedMsg });
+    return SendWhatsAppCloudMessage({ body, ticket, quotedMsg, options });
   }
 
   const wbot = await GetTicketWbot(ticket);
