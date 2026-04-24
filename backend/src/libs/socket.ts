@@ -44,22 +44,39 @@ export const initIO = (httpServer: Server): SocketIO => {
     const counters = new CounterManager();
 
     let user: User = null;
-    let userId = tokenData.id;
 
-    if (userId && userId !== "undefined" && userId !== "null") {
-      user = await User.findByPk(userId, { include: [Queue] });
+    // Supabase JWTs use 'email' to identify the user, not 'id'.
+    // Look up the local user by their email, matching what isAuth.ts does.
+    const userEmail = (tokenData as any).email;
+
+    if (userEmail) {
+      user = await User.findOne({ where: { email: userEmail }, include: [Queue] });
       if (user) {
         user.online = true;
         await user.save();
       } else {
-        logger.info(`onConnect: User ${userId} not found`);
+        logger.info(`onConnect: User with email ${userEmail} not found`);
         socket.disconnect();
         return io;
       }
     } else {
-      logger.info("onConnect: Missing userId");
-      socket.disconnect();
-      return io;
+      // Fallback: legacy token with 'id' field
+      const legacyId = (tokenData as any).id;
+      if (legacyId && legacyId !== "undefined" && legacyId !== "null") {
+        user = await User.findByPk(legacyId, { include: [Queue] });
+        if (user) {
+          user.online = true;
+          await user.save();
+        } else {
+          logger.info(`onConnect: User ${legacyId} not found`);
+          socket.disconnect();
+          return io;
+        }
+      } else {
+        logger.info("onConnect: Missing userId or email in token");
+        socket.disconnect();
+        return io;
+      }
     }
 
     socket.join(`company-${user.companyId}-mainchannel`);
