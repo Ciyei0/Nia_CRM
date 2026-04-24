@@ -103,14 +103,8 @@ const SocketManager = {
       if (!token) {
         return new DummySocket();
       }
-      
-      if ( isExpired(token) ) {
-        console.warn("Expired token, reload after refresh");
-        setTimeout(() => {
-          window.location.reload();
-        },1000);
-        return new DummySocket();
-      }
+      // Note: do NOT check isExpired() here — Supabase tokens can appear expired to react-jwt
+      // but still be valid. The backend will disconnect if the token is truly invalid.
 
       this.currentCompanyId = companyId;
       this.currentUserId = userId;
@@ -125,11 +119,8 @@ const SocketManager = {
       this.currentSocket.io.on("reconnect_attempt", () => {
         this.currentSocket.io.opts.query.r = 1;
         token = JSON.parse(localStorage.getItem("token"));
-        if ( isExpired(token) ) {
-          console.warn("Refreshing");
-          window.location.reload();
-        } else {
-          console.warn("Using new token");
+        if (token) {
+          console.warn("Reconnecting using refreshed token");
           this.currentSocket.io.opts.query.token = token;
         }
       });

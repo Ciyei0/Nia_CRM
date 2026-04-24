@@ -437,6 +437,9 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
     const companyId = localStorage.getItem("companyId");
     const socket = socketManager.getSocket(companyId);
 
+    // Emit joinChatBox immediately (socket may already be connected / ready)
+    socket.emit("joinChatBox", `${ticket.id}`);
+    // Also handle re-connection: the ManagedSocket's 'ready' handler will replay joins
     socket.on("ready", () => socket.emit("joinChatBox", `${ticket.id}`));
 
     socket.on(`company-${companyId}-appMessage`, (data) => {

@@ -88,8 +88,9 @@ export const initIO = (httpServer: Server): SocketIO => {
       }
       Ticket.findByPk(ticketId).then(
         (ticket) => {
-          if (ticket && ticket.companyId === user.companyId
-            && (ticket.userId === user.id || user.profile === "admin")) {
+          // Allow any user of the same company to join the ticket room
+          // so they can receive real-time messages even if the ticket is unassigned
+          if (ticket && ticket.companyId === user.companyId) {
             let c: number;
             if ((c = counters.incrementCounter(`ticket-${ticketId}`)) === 1) {
               socket.join(ticketId);
@@ -162,6 +163,8 @@ export const initIO = (httpServer: Server): SocketIO => {
           logger.debug(`Admin ${user.id} of company ${user.companyId} joined ${status} tickets channel.`);
           socket.join(`company-${user.companyId}-${status}`);
         } else if (status === "pending") {
+          // Also join the company-wide pending room so Cloud API webhook messages reach non-admin users
+          socket.join(`company-${user.companyId}-pending`);
           user.queues.forEach((queue) => {
             logger.debug(`User ${user.id} of company ${user.companyId} joined queue ${queue.id} pending tickets channel.`);
             socket.join(`queue-${queue.id}-pending`);
