@@ -447,19 +447,15 @@ export const getBodyMessage = (msg: proto.IWebMessageInfo): string | null => {
       audioMessage: "Áudio",
       listMessage: getBodyButton(msg) || msg.message?.listResponseMessage?.title,
       listResponseMessage: msg.message?.listResponseMessage?.singleSelectReply?.selectedRowId,
-<<<<<<< HEAD
       interactiveMessage: getBodyButton(msg),
-      interactiveResponseMessage: msg.message?.interactiveResponseMessage?.body?.text || msg.message?.interactiveResponseMessage?.nativeFlowResponseMessage?.name,
-=======
       interactiveResponseMessage: (() => {
         try {
           const params = JSON.parse(msg.message?.interactiveResponseMessage?.nativeFlowResponseMessage?.paramsJson || "{}");
-          return params.id;
+          return params.id || msg.message?.interactiveResponseMessage?.body?.text || msg.message?.interactiveResponseMessage?.nativeFlowResponseMessage?.name;
         } catch (e) {
-          return msg.message?.interactiveResponseMessage?.nativeFlowResponseMessage?.name;
+          return msg.message?.interactiveResponseMessage?.body?.text || msg.message?.interactiveResponseMessage?.nativeFlowResponseMessage?.name;
         }
       })(),
->>>>>>> bdc00fc9ef1676e33e37c57ea3d21d3945c3d7b2
     };
 
     const objKey = Object.keys(types).find(key => key === type);
