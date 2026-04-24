@@ -103,7 +103,9 @@ const Ticket = () => {
     const companyId = localStorage.getItem("companyId");
     const socket = socketManager.getSocket(companyId);
 
-    socket.on("ready", () => socket.emit("joinChatBox", `${ticket.id}`));
+    socket.on("ready", () => {
+      if (ticket?.id) socket.emit("joinChatBox", `${ticket.id}`);
+    });
 
     socket.on(`company-${companyId}-ticket`, (data) => {
       if (data.action === "update" && data.ticket.id === ticket.id) {

@@ -126,6 +126,10 @@ export const findFilteredList = async (
 ): Promise<Response> => {
   try {
     const { contactId, ticketId } = req.query as QueryFilteredNotes;
+    // Return empty array if IDs are missing to avoid SQL errors
+    if (!contactId || !ticketId || contactId === "undefined" || ticketId === "undefined") {
+      return res.status(200).json([]);
+    }
     const notes: TicketNote[] = await FindNotesByContactIdAndTicketId({
       contactId,
       ticketId
