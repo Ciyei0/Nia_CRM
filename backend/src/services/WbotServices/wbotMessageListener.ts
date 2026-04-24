@@ -2091,6 +2091,13 @@ const handleMessage = async (
         chatbot: false,
         queueId: null,
       });
+
+      if (hasMedia) {
+        mediaSent = await verifyMediaMessage(msg, ticket, contact);
+      } else {
+        await verifyMessage(msg, ticket, contact);
+      }
+
       await verifyQueue(wbot, msg, ticket, ticket.contact);
       return;
     }
@@ -2133,6 +2140,13 @@ const handleMessage = async (
         if (ticketTraking !== null && verifyRating(ticketTraking)) {
 
           handleRating(parseFloat(bodyMessage), ticket, ticketTraking);
+
+          if (hasMedia) {
+            mediaSent = await verifyMediaMessage(msg, ticket, contact);
+          } else {
+            await verifyMessage(msg, ticket, contact);
+          }
+
           return;
         }
       }
@@ -2301,6 +2315,12 @@ const handleMessage = async (
       const integrations = await ShowQueueIntegrationService(whatsapp.integrationId, companyId);
 
       await handleMessageIntegration(msg, wbot, integrations, ticket)
+
+      if (hasMedia) {
+        mediaSent = await verifyMediaMessage(msg, ticket, contact);
+      } else {
+        await verifyMessage(msg, ticket, contact);
+      }
 
       return
     }
