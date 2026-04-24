@@ -2453,39 +2453,23 @@ const handleMessage = async (
       });
 
       if (lastMessage && lastMessage.body.includes(whatsapp.greetingMessage)) {
-        // Greeting already sent — save the incoming message and stop
-        if (hasMedia) {
-          await verifyMediaMessage(msg, ticket, contact);
-        } else {
-          await verifyMessage(msg, ticket, contact);
-        }
+        // Greeting already sent — just return, verifyMessage already ran above
         return;
       }
 
       if (whatsapp.greetingMessage) {
-
         console.log('whatsapp.greetingMessage', whatsapp.greetingMessage)
         const debouncedSentMessage = debounce(
           async () => {
             await wbot.sendMessage(
-              `${ticket.contact.number}@${ticket.isGroup ? "g.us" : "s.whatsapp.net"
-              }`,
-              {
-                text: whatsapp.greetingMessage
-              }
+              `${ticket.contact.number}@${ticket.isGroup ? "g.us" : "s.whatsapp.net"}`,
+              { text: whatsapp.greetingMessage }
             );
           },
           1000,
           ticket.id
         );
         debouncedSentMessage();
-
-        // Save the incoming message before returning
-        if (hasMedia) {
-          await verifyMediaMessage(msg, ticket, contact);
-        } else {
-          await verifyMessage(msg, ticket, contact);
-        }
         return;
       }
 

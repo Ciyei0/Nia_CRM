@@ -142,6 +142,12 @@ async function processIncomingMessage(
             }
         }
 
+        // If the message is from the business number itself, it's an outgoing echo. Skip it.
+        if (from === phoneNumberId || from === whatsapp.number) {
+            logger.info(`Webhook Analysis: Skipping outgoing echo message ${messageId} from ${from}`);
+            return;
+        }
+
         logger.info(`Processing message from ${from} (${contactName}): ${messageType}`);
 
         // Create or update contact
