@@ -152,11 +152,11 @@ async function processIncomingMessage(
             companyId: whatsapp.companyId
         });
 
-        // Find or create ticket
+        // Find or create ticket - increment unread counter for incoming messages
         const ticket = await FindOrCreateTicketService(
             contactData,
             whatsapp.id,
-            0, // unreadMessages
+            1, // increment unread messages
             whatsapp.companyId,
             undefined // queueId
         );
@@ -316,20 +316,9 @@ async function processIncomingMessage(
         // Update ticket with last message
         await ticket.update({
             lastMessage: body,
-            unreadMessages: ticket.unreadMessages + 1
         });
 
-        // Emit socket event for real-time updates
-        const io = getIO();
-        io.to(`company-${whatsapp.companyId}-open`)
-            .to(`company-${whatsapp.companyId}-${ticket.id}`)
-            .emit(`company-${whatsapp.companyId}-ticket`, {
-                action: "update",
-                ticket
-            });
-
         logger.info(`Message saved: ${messageId} for ticket ${ticket.id}`);
-
         // Integration Logic (N8N / Webhook)
         let integrationId = whatsapp.integrationId;
 
