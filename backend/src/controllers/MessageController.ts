@@ -36,6 +36,7 @@ type MessageData = {
   quotedMsg?: Message;
   number?: string;
   closeTicket?: true;
+  options?: any;
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
@@ -68,6 +69,16 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 export const store = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId } = req.params;
   const { body, quotedMsg }: MessageData = req.body;
+  let options = req.body.options;
+  
+  if (options && typeof options === 'string') {
+    try {
+      options = JSON.parse(options);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   const medias = req.files as Express.Multer.File[];
   const { companyId } = req.user;
 
@@ -83,7 +94,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       })
     );
   } else {
-    const send = await SendWhatsAppMessage({ body, ticket, quotedMsg });
+    const send = await SendWhatsAppMessage({ body, ticket, quotedMsg, options });
   }
 
   return res.send();
@@ -110,6 +121,16 @@ export const remove = async (
 export const send = async (req: Request, res: Response): Promise<Response> => {
   const { whatsappId } = req.params as unknown as { whatsappId: number };
   const messageData: MessageData = req.body;
+  let options = req.body.options;
+
+  if (options && typeof options === 'string') {
+    try {
+      options = JSON.parse(options);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   const medias = req.files as Express.Multer.File[];
 
   console.log('messageData;', messageData)
@@ -168,7 +189,7 @@ export const send = async (req: Request, res: Response): Promise<Response> => {
         })
       );
     } else {
-      await SendWhatsAppMessage({ body: formatBody(body, contact), ticket });
+      await SendWhatsAppMessage({ body: formatBody(body, contact), ticket, options });
 
       await ticket.update({
         lastMessage: body,

@@ -56,6 +56,7 @@ const useAuth = () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
                 api.defaults.headers.Authorization = `Bearer ${session.access_token}`;
+                localStorage.setItem("token", JSON.stringify(session.access_token));
                 try {
                     const { data } = await api.get("/auth/me");
                     if (mounted) {
@@ -76,6 +77,7 @@ const useAuth = () => {
                            setIsAuth(false);
                            setUser({});
                        }
+                       localStorage.removeItem("token");
                        localStorage.removeItem("companyId");
                        localStorage.removeItem("userId");
                     }
@@ -88,10 +90,12 @@ const useAuth = () => {
 
         const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (event === 'SIGNED_IN' && session) {
+               localStorage.setItem("token", JSON.stringify(session.access_token));
                loadSession();
             } else if (event === 'SIGNED_OUT') {
                setIsAuth(false);
                setUser({});
+               localStorage.removeItem("token");
                localStorage.removeItem("companyId");
                localStorage.removeItem("userId");
                localStorage.removeItem("cshow");
@@ -204,6 +208,7 @@ const useAuth = () => {
             await supabase.auth.signOut();
             setIsAuth(false);
             setUser({});
+            localStorage.removeItem("token");
             localStorage.removeItem("companyId");
             localStorage.removeItem("userId");
             localStorage.removeItem("cshow");

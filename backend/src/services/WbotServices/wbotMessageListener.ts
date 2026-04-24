@@ -334,7 +334,7 @@ export function makeid(length) {
 
 
 const getBodyButton = (msg: proto.IWebMessageInfo): string => {
-  if (msg.key.fromMe && msg?.message?.viewOnceMessage?.message?.buttonsMessage?.contentText) {
+  if (msg?.message?.viewOnceMessage?.message?.buttonsMessage?.contentText) {
     let bodyMessage = `*${msg?.message?.viewOnceMessage?.message?.buttonsMessage?.contentText}*`;
 
     for (const buton of msg.message?.viewOnceMessage?.message?.buttonsMessage?.buttons) {
@@ -343,7 +343,7 @@ const getBodyButton = (msg: proto.IWebMessageInfo): string => {
     return bodyMessage;
   }
 
-  if (msg.key.fromMe && msg?.message?.viewOnceMessage?.message?.listMessage) {
+  if (msg?.message?.viewOnceMessage?.message?.listMessage) {
     let bodyMessage = `*${msg?.message?.viewOnceMessage?.message?.listMessage?.description}*`;
     for (const buton of msg.message?.viewOnceMessage?.message?.listMessage?.sections) {
       for (const rows of buton.rows) {
@@ -351,6 +351,57 @@ const getBodyButton = (msg: proto.IWebMessageInfo): string => {
       }
     }
 
+    return bodyMessage;
+  }
+
+  if (msg?.message?.buttonsMessage?.contentText) {
+    let bodyMessage = `*${msg?.message?.buttonsMessage?.contentText}*`;
+
+    for (const buton of msg.message?.buttonsMessage?.buttons) {
+      bodyMessage += `\n\n${buton.buttonText?.displayText}`;
+    }
+    return bodyMessage;
+  }
+
+  if (msg?.message?.listMessage) {
+    let bodyMessage = `*${msg?.message?.listMessage?.description || msg?.message?.listMessage?.title || ""}*`;
+    if (msg.message?.listMessage?.sections) {
+      for (const buton of msg.message?.listMessage?.sections) {
+        for (const rows of buton.rows) {
+          bodyMessage += `\n\n${rows.title}`;
+        }
+      }
+    }
+    return bodyMessage;
+  }
+
+  if (msg?.message?.interactiveMessage) {
+    let bodyMessage = `*${msg.message.interactiveMessage?.body?.text || msg.message.interactiveMessage?.header?.title || ""}*`;
+    if (msg.message.interactiveMessage.nativeFlowMessage?.buttons) {
+      for (const button of msg.message.interactiveMessage.nativeFlowMessage.buttons) {
+        try {
+          const buttonParams = JSON.parse(button.buttonParamsJson || "{}");
+          if (buttonParams.display_text) {
+            bodyMessage += `\n\n${buttonParams.display_text}`;
+          }
+        } catch (e) {}
+      }
+    }
+    return bodyMessage;
+  }
+
+  if (msg?.message?.viewOnceMessage?.message?.interactiveMessage) {
+    let bodyMessage = `*${msg.message.viewOnceMessage.message.interactiveMessage?.body?.text || msg.message.viewOnceMessage.message.interactiveMessage?.header?.title || ""}*`;
+    if (msg.message.viewOnceMessage.message.interactiveMessage.nativeFlowMessage?.buttons) {
+      for (const button of msg.message.viewOnceMessage.message.interactiveMessage.nativeFlowMessage.buttons) {
+        try {
+          const buttonParams = JSON.parse(button.buttonParamsJson || "{}");
+          if (buttonParams.display_text) {
+            bodyMessage += `\n\n${buttonParams.display_text}`;
+          }
+        } catch (e) {}
+      }
+    }
     return bodyMessage;
   }
 };
@@ -396,6 +447,19 @@ export const getBodyMessage = (msg: proto.IWebMessageInfo): string | null => {
       audioMessage: "Áudio",
       listMessage: getBodyButton(msg) || msg.message?.listResponseMessage?.title,
       listResponseMessage: msg.message?.listResponseMessage?.singleSelectReply?.selectedRowId,
+<<<<<<< HEAD
+      interactiveMessage: getBodyButton(msg),
+      interactiveResponseMessage: msg.message?.interactiveResponseMessage?.body?.text || msg.message?.interactiveResponseMessage?.nativeFlowResponseMessage?.name,
+=======
+      interactiveResponseMessage: (() => {
+        try {
+          const params = JSON.parse(msg.message?.interactiveResponseMessage?.nativeFlowResponseMessage?.paramsJson || "{}");
+          return params.id;
+        } catch (e) {
+          return msg.message?.interactiveResponseMessage?.nativeFlowResponseMessage?.name;
+        }
+      })(),
+>>>>>>> bdc00fc9ef1676e33e37c57ea3d21d3945c3d7b2
     };
 
     const objKey = Object.keys(types).find(key => key === type);
@@ -430,7 +494,8 @@ export const getQuotedMessage = (msg: proto.IWebMessageInfo): any => {
     msg?.message?.buttonsResponseMessage?.selectedButtonId ||
     msg.message.listResponseMessage?.singleSelectReply?.selectedRowId ||
     msg?.message?.listResponseMessage?.singleSelectReply.selectedRowId ||
-    msg.message.listResponseMessage?.contextInfo;
+    msg.message.listResponseMessage?.contextInfo ||
+    msg.message.interactiveResponseMessage?.contextInfo;
   msg.message.senderKeyDistributionMessage;
 
   // testar isso
@@ -470,14 +535,23 @@ const getSenderMessage = (
 const getContactMessage = async (msg: proto.IWebMessageInfo, wbot: Session) => {
   const isGroup = msg.key.remoteJid.includes("g.us");
   const rawNumber = msg.key.remoteJid.replace(/\D/g, "");
+
+  let name = msg.pushName;
+  if (!name && wbot.store?.contacts) {
+    const storeContact = wbot.store.contacts[msg.key.remoteJid];
+    if (storeContact) {
+      name = storeContact.name || storeContact.verifiedName || storeContact.notify;
+    }
+  }
+
   return isGroup
     ? {
       id: getSenderMessage(msg, wbot),
-      name: msg.pushName
+      name: name
     }
     : {
       id: msg.key.remoteJid,
-      name: msg.key.fromMe ? rawNumber : msg.pushName
+      name: msg.key.fromMe ? rawNumber : name
     };
 };
 
@@ -1061,6 +1135,8 @@ const isValidMsg = (msg: proto.IWebMessageInfo): boolean => {
       msgType === "protocolMessage" ||
       msgType === "listResponseMessage" ||
       msgType === "listMessage" ||
+      msgType === "interactiveMessage" ||
+      msgType === "interactiveResponseMessage" ||
       msgType === "viewOnceMessage";
 
     if (!ifType) {
