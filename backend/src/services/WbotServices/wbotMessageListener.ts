@@ -539,6 +539,10 @@ const getContactMessage = async (msg: proto.IWebMessageInfo, wbot: Session) => {
       name = storeContact.name || storeContact.verifiedName || storeContact.notify;
     }
   }
+  // Final fallback: use the phone number so we never create a contactless name
+  if (!name) {
+    name = rawNumber;
+  }
 
   return isGroup
     ? {
@@ -2449,6 +2453,12 @@ const handleMessage = async (
       });
 
       if (lastMessage && lastMessage.body.includes(whatsapp.greetingMessage)) {
+        // Greeting already sent — save the incoming message and stop
+        if (hasMedia) {
+          await verifyMediaMessage(msg, ticket, contact);
+        } else {
+          await verifyMessage(msg, ticket, contact);
+        }
         return;
       }
 
@@ -2469,6 +2479,13 @@ const handleMessage = async (
           ticket.id
         );
         debouncedSentMessage();
+
+        // Save the incoming message before returning
+        if (hasMedia) {
+          await verifyMediaMessage(msg, ticket, contact);
+        } else {
+          await verifyMessage(msg, ticket, contact);
+        }
         return;
       }
 
