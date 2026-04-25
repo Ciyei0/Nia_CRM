@@ -398,8 +398,21 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
   useEffect(() => {
     dispatch({ type: "RESET" });
     setPageNumber(1);
-
     currentTicketId.current = ticketId;
+  }, [ticketId]);
+
+  // Polling fallback: re-fetch page 1 every 8s to catch messages missed by socket
+  useEffect(() => {
+    if (!ticketId) return;
+    const interval = setInterval(async () => {
+      try {
+        const { data } = await api.get("/messages/" + ticketId, { params: { pageNumber: 1 } });
+        if (currentTicketId.current === ticketId && data.messages?.length > 0) {
+          dispatch({ type: "LOAD_MESSAGES", payload: data.messages });
+        }
+      } catch (_) {}
+    }, 8000);
+    return () => clearInterval(interval);
   }, [ticketId]);
 
   useEffect(() => {
@@ -434,26 +447,25 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
   }, [pageNumber, ticketId]);
 
   useEffect(() => {
+    if (!ticketId) return;
     const companyId = localStorage.getItem("companyId");
     const socket = socketManager.getSocket(companyId);
 
-    // Only join when ticket is fully loaded and has a valid ID
-    if (ticket?.id) {
-      socket.emit("joinChatBox", `${ticket.id}`);
-    }
+    socket.emit("joinChatBox", `${ticketId}`);
     socket.on("ready", () => {
-      if (ticket?.id) {
-        socket.emit("joinChatBox", `${ticket.id}`);
-      }
+      socket.emit("joinChatBox", `${ticketId}`);
     });
 
     socket.on(`company-${companyId}-appMessage`, (data) => {
-      if (data.action === "create" && data.message.ticketId === currentTicketId.current) {
+      const msgTicketId = Number(data.message?.ticketId);
+      const curTicketId = Number(currentTicketId.current);
+      console.log("[appMessage]", data.action, "msgTicket:", msgTicketId, "curTicket:", curTicketId, "match:", msgTicketId === curTicketId);
+      if (data.action === "create" && msgTicketId === curTicketId) {
         dispatch({ type: "ADD_MESSAGE", payload: data.message });
         scrollToBottom();
       }
 
-      if (data.action === "update" && data.message.ticketId === currentTicketId.current) {
+      if (data.action === "update" && msgTicketId === curTicketId) {
         dispatch({ type: "UPDATE_MESSAGE", payload: data.message });
       }
     });
@@ -461,7 +473,7 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
     return () => {
       socket.disconnect();
     };
-  }, [ticketId, ticket, socketManager]);
+  }, [ticketId, socketManager]);
 
   const loadMore = () => {
     setPageNumber((prevPageNumber) => prevPageNumber + 1);
