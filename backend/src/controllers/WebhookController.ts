@@ -132,6 +132,11 @@ async function processIncomingMessage(
         const messageId = message.id;
         const timestamp = message.timestamp;
         const messageType = message.type;
+        
+        try {
+            const fs = require('fs');
+            fs.appendFileSync('webhook_debug.txt', `\n[${new Date().toISOString()}] ENTERED processIncomingMessage for ${messageId} | type: ${messageType}\n`);
+        } catch (e) {}
 
         // Extract contact info
         let contactName = from;
@@ -311,12 +316,22 @@ async function processIncomingMessage(
             mediaUrl,
             companyId: whatsapp.companyId
         };
+        
+        try {
+            const fs = require('fs');
+            fs.appendFileSync('webhook_debug.txt', `[${new Date().toISOString()}] ABOUT TO SAVE: body="${body}", ticketId=${ticket.id}, mediaType=${messageData.mediaType}\n`);
+        } catch (e) {}
 
 
 
         logger.info(`WebhookController: Calling CreateMessageService for message ${messageId}`);
         await CreateMessageService({ messageData, companyId: whatsapp.companyId });
         logger.info(`WebhookController: CreateMessageService finished for message ${messageId}`);
+        
+        try {
+            const fs = require('fs');
+            fs.appendFileSync('webhook_debug.txt', `[${new Date().toISOString()}] SUCCESSFULLY SAVED MESSAGE ${messageId}\n`);
+        } catch(e) {}
 
 
         // Update ticket with last message
