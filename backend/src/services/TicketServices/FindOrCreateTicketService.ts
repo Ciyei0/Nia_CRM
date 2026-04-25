@@ -22,20 +22,41 @@ const FindOrCreateTicketService = async (
   companyId: number,
   groupContact?: Contact
 ): Promise<Ticket> => {
-  let ticket = await Ticket.findOne({
-    where: {
-      status: {
-        [Op.or]: ["open", "pending", "closed"]
-      },
-      contactId: groupContact ? groupContact.id : contact.id,
-      companyId,
-      whatsappId
-    },
-    order: [["id", "DESC"]]
-  });
+  let ticket: Ticket;
 
-  if (ticket) {
-    await ticket.update({ unreadMessages, whatsappId });
+  // Priority 1: Most recently active ticket for this contact within last 2 hours (any whatsappId)
+  // This ensures incoming messages route to the same ticket as outgoing (even if different whatsapp connection)
+  if (!groupContact) {
+    ticket = await Ticket.findOne({
+      where: {
+        status: { [Op.or]: ["open", "pending"] },
+        contactId: contact.id,
+        companyId,
+        updatedAt: { [Op.gt]: subHours(new Date(), 2) }
+      },
+      order: [["updatedAt", "DESC"]]
+    });
+
+    if (ticket) {
+      await ticket.update({ unreadMessages, whatsappId: ticket.whatsappId }); // keep original whatsappId
+    }
+  }
+
+  // Priority 2: Existing ticket with exact whatsappId match
+  if (!ticket) {
+    ticket = await Ticket.findOne({
+      where: {
+        status: { [Op.or]: ["open", "pending", "closed"] },
+        contactId: groupContact ? groupContact.id : contact.id,
+        companyId,
+        whatsappId
+      },
+      order: [["id", "DESC"]]
+    });
+
+    if (ticket) {
+      await ticket.update({ unreadMessages, whatsappId });
+    }
   }
 
   if (ticket?.status === "closed") {
@@ -65,13 +86,9 @@ const FindOrCreateTicketService = async (
         userId: ticket.userId
       });
     }
-    const msgIsGroupBlock = await Setting.findOne({
-      where: { key: "timeCreateNewTicket" }
-    });
-
-    const value = msgIsGroupBlock ? parseInt(msgIsGroupBlock.value, 10) : 7200;
   }
 
+  // Priority 3: Any ticket for this contact updated in last 2 hours (legacy fallback)
   if (!ticket && !groupContact) {
     ticket = await Ticket.findOne({
       where: {
