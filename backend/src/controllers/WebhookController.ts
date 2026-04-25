@@ -447,9 +447,9 @@ async function processMessageStatus(
 
             await message.update({ ack });
 
-            // Emit socket event
+            // Emit socket event to ticket room (matches joinChatBox room the frontend uses)
             const io = getIO();
-            io.to(`company-${whatsapp.companyId}-${message.ticketId}`)
+            io.to(message.ticketId.toString())
                 .emit(`company-${whatsapp.companyId}-appMessage`, {
                     action: "update",
                     message

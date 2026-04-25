@@ -2,6 +2,7 @@ import { getIO } from "../../libs/socket";
 import Message from "../../models/Message";
 import Ticket from "../../models/Ticket";
 import Whatsapp from "../../models/Whatsapp";
+import { logger } from "../../utils/logger";
 
 interface MessageData {
   id: string;
@@ -61,8 +62,14 @@ const CreateMessageService = async ({
   }
 
   const io = getIO();
-  io.to(message.ticketId.toString())
-    .to(`company-${companyId}-${message.ticket.status}`)
+  const ticketRoomId = message.ticketId.toString();
+  const ticketRoom = io.sockets.adapter.rooms.get(ticketRoomId);
+  const roomSize = ticketRoom ? ticketRoom.size : 0;
+  const companyRoom = `company-${companyId}-${message.ticket.status}`;
+  logger.info(`[CreateMessageService] Emitting company-${companyId}-appMessage | ticketRoom="${ticketRoomId}" (${roomSize} sockets) | companyRoom="${companyRoom}" | fromMe=${message.fromMe} | body="${message.body?.substring(0,50)}"`);  
+
+  io.to(ticketRoomId)
+    .to(companyRoom)
     .to(`company-${companyId}-notification`)
     .to(`queue-${message.ticket.queueId}-${message.ticket.status}`)
     .to(`queue-${message.ticket.queueId}-notification`)
