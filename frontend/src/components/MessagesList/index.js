@@ -372,6 +372,20 @@ const reducer = (state, action) => {
     return [...state];
   }
 
+  if (action.type === "UPSERT_MESSAGES") {
+    // Like ADD_MESSAGE but for multiple messages - new ones go to END (bottom of chat)
+    const messages = action.payload;
+    messages.forEach((message) => {
+      const messageIndex = state.findIndex((m) => m.id === message.id);
+      if (messageIndex !== -1) {
+        state[messageIndex] = message; // update existing in-place
+      } else {
+        state.push(message); // new message → END of array → bottom of chat
+      }
+    });
+    return [...state];
+  }
+
   if (action.type === "RESET") {
     return [];
   }
@@ -408,7 +422,8 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
       try {
         const { data } = await api.get("/messages/" + ticketId, { params: { pageNumber: 1 } });
         if (currentTicketId.current === ticketId && data.messages?.length > 0) {
-          dispatch({ type: "LOAD_MESSAGES", payload: data.messages });
+          dispatch({ type: "UPSERT_MESSAGES", payload: data.messages });
+          scrollToBottom();
         }
       } catch (_) {}
     }, 8000);
