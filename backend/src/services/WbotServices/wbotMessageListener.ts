@@ -1960,13 +1960,26 @@ export const handleMessageIntegration = async (
 
   if (queueIntegration.type === "n8n" || queueIntegration.type === "webhook") {
     if (queueIntegration?.urlN8N) {
+      const bodyMsg = getBodyMessage(msg);
+      const cleanPayload = {
+        messageId: msg.key.id,
+        from: msg.key.remoteJid?.replace(/@.*/, ""),
+        fromMe: msg.key.fromMe,
+        type: msgType,
+        body: bodyMsg,
+        timestamp: msg.messageTimestamp,
+        ticketId: ticket.id,
+        companyId: ticket.companyId,
+        contactId: ticket.contactId,
+        source: "whatsapp_baileys"
+      };
       const options = {
         method: "POST",
         url: queueIntegration?.urlN8N,
         headers: {
           "Content-Type": "application/json"
         },
-        json: msg
+        json: cleanPayload
       };
       try {
         request(options, function (error, response) {
@@ -2175,8 +2188,19 @@ const handleMessage = async (
       await verifyMessage(msg, ticket, contact);
     }
 
-    // BOT: Check if bot is active for this ticket
+    // BOT: Only run bot/schedule/integration logic if the bot is active for this ticket
     if (!ticket.isBot) {
+      // Still process queues and integrations even when bot is off
+      if (
+        !ticket.queue &&
+        !ticket.isGroup &&
+        !msg.key.fromMe &&
+        !ticket.userId &&
+        whatsapp.queues.length >= 1 &&
+        !ticket.useIntegration
+      ) {
+        await verifyQueue(wbot, msg, ticket, contact);
+      }
       return;
     }
 
