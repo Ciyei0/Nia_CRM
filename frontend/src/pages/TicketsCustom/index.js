@@ -102,8 +102,8 @@ const TicketsCustom = () => {
 					<Grid item xs={4} className={classes.contactsWrapper}>
 						<TicketsManager />
 					</Grid>
-					<Grid item xs={8} className={classes.messagesWrapper}>
-						{ticketId ? (
+					<Grid item xs={12} md={8} className={classes.messagesWrapper}>
+						{ticketId && ticketId !== "undefined" ? (
 							<>
 								<Ticket />
 							</>

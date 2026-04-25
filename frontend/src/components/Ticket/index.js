@@ -74,7 +74,7 @@ const Ticket = () => {
     setLoading(true);
     const delayDebounceFn = setTimeout(() => {
       const fetchTicket = async () => {
-        if (!ticketId) {
+        if (!ticketId || ticketId === "undefined") {
           setLoading(false);
           return;
         }
