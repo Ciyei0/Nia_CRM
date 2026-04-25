@@ -171,6 +171,7 @@ async function processIncomingMessage(
             whatsapp.companyId,
             undefined // queueId
         );
+        logger.info(`[WebhookController] Incoming message from ${from} → ticketId=${ticket.id} whatsappId=${ticket.whatsappId} status=${ticket.status}`);
 
         // Auto-assign queue and user if ticket has no queue
         if (!ticket.queueId) {
