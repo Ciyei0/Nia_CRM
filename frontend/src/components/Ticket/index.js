@@ -74,6 +74,10 @@ const Ticket = () => {
     setLoading(true);
     const delayDebounceFn = setTimeout(() => {
       const fetchTicket = async () => {
+        if (!ticketId) {
+          setLoading(false);
+          return;
+        }
         try {
           const { data } = await api.get("/tickets/u/" + ticketId);
           const { queueId } = data;
