@@ -108,15 +108,15 @@ const Ticket = () => {
     const socket = socketManager.getSocket(companyId);
 
     socket.on("ready", () => {
-      if (ticket?.id) socket.emit("joinChatBox", `${ticket.id}`);
+      if (ticketId && ticketId !== "undefined") socket.emit("joinChatBox", ticketId);
     });
 
     socket.on(`company-${companyId}-ticket`, (data) => {
-      if (data.action === "update" && data.ticket.id === ticket.id) {
+      if (data.action === "update" && Number(data.ticket.id) === Number(ticketId)) {
         setTicket(data.ticket);
       }
 
-      if (data.action === "delete" && data.ticketId === ticket.id) {
+      if (data.action === "delete" && Number(data.ticketId) === Number(ticketId)) {
         // toast.success("Ticket deleted sucessfully.");
         history.push("/tickets");
       }
@@ -136,7 +136,7 @@ const Ticket = () => {
     return () => {
       socket.disconnect();
     };
-  }, [ticketId, ticket, history, socketManager]);
+  }, [ticketId, history, socketManager]);
 
   const handleDrawerOpen = () => {
     setDrawerOpen(true);
