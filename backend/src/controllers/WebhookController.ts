@@ -312,7 +312,7 @@ async function processIncomingMessage(
             body,
             fromMe: false,
             read: false,
-            mediaType: mediaType || (messageType === "text" ? null : messageType),
+            mediaType: mediaType || (messageType === "text" ? "chat" : messageType),
             mediaUrl,
             companyId: whatsapp.companyId
         };
