@@ -476,6 +476,7 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
       const curTicketId = Number(currentTicketId.current);
       console.log("[appMessage]", data.action, "msgTicket:", msgTicketId, "curTicket:", curTicketId, "match:", msgTicketId === curTicketId);
       if (data.action === "create" && msgTicketId === curTicketId) {
+        console.log("[appMessage DEBUG] id:", data.message?.id, "fromMe:", data.message?.fromMe, "body:", data.message?.body, "createdAt:", data.message?.createdAt, "mediaType:", data.message?.mediaType);
         dispatch({ type: "ADD_MESSAGE", payload: data.message });
         scrollToBottom();
       }
@@ -829,6 +830,7 @@ const MessagesList = ({ ticket, ticketId, isGroup }) => {
   };
 
   const renderMessages = () => {
+    console.log("[renderMessages] total:", messagesList.length, messagesList.slice(-3).map(m => ({ id: m.id?.slice(-8), fromMe: m.fromMe, body: m.body?.slice(0,20) })));
     if (messagesList.length > 0) {
       const viewMessagesList = messagesList.map((message, index) => {
 
