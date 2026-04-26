@@ -8,7 +8,7 @@ import GetTicketWbot from "./GetTicketWbot";
 import Whatsapp from "../models/Whatsapp";
 
 const SetTicketMessagesAsRead = async (ticket: Ticket): Promise<void> => {
-  await ticket.update({ unreadMessages: 0 });
+  await ticket.update({ unreadMessages: 0 }, { silent: true } as any);
   // await cacheLayer.set(`contacts:${ticket.contactId}:unreads`, "0");
 
   try {

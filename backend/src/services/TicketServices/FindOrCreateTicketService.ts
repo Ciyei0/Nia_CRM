@@ -25,17 +25,31 @@ const FindOrCreateTicketService = async (
   let ticket: Ticket;
 
   // Priority 1: Most recently active ticket for this contact within last 2 hours (any whatsappId)
-  // This ensures incoming messages route to the same ticket as outgoing (even if different whatsapp connection)
+  // Prefers OPEN over PENDING so new messages route to the active conversation.
   if (!groupContact) {
+    // 1a: open ticket updated in last 2 hours
     ticket = await Ticket.findOne({
       where: {
-        status: { [Op.or]: ["open", "pending"] },
+        status: "open",
         contactId: contact.id,
         companyId,
         updatedAt: { [Op.gt]: subHours(new Date(), 2) }
       },
       order: [["updatedAt", "DESC"]]
     });
+
+    // 1b: pending ticket updated in last 2 hours (fallback)
+    if (!ticket) {
+      ticket = await Ticket.findOne({
+        where: {
+          status: "pending",
+          contactId: contact.id,
+          companyId,
+          updatedAt: { [Op.gt]: subHours(new Date(), 2) }
+        },
+        order: [["updatedAt", "DESC"]]
+      });
+    }
 
     if (ticket) {
       await ticket.update({ unreadMessages, whatsappId: ticket.whatsappId }); // keep original whatsappId
