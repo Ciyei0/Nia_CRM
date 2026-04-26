@@ -336,9 +336,22 @@ async function processIncomingMessage(
 
 
         // Update ticket with last message
+        await ticket.reload();
         await ticket.update({
             lastMessage: body,
         });
+
+        // Emit ticket event so the ticket list updates in real time
+        const io = getIO();
+        io.to(ticket.id.toString())
+          .to(`company-${whatsapp.companyId}-${ticket.status}`)
+          .to(`company-${whatsapp.companyId}-notification`)
+          .to(`queue-${ticket.queueId}-${ticket.status}`)
+          .to(`queue-${ticket.queueId}-notification`)
+          .emit(`company-${whatsapp.companyId}-ticket`, {
+            action: "update",
+            ticket,
+          });
 
         logger.info(`Message saved: ${messageId} for ticket ${ticket.id}`);
         // Integration Logic (N8N / Webhook)

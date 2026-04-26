@@ -204,8 +204,9 @@ const TicketsListCustom = (props) => {
 
   useEffect(() => {
     const queueIds = queues.map((q) => q.id);
+    const allTicketEnabled = user.allTicket === "enabled";
     const filteredTickets = tickets.filter(
-      (t) => queueIds.indexOf(t.queueId) > -1
+      (t) => queueIds.indexOf(t.queueId) > -1 || (allTicketEnabled && t.queueId === null)
     );
 
     if (profile === "user") {
@@ -213,7 +214,7 @@ const TicketsListCustom = (props) => {
     } else {
       dispatch({ type: "LOAD_TICKETS", payload: tickets });
     }
-  }, [tickets, status, searchParam, queues, profile]);
+  }, [tickets, status, searchParam, queues, profile, user.allTicket]);
 
   useEffect(() => {
     const companyId = localStorage.getItem("companyId");
@@ -265,10 +266,13 @@ const TicketsListCustom = (props) => {
 
     socket.on(`company-${companyId}-appMessage`, (data) => {
       const queueIds = queues.map((q) => q.id);
+      const allTicketEnabled = user.allTicket === "enabled";
       if (
         profile === "user" &&
-        (queueIds.indexOf(data.ticket?.queue?.id) === -1 ||
-          data.ticket.queue === null)
+        (
+          (data.ticket?.queue !== null && queueIds.indexOf(data.ticket?.queue?.id) === -1) ||
+          (data.ticket?.queue === null && !allTicketEnabled)
+        )
       ) {
         return;
       }
