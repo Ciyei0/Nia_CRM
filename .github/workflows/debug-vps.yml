@@ -1,15 +1,13 @@
-name: Debug VPS Logs
+name: Debug VPS - Full Diagnostics
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 jobs:
   debug-logs:
     runs-on: ubuntu-latest
     steps:
-      - name: Get Logs from VPS
+      - name: Full VPS Diagnostics
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -17,6 +15,33 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           port: ${{ secrets.VPS_PORT }}
           script: |
+            echo "========== DOCKER CONTAINERS =========="
             docker ps -a
-            docker logs nia_crm_backend --tail 500 > /root/Nia_CRM/backend_logs.txt
-            cat /root/Nia_CRM/backend_logs.txt
+
+            echo ""
+            echo "========== BACKEND LOGS (last 100) =========="
+            docker logs nia_crm_backend --tail 100 2>&1 || echo "Container not found or not running"
+
+            echo ""
+            echo "========== BACKEND INSPECT =========="
+            docker inspect nia_crm_backend 2>&1 | grep -E '"Status"|"ExitCode"|"Error"|"RestartCount"|"Image"' || echo "Container not found"
+
+            echo ""
+            echo "========== TRAEFIK / EASYPANEL STATUS =========="
+            docker ps | grep -i traefik || echo "Traefik not running"
+
+            echo ""
+            echo "========== PORTS IN USE =========="
+            ss -tlnp | grep -E "8001|8081|3001|3010|80|443"
+
+            echo ""
+            echo "========== DOCKER COMPOSE STATUS =========="
+            cd /root/Nia_CRM && docker compose ps 2>&1
+
+            echo ""
+            echo "========== DISK SPACE =========="
+            df -h /
+
+            echo ""
+            echo "========== DOCKER IMAGES =========="
+            docker images | grep -E "nia_crm|REPOSITORY"
