@@ -32,12 +32,27 @@ if (process.env.FRONTEND_URL && !allowedOrigins.includes(process.env.FRONTEND_UR
   allowedOrigins.push(process.env.FRONTEND_URL);
 }
 
-app.use(
-  cors({
-    credentials: true,
-    origin: allowedOrigins
-  })
-);
+const corsOptions = {
+  credentials: true,
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // Allow requests with no origin (mobile apps, curl, server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    logger.warn(`CORS blocked origin: ${origin}`);
+    return callback(new Error(`CORS policy: origin ${origin} not allowed`));
+  },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
+
+// Handle OPTIONS preflight for ALL routes BEFORE any other middleware
+app.options("*", cors(corsOptions));
+
+app.use(cors(corsOptions));
 
 app.set("queues", {
   messageQueue,
