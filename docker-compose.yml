@@ -1,4 +1,4 @@
-version: "3.8"
+
 
 services:
   nia-db:
@@ -42,11 +42,16 @@ services:
       - PROXY_PORT=8001
       - FACEBOOK_APP_ID=1502878444119560
       - FACEBOOK_APP_SECRET=a779858498ded3069dd08271f7d90f12
-      # ... you will need to map other variables from .env here
       - JWT_SECRET=T87UxFqVDmDbol+l3kJPw1BIfUD+V2D0uSMxiVBCeJEE5B7S//YJ62TmrlBAqhe3etLamUk87ZoYCzLSIEI+ag==
       - JWT_REFRESH_SECRET=dBSXqFg9TaNUEDXVp6fhMTRLBysP+j2DSqf7+raxD3A=
       - SUPABASE_URL=https://sucaqyptfxcykheekhqg.supabase.co
       - SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1Y2FxeXB0ZnhjeWtoZWVraHFnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDMxNjc2OCwiZXhwIjoyMDg5ODkyNzY4fQ.Ng9PIxrXzKwMUJu7MnpCz6qc9VA3pIlmrHALIcSl708
+      - WHATSAPP_VERIFY_TOKEN=niacrm_webhook_token
+      - USER_LIMIT=10000
+      - CONNECTIONS_LIMIT=100000
+      - CLOSED_SEND_BY_ME=true
+      - REDIS_OPT_LIMITER_MAX=1
+      - REDIS_OPT_LIMITER_DURATION=3000
     ports:
       - "8081:8001"
     labels:

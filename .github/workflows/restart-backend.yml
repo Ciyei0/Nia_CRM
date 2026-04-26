@@ -1,0 +1,46 @@
+name: Restart Backend on VPS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  restart-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Restart Backend Container
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            cd /root/Nia_CRM
+
+            # Pull latest code
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Login to GHCR
+            echo ${{ secrets.GHCR_PAT || secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Pull latest backend image
+            docker compose pull nia-backend
+
+            # Recreate and restart backend
+            docker compose up -d --force-recreate nia-backend
+
+            # Wait for it to start
+            sleep 5
+
+            # Show status
+            docker ps | grep nia
+            docker logs nia_crm_backend --tail 30 2>&1
+
+            echo ""
+            echo "========== HEALTH CHECK =========="
+            curl -s -o /dev/null -w "%{http_code}" http://localhost:8081/version || echo "Backend not responding on 8081"
+            curl -s -o /dev/null -w "%{http_code}" http://localhost:8001/version || echo "Backend not responding on 8001"
