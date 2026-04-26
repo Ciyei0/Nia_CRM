@@ -3,6 +3,7 @@ name: Debug VPS Logs
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   debug-logs:
@@ -16,5 +17,6 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           port: ${{ secrets.VPS_PORT }}
           script: |
-            docker logs nia-backend --tail 500 > /root/Nia_CRM/backend_logs.txt
+            docker ps -a
+            docker logs nia_crm_backend --tail 500 > /root/Nia_CRM/backend_logs.txt
             cat /root/Nia_CRM/backend_logs.txt
