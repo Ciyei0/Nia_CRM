@@ -87,38 +87,30 @@ export const initIO = (httpServer: Server): SocketIO => {
         return;
       }
 
-      // The frontend may send either the numeric id or the uuid string (from the URL param).
-      // Detect uuid format (e.g. "f982bfdb-78d1-4d4e-b6cc-d7b7d100b9e7") and resolve to the
-      // numeric id so that socket.join uses the same room name that CreateMessageService emits to.
-      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(ticketId);
+      try {
+        // The frontend may send either the numeric id or the uuid string (from the URL param).
+        // Detect uuid format (e.g. "f982bfdb-78d1-4d4e-b6cc-d7b7d100b9e7") and resolve to the
+        // numeric id so that socket.join uses the same room name that CreateMessageService emits to.
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(ticketId);
+        const ticket = isUUID
+          ? await Ticket.findOne({ where: { uuid: ticketId } })
+          : await Ticket.findByPk(ticketId);
 
-      let findPromise: Promise<Ticket>;
-      if (isUUID) {
-        findPromise = Ticket.findOne({ where: { uuid: ticketId } });
-      } else {
-        findPromise = Ticket.findByPk(ticketId);
-      }
-
-      findPromise.then(
-        (ticket) => {
-          // Allow any user of the same company to join the ticket room
-          // so they can receive real-time messages even if the ticket is unassigned
-          if (ticket && ticket.companyId === user.companyId) {
-            // Always use the numeric id as the room name — this matches what CreateMessageService emits to
-            const roomId = ticket.id.toString();
-            let c: number;
-            if ((c = counters.incrementCounter(`ticket-${roomId}`)) === 1) {
-              socket.join(roomId);
-            }
-            logger.debug(`joinChatbox[${c}]: Channel: ${roomId} (resolved from "${ticketId}") by user ${user.id}`);
-          } else {
-            logger.info(`Invalid attempt to join channel of ticket ${ticketId} by user ${user.id}`);
+        // Allow any user of the same company to join the ticket room
+        if (ticket && ticket.companyId === user.companyId) {
+          // Always use the numeric id as the room name — this matches what CreateMessageService emits to
+          const roomId = ticket.id.toString();
+          let c: number;
+          if ((c = counters.incrementCounter(`ticket-${roomId}`)) === 1) {
+            socket.join(roomId);
           }
-        },
-        (error) => {
-          logger.error(error, `Error fetching ticket ${ticketId}`);
+          logger.debug(`joinChatbox[${c}]: Channel: ${roomId} (resolved from "${ticketId}") by user ${user.id}`);
+        } else {
+          logger.info(`Invalid attempt to join channel of ticket ${ticketId} by user ${user.id}`);
         }
-      );
+      } catch (error) {
+        logger.error(error, `Error fetching ticket ${ticketId}`);
+      }
     });
 
     socket.on("leaveChatBox", async (ticketId: string) => {
