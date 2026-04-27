@@ -77,43 +77,44 @@ export const receive = async (req: Request, res: Response): Promise<Response> =>
 
                 logger.info(`Webhook Analysis: Found ${whatsappList.length} connection(s) for WABA ID ${whatsappAccountId}: ${whatsappList.map(w => `ID=${w.id} company=${w.companyId}`).join(", ")}`);
 
-                // Process changes (messages, status updates, etc.) for every connection
+                // Process changes for every matching company connection
                 for (const whatsapp of whatsappList) {
                     logger.info(`Webhook Analysis: Processing for connection ID: ${whatsapp.id}, Name: ${whatsapp.name}, companyId: ${whatsapp.companyId}`);
 
                     if (entry.changes && Array.isArray(entry.changes)) {
                         for (const change of entry.changes) {
+                            if (change.field === "messages") {
+                                const value = change.value;
 
-                        if (change.field === "messages") {
-                            const value = change.value;
+                                // Get metadata
+                                const phoneNumberId = value.metadata?.phone_number_id;
+                                const displayPhoneNumber = value.metadata?.display_phone_number;
 
-                            // Get metadata
-                            const phoneNumberId = value.metadata?.phone_number_id;
-                            const displayPhoneNumber = value.metadata?.display_phone_number;
+                                // Process incoming messages
+                                if (value.messages && Array.isArray(value.messages)) {
+                                    for (const message of value.messages) {
+                                        await processIncomingMessage(
+                                            whatsapp,
+                                            message,
+                                            value.contacts,
+                                            phoneNumberId
+                                        );
+                                    }
+                                }
 
-                            // Process incoming messages
-                            if (value.messages && Array.isArray(value.messages)) {
-                                for (const message of value.messages) {
-                                    await processIncomingMessage(
-                                        whatsapp,
-                                        message,
-                                        value.contacts,
-                                        phoneNumberId
-                                    );
+                                // Process message status updates
+                                if (value.statuses && Array.isArray(value.statuses)) {
+                                    for (const status of value.statuses) {
+                                        await processMessageStatus(whatsapp, status);
+                                    }
                                 }
                             }
-
-                            // Process message status updates
-                            if (value.statuses && Array.isArray(value.statuses)) {
-                                for (const status of value.statuses) {
-                                    await processMessageStatus(whatsapp, status);
-                                }
-                            }
-                        }
+                        } // end for change
                     }
-                }
-            }
-        }
+                } // end for whatsapp
+            } // end for entry
+        } // end if body.entry
+
 
         // Always respond with 200 OK to acknowledge receipt
         return res.sendStatus(200);
