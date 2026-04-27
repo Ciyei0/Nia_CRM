@@ -74,7 +74,7 @@ const FindOrCreateTicketService = async (
   }
 
   if (ticket?.status === "closed") {
-    await ticket.update({ queueId: null, userId: null });
+    await ticket.update({ status: "pending", queueId: null, userId: null });
   }
 
   if (!ticket && groupContact) {
