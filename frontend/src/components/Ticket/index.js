@@ -107,16 +107,26 @@ const Ticket = () => {
     const companyId = localStorage.getItem("companyId");
     const socket = socketManager.getSocket(companyId);
 
+    // Use the numeric ticket.id if available; fall back to the URL UUID param.
+    // The backend can now resolve both, but the numeric id is preferred to avoid
+    // an extra DB lookup on the server side.
+    const chatBoxId = ticket.id ? `${ticket.id}` : ticketId;
+
     socket.on("ready", () => {
-      if (ticketId && ticketId !== "undefined") socket.emit("joinChatBox", ticketId);
+      if (chatBoxId && chatBoxId !== "undefined") socket.emit("joinChatBox", chatBoxId);
     });
 
+    // Join immediately (socket may already be connected)
+    if (chatBoxId && chatBoxId !== "undefined") {
+      socket.emit("joinChatBox", chatBoxId);
+    }
+
     socket.on(`company-${companyId}-ticket`, (data) => {
-      if (data.action === "update" && Number(data.ticket.id) === Number(ticketId)) {
+      if (data.action === "update" && Number(data.ticket.id) === Number(ticket.id || ticketId)) {
         setTicket(data.ticket);
       }
 
-      if (data.action === "delete" && Number(data.ticketId) === Number(ticketId)) {
+      if (data.action === "delete" && Number(data.ticketId) === Number(ticket.id || ticketId)) {
         // toast.success("Ticket deleted sucessfully.");
         history.push("/tickets");
       }
@@ -136,7 +146,7 @@ const Ticket = () => {
     return () => {
       socket.disconnect();
     };
-  }, [ticketId, history, socketManager]);
+  }, [ticketId, ticket.id, history, socketManager]);
 
   const handleDrawerOpen = () => {
     setDrawerOpen(true);

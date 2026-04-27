@@ -86,18 +86,33 @@ export const initIO = (httpServer: Server): SocketIO => {
       if (!ticketId || ticketId === "undefined") {
         return;
       }
-      Ticket.findByPk(ticketId).then(
+
+      // The frontend may send either the numeric id or the uuid string (from the URL param).
+      // Detect uuid format (e.g. "f982bfdb-78d1-4d4e-b6cc-d7b7d100b9e7") and resolve to the
+      // numeric id so that socket.join uses the same room name that CreateMessageService emits to.
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(ticketId);
+
+      let findPromise: Promise<Ticket>;
+      if (isUUID) {
+        findPromise = Ticket.findOne({ where: { uuid: ticketId } });
+      } else {
+        findPromise = Ticket.findByPk(ticketId);
+      }
+
+      findPromise.then(
         (ticket) => {
           // Allow any user of the same company to join the ticket room
           // so they can receive real-time messages even if the ticket is unassigned
           if (ticket && ticket.companyId === user.companyId) {
+            // Always use the numeric id as the room name — this matches what CreateMessageService emits to
+            const roomId = ticket.id.toString();
             let c: number;
-            if ((c = counters.incrementCounter(`ticket-${ticketId}`)) === 1) {
-              socket.join(ticketId);
+            if ((c = counters.incrementCounter(`ticket-${roomId}`)) === 1) {
+              socket.join(roomId);
             }
-            logger.debug(`joinChatbox[${c}]: Channel: ${ticketId} by user ${user.id}`)
+            logger.debug(`joinChatbox[${c}]: Channel: ${roomId} (resolved from "${ticketId}") by user ${user.id}`);
           } else {
-            logger.info(`Invalid attempt to join channel of ticket ${ticketId} by user ${user.id}`)
+            logger.info(`Invalid attempt to join channel of ticket ${ticketId} by user ${user.id}`);
           }
         },
         (error) => {
@@ -111,13 +126,22 @@ export const initIO = (httpServer: Server): SocketIO => {
         return;
       }
 
+      // Resolve UUID to numeric id just like joinChatBox does
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(ticketId);
+      let roomId = ticketId;
+      if (isUUID) {
+        try {
+          const ticket = await Ticket.findOne({ where: { uuid: ticketId } });
+          if (ticket) roomId = ticket.id.toString();
+        } catch (_) {}
+      }
+
       let c: number;
       // o último que sair apaga a luz
-
-      if ((c = counters.decrementCounter(`ticket-${ticketId}`)) === 0) {
-        socket.leave(ticketId);
+      if ((c = counters.decrementCounter(`ticket-${roomId}`)) === 0) {
+        socket.leave(roomId);
       }
-      logger.debug(`leaveChatbox[${c}]: Channel: ${ticketId} by user ${user.id}`)
+      logger.debug(`leaveChatbox[${c}]: Channel: ${roomId} by user ${user.id}`);
     });
 
     socket.on("joinNotification", async () => {
