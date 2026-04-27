@@ -60,24 +60,30 @@ export const receive = async (req: Request, res: Response): Promise<Response> =>
                 const whatsappAccountId = entry.id;
                 logger.info(`Webhook Analysis: Received WABA ID: ${whatsappAccountId}`);
 
-                // Find the WhatsApp connection by account ID
-                const whatsapp = await Whatsapp.findOne({
+                // Find ALL WhatsApp connections that share this WABA account ID.
+                // Multiple companies can share the same WhatsApp Business Account, so we
+                // need to process the message for every matching connection.
+                const whatsappList = await Whatsapp.findAll({
                     where: {
                         whatsappAccountId,
                         channel: "whatsapp_cloud"
                     }
                 });
 
-                if (!whatsapp) {
+                if (!whatsappList || whatsappList.length === 0) {
                     logger.error(`CRITICAL: No WhatsApp Cloud connection found for account ID: ${whatsappAccountId} in DB.`);
                     continue;
-                } else {
-                    logger.info(`Webhook Analysis: Connection found! ID: ${whatsapp.id}, Name: ${whatsapp.name}`);
                 }
 
-                // Process changes (messages, status updates, etc.)
-                if (entry.changes && Array.isArray(entry.changes)) {
-                    for (const change of entry.changes) {
+                logger.info(`Webhook Analysis: Found ${whatsappList.length} connection(s) for WABA ID ${whatsappAccountId}: ${whatsappList.map(w => `ID=${w.id} company=${w.companyId}`).join(", ")}`);
+
+                // Process changes (messages, status updates, etc.) for every connection
+                for (const whatsapp of whatsappList) {
+                    logger.info(`Webhook Analysis: Processing for connection ID: ${whatsapp.id}, Name: ${whatsapp.name}, companyId: ${whatsapp.companyId}`);
+
+                    if (entry.changes && Array.isArray(entry.changes)) {
+                        for (const change of entry.changes) {
+
                         if (change.field === "messages") {
                             const value = change.value;
 
