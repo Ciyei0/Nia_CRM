@@ -12,5 +12,5 @@
     "forceConsistentCasingInFileNames": true,
 	"types": ["node"]
   },
-    "exclude": ["public"]
+    "exclude": ["public", "test_*.ts", "test_*.js", "check_*.js", "dist", "node_modules"]
 }
