@@ -227,6 +227,11 @@ const ListTicketsService = async ({
 
   const hasMore = count > offset + tickets.length;
 
+  console.log(`[ListTicketsService] status=${status} companyId=${companyId} userId=${userId} showAll=${showAll} queueIds=${JSON.stringify(queueIds)} -> found ${tickets.length} tickets`);
+  if (status === "pending") {
+    console.log(`[ListTicketsService] pending tickets:`, tickets.map(t => ({ id: t.id, status: t.status, queueId: t.queueId })));
+  }
+
   return {
     tickets,
     count,
