@@ -60,22 +60,67 @@ export const receive = async (req: Request, res: Response): Promise<Response> =>
                 const whatsappAccountId = entry.id;
                 logger.info(`Webhook Analysis: Received WABA ID: ${whatsappAccountId}`);
 
-                // Find ALL WhatsApp connections that share this WABA account ID.
-                // Multiple companies can share the same WhatsApp Business Account, so we
-                // need to process the message for every matching connection.
-                const whatsappList = await Whatsapp.findAll({
-                    where: {
-                        whatsappAccountId,
-                        channel: "whatsapp_cloud"
+                // Extract phoneNumberId from the first change's metadata to pinpoint
+                // the exact WhatsApp Cloud connection (avoids duplicates when multiple
+                // connections share the same WABA ID).
+                let phoneNumberIdForLookup: string | null = null;
+                if (entry.changes && Array.isArray(entry.changes)) {
+                    for (const ch of entry.changes) {
+                        if (ch.field === "messages" && ch.value?.metadata?.phone_number_id) {
+                            phoneNumberIdForLookup = ch.value.metadata.phone_number_id;
+                            break;
+                        }
                     }
-                });
+                }
+
+                // Try to find the exact connection by phoneNumberId first (stored in
+                // the `number` field), then fall back to whatsappAccountId lookup.
+                let whatsappList: Whatsapp[] = [];
+                if (phoneNumberIdForLookup) {
+                    const exact = await Whatsapp.findOne({
+                        where: {
+                            number: phoneNumberIdForLookup,
+                            channel: "whatsapp_cloud"
+                        }
+                    });
+                    if (exact) {
+                        whatsappList = [exact];
+                        logger.info(`Webhook Analysis: Matched connection by phoneNumberId ${phoneNumberIdForLookup} → ID=${exact.id} company=${exact.companyId}`);
+                    }
+                }
+
+                // Fallback: search by WABA ID (legacy / first setup)
+                if (whatsappList.length === 0) {
+                    const allByWaba = await Whatsapp.findAll({
+                        where: {
+                            whatsappAccountId,
+                            channel: "whatsapp_cloud"
+                        }
+                    });
+                    logger.info(`Webhook Analysis: Fallback – found ${allByWaba.length} connection(s) for WABA ID ${whatsappAccountId}`);
+
+                    // If we know the phoneNumberId, use only the first match to avoid
+                    // sending the webhook event multiple times (one per duplicate row).
+                    // Also persist the phoneNumberId into `number` so future lookups are
+                    // precise and skip this fallback entirely.
+                    if (phoneNumberIdForLookup && allByWaba.length > 0) {
+                        const chosen = allByWaba[0];
+                        whatsappList = [chosen];
+                        if (!chosen.number) {
+                            await chosen.update({ number: phoneNumberIdForLookup });
+                            logger.info(`Webhook Analysis: Persisted phoneNumberId ${phoneNumberIdForLookup} into connection ID=${chosen.id}`);
+                        }
+                    } else {
+                        whatsappList = allByWaba;
+                    }
+                }
 
                 if (!whatsappList || whatsappList.length === 0) {
-                    logger.error(`CRITICAL: No WhatsApp Cloud connection found for account ID: ${whatsappAccountId} in DB.`);
+                    logger.error(`CRITICAL: No WhatsApp Cloud connection found for WABA ID: ${whatsappAccountId} or phoneNumberId: ${phoneNumberIdForLookup} in DB.`);
                     continue;
                 }
 
-                logger.info(`Webhook Analysis: Found ${whatsappList.length} connection(s) for WABA ID ${whatsappAccountId}: ${whatsappList.map(w => `ID=${w.id} company=${w.companyId}`).join(", ")}`);
+                logger.info(`Webhook Analysis: Processing ${whatsappList.length} connection(s): ${whatsappList.map(w => `ID=${w.id} company=${w.companyId}`).join(", ")}`);
 
                 // Process changes for every matching company connection
                 for (const whatsapp of whatsappList) {
