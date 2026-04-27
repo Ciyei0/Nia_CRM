@@ -48,7 +48,6 @@ const ListTicketsService = async ({
   companyId
 }: Request): Promise<Response> => {
   let whereCondition: Filterable["where"] = {
-    [Op.or]: [{ userId }, { status: "pending" }],
     queueId: { [Op.or]: [queueIds, null] }
   };
   let includeCondition: Includeable[];
@@ -81,8 +80,12 @@ const ListTicketsService = async ({
     },
   ];
 
-  if (showAll === "true") {
-    whereCondition = { queueId: { [Op.or]: [queueIds, null] } };
+  if (showAll !== "true") {
+    // Default logic: return tickets assigned to the user OR pending tickets
+    whereCondition = {
+      ...whereCondition,
+      [Op.or]: [{ userId }, { status: "pending" }]
+    };
   }
 
   if (status) {
