@@ -6,8 +6,10 @@ const timezoned = () => {
   return moment().tz('America/Sao_Paulo').format('DD-MM-YYYY HH:mm:ss');
 };
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 const logger = pino({
-  transport: {
+  transport: isProduction ? undefined : {
     target: 'pino-pretty',
     options: {
       colorize: true,

@@ -202,7 +202,7 @@ export const provider = async (ticket: Ticket, msg: proto.IWebMessageInfo, compa
 
                           await browser.close();
                           await sendMessageLink(wbot, contact, ticket, nomePDF, nomePDF);
-                        });
+                        })().catch(err => console.error("Error generating PDF:", err));
 
 
                         if (bloqueado === 'sim') {
@@ -239,8 +239,9 @@ export const provider = async (ticket: Ticket, msg: proto.IWebMessageInfo, compa
 
                         await sleep(2000)
                         fs.unlink(nomePDF, function (err) {
-                          if (err) throw err;
-                          console.log(err);
+                          if (err && err.code !== 'ENOENT') {
+                            console.error("Error deleting PDF file:", err);
+                          }
                         })
 
                         await UpdateTicketService({

@@ -11,17 +11,19 @@ import cron from "node-cron";
 const server = app.listen(process.env.PORT, async () => {
   try {
     const companies = await Company.findAll();
-    const sessionPromises = [];
+    
+    // Start sessions in background to avoid blocking server startup
+    // and handle individual failures gracefully
+    companies.forEach(c => {
+      StartAllWhatsAppsSessions(c.id).catch(err => {
+        logger.error(`Error starting sessions for company ${c.id}:`, err);
+      });
+    });
 
-    for (const c of companies) {
-      sessionPromises.push(StartAllWhatsAppsSessions(c.id));
-    }
-
-    await Promise.all(sessionPromises);
     startQueueProcess();
     logger.info(`Server started on port: ${process.env.PORT}`);
   } catch (error) {
-    logger.error("Error starting server:", error);
+    logger.error("Critical error during server startup:", error);
     process.exit(1);
   }
 });
