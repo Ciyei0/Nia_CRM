@@ -360,7 +360,7 @@ const Login = () => {
 						Iniciar Sesión
 					</Button>
 
-					{viewregister === "enabled" && (
+					{true && (
 						<>
 							<div className={classes.divider}>
 								<span>o</span>

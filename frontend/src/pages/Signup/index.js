@@ -283,9 +283,9 @@ const SignUp = () => {
 		}
 	};
 
-	if (allowregister === "disabled") {
+	/*if (allowregister === "disabled") {
 		history.push("/login");
-	}
+	}*/
 
 	const params = qs.parse(window.location.search)
 	if (params.companyId !== undefined) {
