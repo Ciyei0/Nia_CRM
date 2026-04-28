@@ -363,11 +363,6 @@ const TicketsManagerTabs = () => {
             label="Resueltos"
             classes={{ root: classes.tab }}
           />
-          <Tab
-            value={"search"}
-            label="Búsqueda"
-            classes={{ root: classes.tab }}
-          />
         </Tabs>
       </Paper>
       <Paper square elevation={0} className={classes.ticketOptionsBox}>
@@ -459,19 +454,7 @@ const TicketsManagerTabs = () => {
           selectedQueueIds={selectedQueueIds}
         />
       </TabPanel>
-      <TabPanel value={tab} name="search" className={classes.ticketsWrapper}>
-        <TagsFilter onFiltered={handleSelectedTags} />
-        {profile === "admin" && (
-          <UsersFilter onFiltered={handleSelectedUsers} />
-        )}
-        <TicketsList
-          searchParam={searchParam}
-          showAll={true}
-          tags={selectedTags}
-          users={selectedUsers}
-          selectedQueueIds={selectedQueueIds}
-        />
-      </TabPanel>
+
 
       <div className={classes.fab} onClick={() => setNewTicketModalOpen(true)}>
           <span className="material-symbols-outlined" style={{ fontSize: "32px" }}>add</span>

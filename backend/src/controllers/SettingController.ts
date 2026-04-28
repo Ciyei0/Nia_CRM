@@ -69,7 +69,7 @@ export const show = async (
     return res.status(200).json(retornoData);
   } catch (err) {
     if (settingKey === "viewregister" || settingKey === "allowregister") {
-       return res.status(200).json({ key: settingKey, value: "disabled" });
+       return res.status(200).json({ key: settingKey, value: "enabled" });
     }
     throw err;
   }
