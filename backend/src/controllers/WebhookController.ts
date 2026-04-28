@@ -17,6 +17,22 @@ import { Op } from "sequelize";
 // Verify token for webhook validation (Facebook sends a GET request)
 const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || "niacrm_webhook_token";
 
+// Dedup tracker: prevents the same WhatsApp message from being forwarded to
+// n8n more than once when multiple DB connections share the same WABA ID.
+const n8nSentMessages = new Map<string, number>(); // messageId -> timestamp
+const N8N_DEDUP_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+function hasAlreadySentToN8n(messageId: string): boolean {
+    const now = Date.now();
+    // Evict expired entries to prevent memory leak
+    for (const [id, ts] of n8nSentMessages.entries()) {
+        if (now - ts > N8N_DEDUP_TTL_MS) n8nSentMessages.delete(id);
+    }
+    if (n8nSentMessages.has(messageId)) return true;
+    n8nSentMessages.set(messageId, now);
+    return false;
+}
+
 /**
  * GET /webhook/whatsapp
  * Facebook sends a GET request to verify the webhook URL
@@ -60,67 +76,22 @@ export const receive = async (req: Request, res: Response): Promise<Response> =>
                 const whatsappAccountId = entry.id;
                 logger.info(`Webhook Analysis: Received WABA ID: ${whatsappAccountId}`);
 
-                // Extract phoneNumberId from the first change's metadata to pinpoint
-                // the exact WhatsApp Cloud connection (avoids duplicates when multiple
-                // connections share the same WABA ID).
-                let phoneNumberIdForLookup: string | null = null;
-                if (entry.changes && Array.isArray(entry.changes)) {
-                    for (const ch of entry.changes) {
-                        if (ch.field === "messages" && ch.value?.metadata?.phone_number_id) {
-                            phoneNumberIdForLookup = ch.value.metadata.phone_number_id;
-                            break;
-                        }
+                // Find ALL WhatsApp connections that share this WABA account ID.
+                // Multiple companies can share the same WhatsApp Business Account, so we
+                // need to process the message for every matching connection.
+                const whatsappList = await Whatsapp.findAll({
+                    where: {
+                        whatsappAccountId,
+                        channel: "whatsapp_cloud"
                     }
-                }
-
-                // Try to find the exact connection by phoneNumberId first (stored in
-                // the `number` field), then fall back to whatsappAccountId lookup.
-                let whatsappList: Whatsapp[] = [];
-                if (phoneNumberIdForLookup) {
-                    const exact = await Whatsapp.findOne({
-                        where: {
-                            number: phoneNumberIdForLookup,
-                            channel: "whatsapp_cloud"
-                        }
-                    });
-                    if (exact) {
-                        whatsappList = [exact];
-                        logger.info(`Webhook Analysis: Matched connection by phoneNumberId ${phoneNumberIdForLookup} → ID=${exact.id} company=${exact.companyId}`);
-                    }
-                }
-
-                // Fallback: search by WABA ID (legacy / first setup)
-                if (whatsappList.length === 0) {
-                    const allByWaba = await Whatsapp.findAll({
-                        where: {
-                            whatsappAccountId,
-                            channel: "whatsapp_cloud"
-                        }
-                    });
-                    logger.info(`Webhook Analysis: Fallback – found ${allByWaba.length} connection(s) for WABA ID ${whatsappAccountId}`);
-
-                    // If we know the phoneNumberId, use only the first match to avoid
-                    // sending the webhook event multiple times (one per duplicate row).
-                    // Also persist the phoneNumberId into `number` so future lookups are
-                    // precise and skip this fallback entirely.
-                    if (phoneNumberIdForLookup && allByWaba.length > 0) {
-                        const chosen = allByWaba[0];
-                        whatsappList = [chosen];
-                        if (!chosen.number) {
-                            await chosen.update({ number: phoneNumberIdForLookup });
-                            logger.info(`Webhook Analysis: Persisted phoneNumberId ${phoneNumberIdForLookup} into connection ID=${chosen.id}`);
-                        }
-                    } else {
-                        whatsappList = allByWaba;
-                    }
-                }
+                });
 
                 if (!whatsappList || whatsappList.length === 0) {
-                    logger.error(`CRITICAL: No WhatsApp Cloud connection found for WABA ID: ${whatsappAccountId} or phoneNumberId: ${phoneNumberIdForLookup} in DB.`);
+                    logger.error(`CRITICAL: No WhatsApp Cloud connection found for account ID: ${whatsappAccountId} in DB.`);
                     continue;
                 }
 
-                logger.info(`Webhook Analysis: Processing ${whatsappList.length} connection(s): ${whatsappList.map(w => `ID=${w.id} company=${w.companyId}`).join(", ")}`);
+                logger.info(`Webhook Analysis: Found ${whatsappList.length} connection(s) for WABA ID ${whatsappAccountId}: ${whatsappList.map(w => `ID=${w.id} company=${w.companyId}`).join(", ")}`);
 
                 // Process changes for every matching company connection
                 for (const whatsapp of whatsappList) {
@@ -429,36 +400,43 @@ async function processIncomingMessage(
                 // Check for n8n, webhook, or webhooks (plural/mixed case)
                 if (integrationType === "n8n" || integrationType.includes("webhook")) {
                     if (integration.urlN8N) {
-                        const payload = {
-                            ...message,
-                            fromMe: false,
-                            contact: contactData,
-                            ticket: ticket,
-                            type: messageType,
-                            body,
-                            source: "whatsapp_cloud_webhook"
-                        };
+                        // Guard: if this exact messageId was already forwarded to n8n
+                        // (e.g. by another connection row that shares the same WABA),
+                        // skip to avoid duplicate messages in the chat.
+                        if (hasAlreadySentToN8n(messageId)) {
+                            logger.warn(`WebhookController: Skipping duplicate n8n call for message ${messageId} (already sent by another connection).`);
+                        } else {
+                            const payload = {
+                                ...message,
+                                fromMe: false,
+                                contact: contactData,
+                                ticket: ticket,
+                                type: messageType,
+                                body,
+                                source: "whatsapp_cloud_webhook"
+                            };
 
-                        logger.info(`WebhookController: Sending POST to: ${integration.urlN8N}`);
-                        logger.info(`WebhookController: Payload: ${JSON.stringify(payload)}`);
+                            logger.info(`WebhookController: Sending POST to: ${integration.urlN8N}`);
+                            logger.info(`WebhookController: Payload: ${JSON.stringify(payload)}`);
 
-                        const options = {
-                            method: "POST",
-                            url: integration.urlN8N,
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            json: payload
-                        };
+                            const options = {
+                                method: "POST",
+                                url: integration.urlN8N,
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                json: payload
+                            };
 
-                        // Fire-and-forget using request library (callback-based)
-                        request(options, function (error, response) {
-                            if (error) {
-                                logger.error(`WebhookController: Error sending to integration: ${error}`);
-                            } else {
-                                logger.info(`WebhookController: Sent to integration. StatusCode: ${response ? response.statusCode : "unknown"}`);
-                            }
-                        });
+                            // Fire-and-forget using request library (callback-based)
+                            request(options, function (error, response) {
+                                if (error) {
+                                    logger.error(`WebhookController: Error sending to integration: ${error}`);
+                                } else {
+                                    logger.info(`WebhookController: Sent to integration. StatusCode: ${response ? response.statusCode : "unknown"}`);
+                                }
+                            });
+                        }
                     } else {
                         logger.warn(`WebhookController: Integration type matches but NO URL defined.`);
                     }
