@@ -6,22 +6,53 @@ services:
     container_name: nia_crm_db
     restart: always
     environment:
-      POSTGRES_DB: ${DB_NAME:-whaticketsaas}
-      POSTGRES_USER: ${DB_USER:-whaticket_user}
-      POSTGRES_PASSWORD: ${DB_PASS:-mysql123456}
-    ports:
-      - "5433:5432"
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    # Removido el mapeo de puerto al host para mayor seguridad
+    # ports:
+    #   - "5433:5432"
     volumes:
       - nia_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-whaticket_user} -d ${DB_NAME:-whaticketsaas}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   nia-redis:
     image: redis:alpine
     container_name: nia_crm_redis
     restart: always
-    ports:
-      - "6380:6379"
+    # Removido el mapeo de puerto al host para mayor seguridad
+    # ports:
+    #   - "6380:6379"
     volumes:
       - nia_redis_data:/data
+    command: redis-server --appendonly yes # Habilitamos AOF para mayor persistencia
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   nia-backend:
     image: ghcr.io/ciyei0/nia_crm-backend:latest
@@ -32,26 +63,27 @@ services:
       - PORT=8001
       - DB_DIALECT=postgres
       - DB_HOST=nia-db
-      - DB_USER=${DB_USER:-whaticket_user}
-      - DB_PASS=${DB_PASS:-mysql123456}
-      - DB_NAME=${DB_NAME:-whaticketsaas}
-      - DB_PORT=5432 # This is the internal port of nia-db
-      - REDIS_URI=redis://nia-redis:6379 # Internal port of nia-redis
-      - BACKEND_URL=${BACKEND_URL:-https://backend.niacrmbot.com}
-      - FRONTEND_URL=${FRONTEND_URL:-https://niacrmbot.com}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - DB_PORT=5432
+      - REDIS_URI=redis://nia-redis:6379
+      - BACKEND_URL=${BACKEND_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
       - PROXY_PORT=8001
-      - FACEBOOK_APP_ID=1502878444119560
-      - FACEBOOK_APP_SECRET=a779858498ded3069dd08271f7d90f12
-      - JWT_SECRET=T87UxFqVDmDbol+l3kJPw1BIfUD+V2D0uSMxiVBCeJEE5B7S//YJ62TmrlBAqhe3etLamUk87ZoYCzLSIEI+ag==
-      - JWT_REFRESH_SECRET=dBSXqFg9TaNUEDXVp6fhMTRLBysP+j2DSqf7+raxD3A=
-      - SUPABASE_URL=https://sucaqyptfxcykheekhqg.supabase.co
-      - SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1Y2FxeXB0ZnhjeWtoZWVraHFnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDMxNjc2OCwiZXhwIjoyMDg5ODkyNzY4fQ.Ng9PIxrXzKwMUJu7MnpCz6qc9VA3pIlmrHALIcSl708
-      - WHATSAPP_VERIFY_TOKEN=niacrm_webhook_token
+      - FACEBOOK_APP_ID=${FACEBOOK_APP_ID}
+      - FACEBOOK_APP_SECRET=${FACEBOOK_APP_SECRET}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - WHATSAPP_VERIFY_TOKEN=${WHATSAPP_VERIFY_TOKEN}
       - USER_LIMIT=10000
       - CONNECTIONS_LIMIT=100000
       - CLOSED_SEND_BY_ME=true
       - REDIS_OPT_LIMITER_MAX=1
       - REDIS_OPT_LIMITER_DURATION=3000
+    # Mantenemos el puerto del backend por si se requiere acceso directo
     ports:
       - "8081:8001"
     labels:
@@ -65,15 +97,32 @@ services:
       - default
       - easypanel
     depends_on:
-      - nia-db
-      - nia-redis
+      nia-db:
+        condition: service_healthy
+      nia-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 1G # El backend es lo más pesado
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   nia-frontend:
     image: ghcr.io/ciyei0/nia_crm-frontend:latest
     container_name: nia_crm_frontend
     restart: always
     ports:
-      - "127.0.0.1:3010:3001" # Internal mapping for Nginx proxy
+      - "127.0.0.1:3010:3001"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.nia-front.rule=Host(`niacrmbot.com`)"
@@ -89,6 +138,11 @@ services:
     volumes:
       - ./frontend-build:/usr/share/nginx/html
       - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   nia_db_data:

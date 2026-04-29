@@ -31,12 +31,14 @@ const server = app.listen(process.env.PORT, async () => {
 process.on("uncaughtException", err => {
   logger.error(`${new Date().toUTCString()} uncaughtException:`, err.message);
   logger.error(err.stack);
-  // Remove process.exit(1); to avoid abrupt shutdowns
+  // Exit process to avoid inconsistent state, Docker will restart it
+  process.exit(1);
 });
 
 process.on("unhandledRejection", (reason, p) => {
   logger.error(`${new Date().toUTCString()} unhandledRejection:`, reason, p);
-  // Remove process.exit(1); to avoid abrupt shutdowns
+  // Exit process to avoid inconsistent state, Docker will restart it
+  process.exit(1);
 });
 
 cron.schedule("* * * * *", async () => {

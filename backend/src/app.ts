@@ -2,6 +2,8 @@ import * as Sentry from "@sentry/node";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import "express-async-errors";
 import "reflect-metadata";
 import "./bootstrap";
@@ -18,6 +20,22 @@ import { logger } from "./utils/logger";
 Sentry.init({ dsn: process.env.SENTRY_DSN });
 
 const app = express();
+
+// Security Middlewares
+app.use(helmet()); // Sets various HTTP headers for security
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: "Too many requests from this IP, please try again after 15 minutes",
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+// Apply the rate limiting middleware to all requests
+// Except for webhooks which might receive high volume
+app.use("/auth", limiter);
+app.use("/users", limiter);
 
 app.use(Sentry.Handlers.requestHandler());
 
