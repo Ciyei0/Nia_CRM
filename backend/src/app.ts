@@ -22,7 +22,10 @@ Sentry.init({ dsn: process.env.SENTRY_DSN });
 const app = express();
 
 // Security Middlewares
-app.use(helmet()); // Sets various HTTP headers for security
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: false, // Desactivamos CSP temporalmente para evitar bloqueos de scripts/estilos
+})); 
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
