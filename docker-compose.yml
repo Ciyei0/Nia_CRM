@@ -105,8 +105,8 @@ services:
       test: ["CMD-SHELL", "node -e 'require(\"http\").get(\"http://localhost:8001/\", (res) => process.exit(res.statusCode === 200 ? 0 : 1)).on(\"error\", () => process.exit(1))'"]
       interval: 30s
       timeout: 10s
-      retries: 3
-      start_period: 40s
+      retries: 10 # Más reintentos para dar tiempo al arranque
+      start_period: 120s # 2 minutos de gracia al arrancar
     deploy:
       resources:
         limits:

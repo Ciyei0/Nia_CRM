@@ -84,6 +84,7 @@ app.use(bodyParser.json({ limit: '10mb' }));
 app.use(cookieParser());
 app.use(express.json());
 app.use("/public", express.static(uploadConfig.directory));
+app.get("/", (req, res) => res.status(200).send("Nia CRM API is running"));
 app.use(routes);
 
 app.use(Sentry.Handlers.errorHandler());
