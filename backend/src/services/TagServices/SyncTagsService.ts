@@ -38,8 +38,8 @@ const SyncTags = async ({
   await ticket.reload();
 
   const io = getIO();
-  io.to(ticket.status)
-    .to("notification")
+  io.to(`company-${ticket.companyId}-${ticket.status}`)
+    .to(`company-${ticket.companyId}-notification`)
     .to(ticketId.toString())
     .emit(`company-${ticket.companyId}-ticket`, {
       action: "update",

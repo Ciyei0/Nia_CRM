@@ -335,6 +335,15 @@ const TicketsManagerTabs = () => {
         </div>
       </div>
 
+      <div style={{ display: 'flex', gap: '10px', padding: '0 12px' }}>
+        <div style={{ flex: 1 }}>
+          <TagsFilter onFiltered={handleSelectedTags} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <UsersFilter onFiltered={handleSelectedUsers} />
+        </div>
+      </div>
+
       <Paper elevation={0} square className={classes.tabsHeader}>
         <Tabs
           value={tab}
@@ -437,6 +446,8 @@ const TicketsManagerTabs = () => {
             selectedQueueIds={selectedQueueIds}
             updateCount={(val) => setOpenCount(val)}
             style={applyPanelStyle("open")}
+            tags={selectedTags}
+            users={selectedUsers}
           />
           <TicketsList
             status="pending"
@@ -444,6 +455,8 @@ const TicketsManagerTabs = () => {
             selectedQueueIds={selectedQueueIds}
             updateCount={(val) => setPendingCount(val)}
             style={applyPanelStyle("pending")}
+            tags={selectedTags}
+            users={selectedUsers}
           />
         </Paper>
       </TabPanel>
@@ -452,6 +465,8 @@ const TicketsManagerTabs = () => {
           status="closed"
           showAll={true}
           selectedQueueIds={selectedQueueIds}
+          tags={selectedTags}
+          users={selectedUsers}
         />
       </TabPanel>
 

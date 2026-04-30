@@ -313,12 +313,14 @@ const TicketsManager = () => {
             selectedQueueIds={selectedQueueIds}
             updateCount={(val) => setOpenCount(val)}
             style={applyPanelStyle("open")}
+            tags={selectedTags}
           />
           <TicketsList
             status="pending"
             selectedQueueIds={selectedQueueIds}
             updateCount={(val) => setPendingCount(val)}
             style={applyPanelStyle("pending")}
+            tags={selectedTags}
           />
         </Paper>
       </TabPanel>
@@ -330,6 +332,7 @@ const TicketsManager = () => {
           showAll={true}
           selectedQueueIds={selectedQueueIds}
           updateCount={(val) => setPendingCount(val)}
+          tags={selectedTags}
         />
       </TabPanel>
 
@@ -341,6 +344,7 @@ const TicketsManager = () => {
           status="closed"
           showAll={true}
           selectedQueueIds={selectedQueueIds}
+          tags={selectedTags}
         />
       </TabPanel>
       <TabPanel value={tab} name="search" className={classes.ticketsWrapper}>
