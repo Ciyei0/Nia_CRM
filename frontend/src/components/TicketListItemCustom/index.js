@@ -482,7 +482,7 @@ const TicketListItemCustom = ({ ticket }) => {
         <ListItemAvatar>
             <Avatar
               className={classes.avatar}
-              src={ticket?.contact?.profilePicUrl}>
+              src={ticket?.contact?.profilePicUrl?.includes("nopicture.png") ? "/nopicture.png" : ticket?.contact?.profilePicUrl}>
               {getInitials(ticket?.contact?.name || "")}
             </Avatar>
         </ListItemAvatar>
@@ -496,7 +496,7 @@ const TicketListItemCustom = ({ ticket }) => {
                     variant="body2"
                     className={classes.nameText}
                   >
-                    {ticket.contact.name}
+                    {ticket.contact?.name}
                   </Typography>
                   <Typography className={classes.ticketInfo}>#T-{ticket.id}</Typography>
                 </div>

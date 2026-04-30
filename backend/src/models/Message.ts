@@ -51,9 +51,12 @@ class Message extends Model<Message> {
   @Column(DataType.STRING)
   get mediaUrl(): string | null {
     if (this.getDataValue("mediaUrl")) {
-      return `${process.env.BACKEND_URL}/public/${this.getDataValue(
-        "mediaUrl"
-      )}`;
+      const backendUrl = process.env.BACKEND_URL;
+      let url = `${backendUrl}/public/${this.getDataValue("mediaUrl")}`;
+      if (process.env.NODE_ENV === "production" && url.startsWith("http://") && !url.includes("localhost")) {
+        url = url.replace("http://", "https://");
+      }
+      return url;
     }
     return null;
   }

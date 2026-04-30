@@ -222,7 +222,7 @@ const TicketListItem = ({ ticket }) => {
           ></span>
         </Tooltip>
         <ListItemAvatar>
-          <Avatar src={ticket?.contact?.profilePicUrl} className={classes.avatar} />
+          <Avatar src={ticket?.contact?.profilePicUrl?.includes("nopicture.png") ? "/nopicture.png" : ticket?.contact?.profilePicUrl} className={classes.avatar} />
         </ListItemAvatar>
         <ListItemText
           disableTypography
@@ -235,7 +235,7 @@ const TicketListItem = ({ ticket }) => {
                         variant="body2"
                         className={classes.nameText}
                     >
-                        {ticket.contact.name}
+                        {ticket.contact?.name}
                     </Typography>
                     <Typography className={classes.ticketId}>#T-{ticket.id}</Typography>
                 </div>

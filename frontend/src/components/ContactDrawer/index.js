@@ -134,7 +134,7 @@ const ContactDrawer = ({ open, handleDrawerClose, contact, ticket, loading }) =>
 								titleTypographyProps={{ noWrap: true }}
 								subheaderTypographyProps={{ noWrap: true }}
 								avatar={<Avatar
-                      src={contact.profilePicUrl}
+                      src={contact.profilePicUrl?.includes("nopicture.png") ? "/nopicture.png" : contact.profilePicUrl}
                       alt="contact_image"
                       style={{ width: 60, height: 60, backgroundColor: generateColor(contact?.number), color: "white", fontWeight: "bold" }}
                     >

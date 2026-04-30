@@ -20,7 +20,7 @@ const GetProfilePicUrl = async (
   if (whatsapp.channel === "whatsapp_cloud") {
     // Cloud API does not provide a direct way to get profile pic via this method easily found in docs yet, 
     // or requires permissions/different endpoint. For now, return default to avoid crash.
-    return `${process.env.FRONTEND_URL}/nopicture.png`;
+    return "/nopicture.png";
   }
 
   const wbot = getWbot(whatsapp.id);
@@ -29,7 +29,7 @@ const GetProfilePicUrl = async (
   try {
     profilePicUrl = await wbot.profilePictureUrl(`${number}@s.whatsapp.net`);
   } catch (error) {
-    profilePicUrl = `${process.env.FRONTEND_URL}/nopicture.png`;
+    profilePicUrl = "/nopicture.png";
   }
 
   return profilePicUrl;
