@@ -29,7 +29,7 @@ const TicketInfo = ({ contact, ticket, onClick }) => {
 			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [])
+	}, [contact, ticket])
 
 	return (
 		<CardHeader
