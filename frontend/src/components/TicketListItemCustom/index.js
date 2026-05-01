@@ -250,7 +250,7 @@ const TicketListItemCustom = ({ ticket }) => {
       isMounted.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [ticket]);
 
   {/*CÓDIGO NOVO SAUDAÇÃO*/ }
   const handleCloseTicket = async (id) => {

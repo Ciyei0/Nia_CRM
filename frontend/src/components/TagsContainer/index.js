@@ -57,24 +57,35 @@ export function TagsContainer({ ticket }) {
     }
 
     const onChange = async (value, reason) => {
-        let optionsChanged = []
-        if (reason === 'create-option') {
-            if (isArray(value)) {
-                for (let item of value) {
-                    if (isString(item)) {
-                        const newTag = await createTag({ name: item })
-                        optionsChanged.push(newTag);
+        let optionsChanged = [];
+        
+        if (isArray(value)) {
+            for (let item of value) {
+                if (isString(item)) {
+                    // Check if tag already exists in the 'tags' list to avoid creating duplicates
+                    const existingTag = tags.find(t => t.name.toLowerCase() === item.toLowerCase());
+                    if (existingTag) {
+                        optionsChanged.push(existingTag);
                     } else {
-                        optionsChanged.push(item);
+                        const newTag = await createTag({ name: item });
+                        if (newTag) {
+                            optionsChanged.push(newTag);
+                        }
                     }
+                } else {
+                    optionsChanged.push(item);
                 }
             }
-            await loadTags();
-        } else {
-            optionsChanged = value;
         }
-        setSelecteds(optionsChanged);
-        await syncTags({ ticketId: ticket.id, tags: optionsChanged });
+        
+        // Remove duplicates just in case
+        const uniqueOptions = optionsChanged.filter((option, index, self) =>
+            index === self.findIndex((t) => t.id === option.id)
+        );
+
+        setSelecteds(uniqueOptions);
+        await syncTags({ ticketId: ticket.id, tags: uniqueOptions });
+        await loadTags(); // Refresh tags list
     }
 
     return (

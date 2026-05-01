@@ -35,7 +35,7 @@ const SyncTags = async ({
     await TicketTag.bulkCreate(tagList);
   }
 
-  await ticket.reload();
+  await ticket.reload({ include: [Tag] });
 
   const io = getIO();
   io.to(`company-${ticket.companyId}-${ticket.status}`)
