@@ -320,20 +320,7 @@ const TicketsManagerTabs = () => {
         }}
       />
 
-      <div className={classes.searchContainer}>
-        <div className={classes.serachInputWrapper}>
-            <div className={classes.searchIconWrapper}>
-                <SearchIcon className={classes.searchIcon} />
-            </div>
-            <input
-              type="text"
-              placeholder={i18n.t("tickets.search.placeholder")}
-              className={classes.searchInput}
-              value={searchParam}
-              onChange={handleSearch}
-            />
-        </div>
-      </div>
+
 
       <div style={{ display: 'flex', gap: '10px', padding: '0 12px' }}>
         <div style={{ flex: 1 }}>
