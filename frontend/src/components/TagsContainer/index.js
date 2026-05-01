@@ -86,7 +86,7 @@ export function TagsContainer({ ticket }) {
                 value={selecteds}
                 freeSolo
                 onChange={(e, v, r) => onChange(v, r)}
-                getOptionLabel={(option) => option.name}
+                getOptionLabel={(option) => option.name || option}
                 renderTags={(value, getTagProps) =>
                     value.map((option, index) => (
                         <Chip
@@ -100,7 +100,7 @@ export function TagsContainer({ ticket }) {
                                 fontSize: "0.8em",
                                 whiteSpace: "nowrap"
                             }}
-                            label={option.name.toUpperCase()}
+                            label={option.name ? option.name.toUpperCase() : option.toUpperCase()}
                             {...getTagProps({ index })}
                             size="small"
                         />
