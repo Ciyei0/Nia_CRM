@@ -122,11 +122,11 @@ const Ticket = () => {
     }
 
     socket.on(`company-${companyId}-ticket`, (data) => {
-      if (data.action === "update" && Number(data.ticket.id) === Number(ticket.id || ticketId)) {
+      if (data.action === "update" && (data.ticket.id === ticket.id || data.ticket.uuid === ticketId)) {
         setTicket(data.ticket);
       }
 
-      if (data.action === "delete" && Number(data.ticketId) === Number(ticket.id || ticketId)) {
+      if (data.action === "delete" && (data.ticketId === ticket.id || data.ticketId === ticketId)) {
         // toast.success("Ticket deleted sucessfully.");
         history.push("/tickets");
       }
@@ -144,7 +144,8 @@ const Ticket = () => {
     });
 
     return () => {
-      socket.disconnect();
+      socket.off(`company-${companyId}-ticket`);
+      socket.off(`company-${companyId}-contact`);
     };
   }, [ticketId, ticket.id, history, socketManager]);
 
