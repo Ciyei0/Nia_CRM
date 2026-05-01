@@ -35,4 +35,10 @@ whatsappTemplateRoutes.post(
     WhatsappTemplateController.sync
 );
 
+whatsappTemplateRoutes.post(
+    "/whatsapp-templates/:id/send",
+    isAuth,
+    WhatsappTemplateController.send
+);
+
 export default whatsappTemplateRoutes;

@@ -8,6 +8,8 @@ import CreateWhatsappTemplateService from "../services/WhatsappTemplateServices/
 import ShowWhatsappTemplateService from "../services/WhatsappTemplateServices/ShowWhatsappTemplateService";
 import DeleteWhatsappTemplateService from "../services/WhatsappTemplateServices/DeleteWhatsappTemplateService";
 import SyncWhatsappTemplatesService from "../services/WhatsappTemplateServices/SyncWhatsappTemplatesService";
+import ShowTicketService from "../services/TicketServices/ShowTicketService";
+import SendWhatsAppCloudTemplate from "../services/WbotServices/SendWhatsAppCloudTemplate";
 
 type IndexQuery = {
     whatsappId?: string;
@@ -135,4 +137,33 @@ export const sync = async (req: Request, res: Response): Promise<Response> => {
         message: `Sincronizado: ${result.synced} actualizadas, ${result.created} nuevas`,
         ...result
     });
+};
+
+export const send = async (req: Request, res: Response): Promise<Response> => {
+    const { id } = req.params;
+    const { ticketId, variables } = req.body;
+    const { companyId } = req.user;
+
+    const template = await ShowWhatsappTemplateService({
+        id: parseInt(id, 10),
+        companyId
+    });
+
+    if (!template) {
+        throw new AppError("Plantilla no encontrada");
+    }
+
+    const ticket = await ShowTicketService(ticketId, companyId);
+
+    if (!ticket) {
+        throw new AppError("Ticket no encontrado");
+    }
+
+    await SendWhatsAppCloudTemplate({
+        ticket,
+        template,
+        variables
+    });
+
+    return res.status(200).json({ message: "Plantilla enviada" });
 };

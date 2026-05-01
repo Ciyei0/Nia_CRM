@@ -23,6 +23,8 @@ import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { FormControlLabel, Switch } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { isString, isEmpty, isObject, has } from "lodash";
+import WhatsAppIcon from "@material-ui/icons/WhatsApp";
+import WhatsappTemplatesModal from "../WhatsappTemplatesModal";
 
 import { i18n } from "../../translate/i18n";
 import api from "../../services/api";
@@ -475,7 +477,7 @@ const CustomInput = (props) => {
 };
 
 const MessageInputCustom = (props) => {
-  const { ticketStatus, ticketId } = props;
+  const { ticketStatus, ticketId, whatsappId } = props;
   const classes = useStyles();
   const [percentLoading, setPercentLoading] = useState(0);
   const [medias, setMedias] = useState([]);
@@ -483,6 +485,7 @@ const MessageInputCustom = (props) => {
   const [showEmoji, setShowEmoji] = useState(false);
   const [loading, setLoading] = useState(false);
   const [recording, setRecording] = useState(false);
+  const [whatsappTemplatesModalOpen, setWhatsappTemplatesModalOpen] = useState(false);
   const inputRef = useRef();
   const { setReplyingMessage, replyingMessage } =
     useContext(ReplyMessageContext);
@@ -817,6 +820,22 @@ const MessageInputCustom = (props) => {
           <FileInput
             disableOption={disableOption}
             handleChangeMedias={handleChangeMedias}
+          />
+
+          <IconButton
+            aria-label="whatsapp-templates"
+            component="span"
+            disabled={disableOption()}
+            onClick={() => setWhatsappTemplatesModalOpen(true)}
+          >
+            <WhatsAppIcon className={classes.sendMessageIcons} />
+          </IconButton>
+
+          <WhatsappTemplatesModal
+            open={whatsappTemplatesModalOpen}
+            onClose={() => setWhatsappTemplatesModalOpen(false)}
+            ticketId={ticketId}
+            whatsappId={whatsappId}
           />
 
           <SignSwitch
