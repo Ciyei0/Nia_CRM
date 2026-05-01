@@ -384,12 +384,7 @@ const MainListItems = (props) => {
         icon={<LocalOfferIcon />}
       />
 
-      {/* Respuestas Rápidas */}
-      <ListItemLink
-        to="/quick-messages"
-        primary="Respuestas Rápidas"
-        icon={<FlashOnIcon />}
-      />
+
 
       {/* Plantillas WhatsApp */}
       <ListItemLink
